@@ -23,7 +23,13 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_settings);
 
-        sp = getSharedPreferences("tn.amin.mpro_preferences", Context.MODE_WORLD_READABLE);
+        boolean fromMessenger = getIntent().getBooleanExtra("fromMessenger", false);
+        int sharedPrefMode;
+        if (fromMessenger)
+            sharedPrefMode = Context.MODE_WORLD_READABLE;
+        else
+            sharedPrefMode = Context.MODE_PRIVATE;
+        sp = getSharedPreferences("tn.amin.mpro_preferences", sharedPrefMode);
 
         getSupportFragmentManager()
                 .beginTransaction()

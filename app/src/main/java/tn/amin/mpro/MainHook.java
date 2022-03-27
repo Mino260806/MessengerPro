@@ -278,6 +278,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				switch (buttonName) {
 					case Constants.TITLEBAR_BUTTON_ACTION_NAME:
 						Intent intent = new Intent("tn.amin.mpro.SETTINGS");
+						intent.putExtra("fromMessenger", true);
 						getActivity().startActivity(intent);
 						break;
 					default:
