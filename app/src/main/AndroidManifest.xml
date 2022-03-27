@@ -29,6 +29,9 @@
 		<meta-data
 			android:name="xposedminversion"
 			android:value="53" />
+		<meta-data
+			android:name="xposedscope"
+			android:value="@array/xposedscope" />
 		<activity
 			android:name="tn.amin.mpro.activities.SettingsActivity"
 			android:exported="true"
