@@ -29,5 +29,7 @@ public class SettingsActivity extends AppCompatActivity {
                 .beginTransaction()
                 .add(R.id.settings_fragment, new SettingsFragment())
                 .commit();
+
+        setTitle("Messenger Pro settings");
     }
 }
