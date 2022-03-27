@@ -27,4 +27,4 @@ It will work if and only if use **Messenger version 350.0.0.7.89 Android 9.0+ re
   from the top right corner. You can disable/enable the previous features to match your preferences.
 
 ## Compatibility
-This module should support Android versions above Android 9.0. However it has only been tested on Android 12.0
+This module should support Android versions starting from Android 9.0. However it has only been tested on Android 12.0
