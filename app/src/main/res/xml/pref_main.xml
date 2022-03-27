@@ -48,4 +48,10 @@
             android:title="Call confirmation"
             android:key="mpro_other_call_confirmation"
             android:defaultValue="true" />
+    <PreferenceCategory
+        android:key="category_about_key"
+        android:title="About" />
+        <Preference
+            android:title="Github Page"
+            android:key="mpro_about" />
 </PreferenceScreen>

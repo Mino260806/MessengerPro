@@ -1,7 +1,10 @@
 package tn.amin.mpro.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -9,6 +12,7 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
 import tn.amin.mpro.R;
+import tn.amin.mpro.constants.Constants;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     private PreferenceScreen mPreferenceScreen;
@@ -45,6 +49,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         P_Commands.callChangeListener(P_Commands.isChecked());
         P_Image.callChangeListener(P_Image.isChecked());
+
+        Preference P_About = mPreferenceScreen.findPreference("mpro_about");
+        P_About.setOnPreferenceClickListener(preference -> {
+            String url = Constants.MPRO_REPO_URL;
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+            return true;
+        });
     }
 
     @Override
