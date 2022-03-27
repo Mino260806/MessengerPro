@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="category_general_key"
+        android:title="General"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="mpro_enabled"
+            android:title="Enable Messenger Pro" />
+    <PreferenceCategory
+        android:key="category_text_key"
+        android:title="Text"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="mpro_text_format"
+            android:title="Enable messages formatting" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="mpro_commands"
+            android:title="Enable commands" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="mpro_commands_dont_send"
+            android:title="Send command input" />
+    <PreferenceCategory
+        android:key="category_image_key"
+        android:title="Image" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="mpro_image_watermark"
+            android:title="Watermark Images" />
+        <EditTextPreference
+            android:enabled="false"
+            android:defaultValue="Messenger Pro"
+            android:key="mpro_image_watermark_text"
+            android:title="Watermark text" />
+        <SeekBarPreference
+            android:enabled="false"
+            android:defaultValue="50"
+            android:max="200"
+            android:key="mpro_image_watermark_text_size"
+            android:title="Watermark text size" />
+    <PreferenceCategory
+        android:key="category_other_key"
+        android:title="Other" />
+        <SwitchPreference
+            android:enabled="true"
+            android:title="Call confirmation"
+            android:key="mpro_other_call_confirmation"
+            android:defaultValue="true" />
+</PreferenceScreen>

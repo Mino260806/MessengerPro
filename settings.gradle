@@ -1,0 +1,13 @@
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "https://libraries.minecraft.net"
+        }
+        jcenter() // Warning: this repository is going to shut down soon
+    }
+}
+rootProject.name = "Messenger Pro"
+include ':app'

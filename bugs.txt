@@ -1,0 +1,4 @@
+1) Forwarding a file sent by MPro crashes facebook messenger
+2) The dialog shown by MPro only matches system dark mode / light mode
+3) Opening a chat bubble above messenger activity will result in working with the conversation that is behind
+ that has been added because both are shown.
