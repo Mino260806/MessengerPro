@@ -201,12 +201,12 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		XposedBridge.hookAllMethods(classes.X_MediaResourceHelper, "A0A", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				if (!getPrefReader().isWatermarkEnabled()) return;
-
-				Object mediaResource = param.args[0];
-				Uri oldUri = ((Uri) XposedHelpers.getObjectField(mediaResource, "A0E"));
-				Uri newUri = ImageEditor.onImageLoaded(oldUri.getPath());
-				XposedHelpers.setObjectField(mediaResource, "A0E", newUri);
+//				if (!getPrefReader().isWatermarkEnabled()) return;
+//
+//				Object mediaResource = param.args[0];
+//				Uri oldUri = ((Uri) XposedHelpers.getObjectField(mediaResource, "A0E"));
+//				Uri newUri = ImageEditor.onImageLoaded(oldUri.getPath());
+//				XposedHelpers.setObjectField(mediaResource, "A0E", newUri);
 			}
 		});
 
@@ -335,11 +335,10 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		XposedBridge.hookAllMethods(classes.X_ComposeFragment, "A1d", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				Object mediaResource = getPendingAttachment();
-				// If an attachment is pending attach it to the message
-				// and remove its text
-				if (mediaResource != null) {
-					Object[] mediaResourcesArray = {mediaResource};
+				Object pendingAttachment = getPendingAttachment();
+				// If an attachment is pending attach it to the message and remove its text
+				if (pendingAttachment != null) {
+					Object[] mediaResourcesArray = { pendingAttachment };
 					Object mediaResources = XposedHelpers.newInstance(classes.X_RegularImmutableList,
 							mediaResourcesArray, 1);
 					XposedHelpers.setObjectField(param.args[1], "A0h", mediaResources);
@@ -354,6 +353,21 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 						newMessageTypes.add(messageType);
 					}
 					XposedHelpers.setObjectField(param.args[1], "A1E", newMessageTypes);
+				}
+				// If no attachment is pending, check if user sent an image in case we want to apply
+				// watermarks.
+				else {
+					AbstractCollection mediaResources = (AbstractCollection) XposedHelpers.getObjectField(param.args[1], "A0h");
+					for (Object mediaResource: mediaResources) {
+						Enum mediaType = (Enum) XposedHelpers.getObjectField(mediaResource, "A0P");
+						String mediaTypeString = mediaType.name();
+						boolean isImage = mediaTypeString.equals("PHOTO");
+						if (isImage && MProMain.getPrefReader().isWatermarkEnabled()) {
+							Uri oldUri = ((Uri) XposedHelpers.getObjectField(mediaResource, "A0E"));
+							Uri newUri = ImageEditor.onImageLoaded(oldUri.getPath());
+							XposedHelpers.setObjectField(mediaResource, "A0E", newUri);
+						}
+					}
 				}
 			}
 		});
