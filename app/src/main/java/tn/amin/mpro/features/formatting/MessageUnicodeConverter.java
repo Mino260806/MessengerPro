@@ -27,27 +27,40 @@ public class MessageUnicodeConverter
 	private static class CharUnicodeConverter {
 		private ConversionMethod mType;
 		private int mOffset;
-		
+		private CharacterFilter mCharacterFilter = CharacterFilter.noCharacterFilter;
+
 		public enum ConversionMethod {
 			CONVERSION_METHOD_ADD,
 			CONVERSION_METHOD_SHIFT
 		}
-		
+
 		CharUnicodeConverter(ConversionMethod type, int offset) {
 			mType = type;
 			mOffset = offset;
 		}
+		CharUnicodeConverter(ConversionMethod type, int offset, CharacterFilter characterFilter) {
+			this(type, offset);
+			mCharacterFilter = characterFilter;
+		}
 
 		public String convert(char c) {
+			// CharacterFilter gets executed first
+			char filteredChar = mCharacterFilter.filterCharacter(c);
+			if (filteredChar != CharacterFilter.NULL_CHAR)
+				return String.valueOf(filteredChar);
+			// If CharacterFilter returns NULL_CHAR, (ignores the c), proceed to the universal
+			// conversion methods.
 			switch (mType) {
 				case CONVERSION_METHOD_ADD:
+					if (Character.isSpaceChar(c))
+						break;
 					return new StringBuilder()
 						.append(c)
 						.append((char)mOffset)
 						.toString();
 				case CONVERSION_METHOD_SHIFT:
 					if (!Character.isLetter(c))
-						return String.valueOf(c);
+						break;
 					int offset = mOffset;
 					if (Character.isUpperCase(c)) {
 						offset -= 0x1a;
@@ -56,16 +69,25 @@ public class MessageUnicodeConverter
 					return new String(Character.toChars((c - 'a') + offset));
 				
 				default:
-					return String.valueOf(c);
+					break;
 			}
+			return String.valueOf(c);
 		}
 	}
 	
 	static {
-		mSpecialSymbols.put("_", new CharUnicodeConverter(CharUnicodeConverter.ConversionMethod.CONVERSION_METHOD_ADD, 0x35F));
-		mSpecialSymbols.put("-", new CharUnicodeConverter(CharUnicodeConverter.ConversionMethod.CONVERSION_METHOD_ADD, 0x336));
 		mSpecialSymbols.put("*", new CharUnicodeConverter(CharUnicodeConverter.ConversionMethod.CONVERSION_METHOD_SHIFT, 0x1D5EE));
 		mSpecialSymbols.put("!", new CharUnicodeConverter(CharUnicodeConverter.ConversionMethod.CONVERSION_METHOD_SHIFT, 0x1D622));
+		mSpecialSymbols.put("-", new CharUnicodeConverter(CharUnicodeConverter.ConversionMethod.CONVERSION_METHOD_ADD, 0x336));
+		mSpecialSymbols.put("_", new CharUnicodeConverter(CharUnicodeConverter.ConversionMethod.CONVERSION_METHOD_ADD, 0x35F, c -> {
+			// Non alphanumeric characters do not use the same "y" level for underline
+			// so the underlining line becomes misaligned and ugly. We are obliged to disable
+			// for all non alphanumeric chars as a result. Note also that the "y" level for underlining
+			// numbers is not same as letters, but it's not very important.
+			if (Character.isLetterOrDigit(c))
+				return CharacterFilter.NULL_CHAR; // proceed to normal conversion
+			return c; // keep c as it is
+		}));
 	}
 
 	public static String bold(String s) { return MessageUnicodeConverter.convert(s, "*"); }
