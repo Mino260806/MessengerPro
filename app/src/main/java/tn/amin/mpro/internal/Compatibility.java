@@ -1,6 +1,7 @@
 package tn.amin.mpro.internal;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import java.util.ArrayList;
@@ -16,20 +17,22 @@ import tn.amin.mpro.constants.Constants;
 public class Compatibility {
     public static boolean isSupported(Context context) {
         try {
-            String versionName = context.getPackageManager()
-                    .getPackageInfo(Constants.TARGET_PACKAGE_NAME, 0).versionName;
-            return checkVersion(versionName);
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(Constants.TARGET_PACKAGE_NAME, 0);
+            String versionName = packageInfo.versionName;
+            int versionCode = packageInfo.versionCode;
+            return checkVersion(versionName, versionCode);
         } catch (PackageManager.NameNotFoundException e) {
             XposedBridge.log(e);
             return false;
         }
     }
 
-    private static boolean checkVersion(String version) {
-        return getSupportedVersions().contains(version);
+    private static boolean checkVersion(String version, int versionCode) {
+        return getSupportedVersions().contains(version + ":" + versionCode);
     }
 
     private static List<String> getSupportedVersions() {
-        return Collections.singletonList("350.0.0.7.89");
+        return Collections.singletonList("350.0.0.7.89:300011227");
     }
 }
