@@ -11,6 +11,7 @@ import tn.amin.mpro.features.commands.CommandData;
 import tn.amin.mpro.features.commands.CommandsManager;
 import tn.amin.mpro.features.image.ImageEditor;
 import tn.amin.mpro.builders.MessengerDialogBuilder;
+import tn.amin.mpro.internal.Compatibility;
 import tn.amin.mpro.internal.SendButtonOCL;
 import tn.amin.mpro.utils.XposedHilfer;
 
@@ -49,6 +50,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	public ArrayList<ViewGroup> O_composerViews = new ArrayList<>();
 	public WeakReference<ViewGroup> O_contentView;
 
+	private boolean mIsInitialized = false;
 	public XModuleResources mResources = null;
 	private final ConversationMapper mConversationMapper = new ConversationMapper();
 	private PrefReader mPrefReader = null;
@@ -62,21 +64,51 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	@Override
 	public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
 		if (!lpparam.packageName.equals(Constants.TARGET_PACKAGE_NAME)) return;
-		XposedHilfer.setClassLoader(lpparam.classLoader);
-		MProMain.init(this);
 
-		ConversationMapper.mainHook = this;
-		CommandsManager.mainHook = this;
-		CommandData.X_CommandInterface = MProMain.getReflectedClasses().X_CommandInterface;
+		/* When MainActivity is resumed: + check for messenger version, if supported, init everything
+		 *								 + capture activity object (onResume gets called after onCreate)
+		 *								 + reload preferences
+		 *								 + prepare cache dir since messenger erases it after shutdown
+		 * */
+		XposedBridge.hookAllMethods(Activity.class, "onResume", new XC_MethodHook() {
+			@Override
+			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
+				XposedBridge.log("MainActivity resumed...");
+				O_activity = new WeakReference<>((Activity) param.thisObject);
 
-		XposedBridge.log("MessengerPro hook successfully loaded");
-		mPrefReader = new PrefReader();
+				// Check if messenger version is correct before doing anything.
+				if (!mIsInitialized) {
+					if (!Compatibility.isSupported(getContext())) {
+						new AlertDialog.Builder(getContext())
+								.setTitle("Unsupported")
+								.setMessage("This messenger version is not supported. " +
+										"Please visit our github page for more info. " +
+										"You will continue to use messenger but Messenger Pro will not be activated.")
+								.setCancelable(false)
+								.setPositiveButton("Ok", (dialogInterface, i) -> {
+								})
+								.show();
+						return;
+					}
+					else {
+						init(lpparam.classLoader);
+					}
+				}
 
-		initHooks();
-		if (Constants.MPRO_DEBUG) {
-			initTestHooks();
-			initDebugHooks();
-		}
+				// Disable network restrictions
+				StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+				StrictMode.setThreadPolicy(policy);
+
+				mPrefReader.reload();
+				if (Constants.MPRO_CACHE_DIR == null) {
+					Constants.MPRO_CACHE_DIR = new File(getContext().getCacheDir(), "fb_temp/mpro");
+					if (!Constants.MPRO_CACHE_DIR.exists()) {
+						Constants.MPRO_CACHE_DIR.mkdirs();
+					}
+				}
+			}
+		});
 	}
 
 	private void setupListeners() {
@@ -88,36 +120,31 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		messageEdit.addTextChangedListener(mConversationMapper);
 	}
 
+	private void init(ClassLoader cl) {
+		mIsInitialized = true;
+
+		XposedHilfer.setClassLoader(cl);
+		MProMain.init(this);
+
+		ConversationMapper.mainHook = this;
+		CommandsManager.mainHook = this;
+		CommandData.X_CommandInterface = MProMain.getReflectedClasses().X_CommandInterface;
+
+		mPrefReader = new PrefReader();
+
+		initHooks();
+		if (Constants.MPRO_DEBUG) {
+			initTestHooks();
+			initDebugHooks();
+		}
+		XposedBridge.log("MessengerPro hook successfully loaded");
+	}
+
 	/**
 	* Init the essential hooks for Messenger Pro to work
 	* */
 	private void initHooks() {
 		ReflectedClasses classes =  MProMain.getReflectedClasses();
-
-		/* When MainActivity is resumed: + capture its object (onResume gets called after onCreate)
-	    *								 + reload preferences
-	    *								 + prepare cache dir since messenger erases it after shutdown
-		* */
-		XposedBridge.hookAllMethods(Activity.class, "onResume", new XC_MethodHook() {
-			@Override
-			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-				if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
-				// Disable network restrictions
-				StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-				StrictMode.setThreadPolicy(policy);
-
-				XposedBridge.log("MainActivity resumed...");
-
-				O_activity = new WeakReference<>((Activity) param.thisObject);
-				mPrefReader.reload();
-				if (Constants.MPRO_CACHE_DIR == null) {
-					Constants.MPRO_CACHE_DIR = new File(getContext().getCacheDir(), "fb_temp/mpro");
-					if (!Constants.MPRO_CACHE_DIR.exists()) {
-						Constants.MPRO_CACHE_DIR.mkdirs();
-					}
-				}
-			}
-		});
 
 		/*
 		* This function gets called once / twice in messenger's lifecycle:
