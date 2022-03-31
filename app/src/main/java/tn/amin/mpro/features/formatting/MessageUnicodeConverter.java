@@ -44,6 +44,9 @@ public class MessageUnicodeConverter
 		}
 
 		public String convert(char c) {
+			// Ignore line feed and carriage return
+			if (c == '\n' || c == '\r')
+				return String.valueOf(c);
 			// CharacterFilter gets executed first
 			char filteredChar = mCharacterFilter.filterCharacter(c);
 			if (filteredChar != CharacterFilter.NULL_CHAR)
