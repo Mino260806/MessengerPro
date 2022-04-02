@@ -50,8 +50,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	public ArrayList<ViewGroup> O_composerViews = new ArrayList<>();
 	public WeakReference<ViewGroup> O_contentView;
 
-	private boolean mIsInitialized = false;
 	public XModuleResources mResources = null;
+	private boolean mIsInitialized = false;
 	private final ConversationMapper mConversationMapper = new ConversationMapper();
 	private PrefReader mPrefReader = null;
 
@@ -63,6 +63,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
 	@Override
 	public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+		XposedHilfer.setClassLoader(lpparam.classLoader);
+
 		if (!lpparam.packageName.equals(Constants.TARGET_PACKAGE_NAME)) return;
 
 		/* When MainActivity is resumed: + check for messenger version, if supported, init everything
@@ -92,7 +94,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 						return;
 					}
 					else {
-						init(lpparam.classLoader);
+						init();
 					}
 				}
 
@@ -120,10 +122,9 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		messageEdit.addTextChangedListener(mConversationMapper);
 	}
 
-	private void init(ClassLoader cl) {
+	private void init() {
 		mIsInitialized = true;
 
-		XposedHilfer.setClassLoader(cl);
 		MProMain.init(this);
 
 		ConversationMapper.mainHook = this;
