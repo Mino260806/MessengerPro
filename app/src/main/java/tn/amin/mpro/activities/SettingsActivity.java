@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.prefs.Preferences;
 
+import tn.amin.mpro.MProMain;
 import tn.amin.mpro.R;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -20,6 +21,11 @@ public class SettingsActivity extends AppCompatActivity {
     @SuppressLint("WorldReadableFiles")
     @Override
     public void onCreate(Bundle savedInstance) {
+        if (MProMain.isDarkMode(this))
+            setTheme(R.style.Theme_AppCompat_DayNight);
+        else
+            setTheme(R.style.Theme_AppCompat_Light);
+
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_settings);
 

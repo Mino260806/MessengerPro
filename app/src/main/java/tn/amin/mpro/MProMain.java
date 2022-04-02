@@ -185,4 +185,8 @@ public class MProMain {
     public static boolean isDarkMode() {
         return (getContext().getResources().getConfiguration().uiMode & 48) == 32;
     }
+
+    public static boolean isDarkMode(Context context) {
+        return (context.getResources().getConfiguration().uiMode & 48) == 32;
+    }
 }
