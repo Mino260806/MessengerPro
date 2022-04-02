@@ -1,4 +1,7 @@
 package tn.amin.mpro.features.formatting;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.*;
 
 public class MessageUnicodeConverter
@@ -13,6 +16,9 @@ public class MessageUnicodeConverter
 	}
 
 	public static String convert(String text, String token) {
+		// Decompose accents
+		text = Normalizer.normalize(text, Normalizer.Form.NFD);
+
 		StringBuilder formattedText = new StringBuilder();
 		CharUnicodeConverter unicodeConverter = mSpecialSymbols.get(token);
 		for (int i=0; i<text.length(); i++) {
@@ -62,7 +68,8 @@ public class MessageUnicodeConverter
 						.append((char)mOffset)
 						.toString();
 				case CONVERSION_METHOD_SHIFT:
-					if (!Character.isLetter(c))
+					// Shifting will only work with ascii chars
+					if (!isAscii(c))
 						break;
 					int offset = mOffset;
 					if (Character.isUpperCase(c)) {
@@ -97,4 +104,9 @@ public class MessageUnicodeConverter
 	public static String italic(String s) { return MessageUnicodeConverter.convert(s, "!"); }
 	public static String underline(String s) { return MessageUnicodeConverter.convert(s, "_"); }
 	public static String crossOut(String s) { return MessageUnicodeConverter.convert(s, "-"); }
+
+	private static boolean isAscii(char c) {
+		return (!StandardCharsets.US_ASCII.newEncoder().canEncode(c))
+				|| Character.isDigit(c);
+	}
 }
