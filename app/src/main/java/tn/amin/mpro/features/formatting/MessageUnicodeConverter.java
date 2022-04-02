@@ -106,7 +106,7 @@ public class MessageUnicodeConverter
 	public static String crossOut(String s) { return MessageUnicodeConverter.convert(s, "-"); }
 
 	private static boolean isAscii(char c) {
-		return (!StandardCharsets.US_ASCII.newEncoder().canEncode(c)) &&
+		return (StandardCharsets.US_ASCII.newEncoder().canEncode(c)) &&
 				!Character.isSpaceChar(c);
 	}
 }
