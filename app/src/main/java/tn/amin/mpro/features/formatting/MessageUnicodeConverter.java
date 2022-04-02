@@ -107,6 +107,6 @@ public class MessageUnicodeConverter
 
 	private static boolean isAscii(char c) {
 		return (StandardCharsets.US_ASCII.newEncoder().canEncode(c)) &&
-				!Character.isLetter(c);
+				Character.isLetter(c);
 	}
 }
