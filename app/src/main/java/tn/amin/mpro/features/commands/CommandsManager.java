@@ -26,8 +26,6 @@ import tn.amin.mpro.features.commands.api.RedditAPI;
 import tn.amin.mpro.features.commands.api.WikipediaAPI;
 
 public class CommandsManager {
-    public static MainHook mainHook = null;
-
     private static final CommandDispatcher<Object> mDispatcher = new CommandDispatcher<>();
     private static final ArrayList<CommandFields> mCommands = new ArrayList<>();
     private ParseResults<Object> mCachedParseResults;

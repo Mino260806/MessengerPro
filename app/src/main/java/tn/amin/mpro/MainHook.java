@@ -133,10 +133,6 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		MProMain.init(this);
 
 		mConversationMapper = new ConversationMapper();
-		ConversationMapper.mainHook = this;
-		CommandsManager.mainHook = this;
-		CommandData.X_CommandInterface = MProMain.getReflectedClasses().X_CommandInterface;
-
 		mPrefReader = new PrefReader();
 
 		initHooks();

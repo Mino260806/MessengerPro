@@ -1,16 +1,15 @@
 package tn.amin.mpro.features.commands;
 
-public class CommandData {
-    public static Class<?> X_CommandInterface = null;
+import tn.amin.mpro.MProMain;
 
+public class CommandData {
     public static Object newInstance(CommandFields cf) {
         final String title = cf.name;
         final String description = cf.description;
         final String iconName = cf.getIconName();
 
-        if (X_CommandInterface == null) {
-            throw new NullPointerException("Please assign CommandData.X_CommandInterface first");
-        }
+        Class<?> X_CommandInterface = MProMain.getReflectedClasses().X_CommandInterface;
+
         Object thisObject = java.lang.reflect.Proxy.newProxyInstance(
                 X_CommandInterface.getClassLoader(),
                 new java.lang.Class[] { X_CommandInterface },

@@ -170,6 +170,7 @@ public class MProMain {
     public static Resources getMProResources() { return mainHook.mResources; }
     public static PrefReader getPrefReader() { return mainHook.getPrefReader(); }
     public static ConversationMapper getConversationMapper() { return mainHook.getConversationMapper(); }
+    public static Object getActiveCommandsParser() { return mainHook.getActiveCommandsParser(); }
 
     public static boolean isDarkMode() {
         return (getContext().getResources().getConfiguration().uiMode & 48) == 32;

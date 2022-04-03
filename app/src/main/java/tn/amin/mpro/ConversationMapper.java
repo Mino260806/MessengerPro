@@ -6,7 +6,6 @@ import tn.amin.mpro.features.formatting.MessageFormatter;
 
 public class ConversationMapper implements TextWatcher
 {
-	public static MainHook mainHook;
 	private static final CommandsManager mCommandsManager = new CommandsManager();
 
 	@Override
@@ -19,17 +18,17 @@ public class ConversationMapper implements TextWatcher
 
 	@Override
 	public void afterTextChanged(Editable p1) {
-		if (mainHook.getActiveCommandsParser() == null) return;
+		if (MProMain.getActiveCommandsParser() == null) return;
 		mCommandsManager.update(p1.toString());
 	}
 	
-	public boolean beforeMessageSent(Editable message) {if (mainHook.getPrefReader().isDontSendCommandEnabled()) {
+	public boolean beforeMessageSent(Editable message) {if (MProMain.getPrefReader().isDontSendCommandEnabled()) {
 		if (message.toString().startsWith("/")
 				&& mCommandsManager.isLastCommandValid()) {
 					return false;
 			}
 		}
-		if (mainHook.getPrefReader().isTextFormattingEnabled()) {
+		if (MProMain.getPrefReader().isTextFormattingEnabled()) {
 			if (MProMain.formatNextMessage) {
 				MessageFormatter.format(message);
 			}
@@ -45,7 +44,7 @@ public class ConversationMapper implements TextWatcher
 			// Clear message input even if message was not sent
 			MProMain.clearMessageInput();
 		}
-		if (mainHook.getPrefReader().isCommandsEnabled()) {
+		if (MProMain.getPrefReader().isCommandsEnabled()) {
 			if (sentMessage.startsWith("/")) {
 				mCommandsManager.execute();
 			}
