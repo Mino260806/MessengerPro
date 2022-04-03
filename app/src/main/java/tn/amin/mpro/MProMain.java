@@ -1,12 +1,13 @@
 package tn.amin.mpro;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.net.Uri;
-import android.text.Editable;
+import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -19,26 +20,14 @@ import com.takusemba.spotlight.OnTargetListener;
 import com.takusemba.spotlight.Spotlight;
 import com.takusemba.spotlight.Target;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import kotlin.NotImplementedError;
-import tn.amin.mpro.builders.MediaResourceBuilder;
 import tn.amin.mpro.constants.Constants;
 import tn.amin.mpro.constants.ReflectedClasses;
-import tn.amin.mpro.utils.file.FileHelper;
 
 /**
  * This is the most important class in this module
@@ -188,5 +177,45 @@ public class MProMain {
 
     public static boolean isDarkMode(Context context) {
         return (context.getResources().getConfiguration().uiMode & 48) == 32;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    public static void setupLikeButtonListener(View likeButton) {
+        likeButton.setOnTouchListener(new View.OnTouchListener() {
+            private boolean mWaitingForSecondClick = false;
+            private boolean mDoubleClicked = false;
+            private final Handler mHandler = new Handler();
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                View.OnTouchListener onTouchListener = (View.OnTouchListener)
+                        XposedHelpers.getAdditionalInstanceField(
+                                view, "originalOnTouchListener"
+                        );
+                if (!MProMain.getPrefReader().isDoubleTapEmojiEnabled()) {
+                    onTouchListener.onTouch(view, motionEvent);
+                    return false;
+                }
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (!mWaitingForSecondClick) {
+                        mDoubleClicked = false;
+                        mWaitingForSecondClick = true;
+                        mHandler.postDelayed((Runnable) () -> {
+                            mWaitingForSecondClick = false;
+                            if (!mDoubleClicked) {
+                                Toast.makeText(getContext(), "Double click to send.", Toast.LENGTH_SHORT).show();
+                            }
+                        }, 500);
+                        // Disable all resulting touch events if no second click occurs
+                        return true;
+                    }
+                    else {
+                        mDoubleClicked = true;
+                    }
+                }
+                onTouchListener.onTouch(view, motionEvent);
+                return false;
+            }
+        });
     }
 }

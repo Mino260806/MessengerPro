@@ -26,6 +26,7 @@ public class PrefReader {
     public boolean isDontSendCommandEnabled() { return isMProEnabled() && !mPrefs.getBoolean("mpro_commands_dont_send", true); }
     public boolean isWatermarkEnabled() { return isMProEnabled() && mPrefs.getBoolean("mpro_image_watermark", false); }
     public boolean isCallConfirmationEnabled() { return isMProEnabled() && mPrefs.getBoolean("mpro_other_call_confirmation", true); }
+    public boolean isDoubleTapEmojiEnabled() { return isMProEnabled() && mPrefs.getBoolean("mpro_other_double_tap_emoji", false); }
 
     public String getWatermarkText() { return mPrefs.getString("mpro_image_watermark_text", "Messenger Pro"); }
     public int getWatermarkTextSize() { return mPrefs.getInt("mpro_image_watermark_text_size", 50); }

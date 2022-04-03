@@ -13,18 +13,16 @@ import tn.amin.mpro.features.image.ImageEditor;
 import tn.amin.mpro.builders.MessengerDialogBuilder;
 import tn.amin.mpro.internal.Compatibility;
 import tn.amin.mpro.internal.Debugger;
+import tn.amin.mpro.internal.ListenerGetter;
 import tn.amin.mpro.internal.SendButtonOCL;
 import tn.amin.mpro.utils.XposedHilfer;
 
 import android.content.*;
 
-import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.content.res.XModuleResources;
 import android.net.Uri;
 import android.os.StrictMode;
 import android.graphics.*;
-import android.util.TypedValue;
 import android.widget.*;
 import android.view.*;
 import android.graphics.drawable.*;
@@ -36,7 +34,6 @@ import androidx.documentfile.provider.DocumentFile;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.net.URI;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,6 +45,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	public WeakReference<Activity> O_activity = null;
 	public ArrayList<EditText> O_messageEdits = new ArrayList<>();
 	public ArrayList<View> O_sendButtons = new ArrayList<>();
+	public ArrayList<View> O_likeButtons = new ArrayList<>();
 	public ArrayList<ViewGroup> O_composerViews = new ArrayList<>();
 	public WeakReference<ViewGroup> O_contentView;
 
@@ -77,6 +75,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 				if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
+				XposedBridge.log("MainActivity resumed...");
 				XposedBridge.log("MainActivity resumed...");
 				O_activity = new WeakReference<>((Activity) param.thisObject);
 
@@ -121,6 +120,11 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		EditText messageEdit = O_messageEdits.get(O_messageEdits.size() - 1);
 		sendButton.setOnClickListener(new SendButtonOCL(sendButton, messageEdit));
 		messageEdit.addTextChangedListener(mConversationMapper);
+
+		View likeButton = O_likeButtons.get(O_likeButtons.size() - 1);
+		XposedHelpers.setAdditionalInstanceField(likeButton, "originalOnTouchListener",
+				ListenerGetter.from(likeButton).getOnTouchListener());
+		MProMain.setupLikeButtonListener(O_likeButtons.get(O_likeButtons.size() - 1));
 	}
 
 	private void init() {
@@ -161,6 +165,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
 				O_composerViews.add(oneLineComposerView);
 				O_sendButtons.add((ImageView) XposedHelpers.getObjectField(oneLineComposerView, "A0O"));
+				O_likeButtons.add((ImageView) XposedHelpers.getObjectField(getActiveComposerView(), "A0N"));
 				O_messageEdits.add((EditText) XposedHelpers.getObjectField(container, "A0B"));
 
 //				GradientDrawable border = new GradientDrawable();

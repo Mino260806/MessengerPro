@@ -48,6 +48,11 @@
             android:title="Call confirmation"
             android:key="mpro_other_call_confirmation"
             android:defaultValue="true" />
+        <SwitchPreference
+            android:enabled="true"
+            android:title="Double tap Like / Emoji button"
+            android:key="mpro_other_double_tap_emoji"
+            android:defaultValue="false" />
     <PreferenceCategory
         android:key="category_about_key"
         android:title="About" />
