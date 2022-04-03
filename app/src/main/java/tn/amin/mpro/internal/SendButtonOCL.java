@@ -14,8 +14,7 @@ public class SendButtonOCL implements View.OnClickListener {
 
     final private EditText mAssociatedEditText;
     public SendButtonOCL(View sendButton, EditText associatedEditText) {
-        Object listenerInfo = XposedHelpers.callMethod(sendButton, "getListenerInfo");
-        mDefaultOCL = (View.OnClickListener)XposedHelpers.getObjectField(listenerInfo, "mOnClickListener");
+        mDefaultOCL = ListenerGetter.from(sendButton).getOnClickListener();
         mAssociatedEditText = associatedEditText;
     }
     @Override
