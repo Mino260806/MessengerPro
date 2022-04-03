@@ -32,8 +32,8 @@ public class CommandsManager {
 
     static {
         mDispatcher.register(literal("word")
-                .then(literal("pronounce").then(argument("word", word()).executes(c -> comWordDefinition(getString(c, "word"), "pronounce")
-        ))));
+                .then(literal("pronounce").then(argument("word", word()).executes(c -> comWordDefinition(getString(c, "word"), "pronounce"))))
+                .then(literal("define").then(argument("word", word()).executes(c -> comWordDefinition(getString(c, "word"), "define")))));
         mDispatcher.register(literal("reddit")
                 .then(argument("subreddit", string()).executes(c -> comLatestPost(getString(c, "subreddit"), ""))
                 .then(argument("sort", word()).executes(c -> comLatestPost(getString(c, "subreddit"), getString(c, "sort"))))));
@@ -111,6 +111,11 @@ public class CommandsManager {
                             .build();
                     MProMain.getActivity().runOnUiThread(() ->
                             MProMain.sendAttachment(mediaResource));
+                }
+                case "define": {
+                    String defintions = FreeDictionaryAPI.fetchDefinitions(word);
+                    MProMain.getActivity().runOnUiThread(() ->
+                            MProMain.sendMessage(defintions));
                 }
             }
         }).start();
