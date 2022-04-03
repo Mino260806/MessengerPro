@@ -111,11 +111,13 @@ public class CommandsManager {
                             .build();
                     MProMain.getActivity().runOnUiThread(() ->
                             MProMain.sendAttachment(mediaResource));
+                    break;
                 }
                 case "define": {
                     String defintions = FreeDictionaryAPI.fetchDefinitions(word);
                     MProMain.getActivity().runOnUiThread(() ->
                             MProMain.sendMessage(defintions));
+                    break;
                 }
             }
         }).start();
