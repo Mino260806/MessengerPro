@@ -51,7 +51,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
 	public XModuleResources mResources = null;
 	private boolean mIsInitialized = false;
-	private final ConversationMapper mConversationMapper = new ConversationMapper();
+	private ConversationMapper mConversationMapper;
 	private PrefReader mPrefReader = null;
 
 	@Override
@@ -132,6 +132,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
 		MProMain.init(this);
 
+		mConversationMapper = new ConversationMapper();
 		ConversationMapper.mainHook = this;
 		CommandsManager.mainHook = this;
 		CommandData.X_CommandInterface = MProMain.getReflectedClasses().X_CommandInterface;
