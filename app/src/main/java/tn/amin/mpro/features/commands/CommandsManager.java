@@ -10,6 +10,8 @@ import static com.mojang.brigadier.arguments.StringArgumentType.*;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 
+import android.content.res.Resources;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +19,7 @@ import java.util.Locale;
 import de.robv.android.xposed.XposedBridge;
 import tn.amin.mpro.MProMain;
 import tn.amin.mpro.MainHook;
+import tn.amin.mpro.R;
 import tn.amin.mpro.builders.MediaResourceBuilder;
 import tn.amin.mpro.features.commands.api.FreeDictionaryAPI;
 import tn.amin.mpro.features.commands.api.RedditAPI;
@@ -40,10 +43,10 @@ public class CommandsManager {
                 .then(argument("language", word())
                 .then(argument("term", greedyString()).executes(c -> comWikipedia(getString(c, "term"), getString(c, "language"))))));
 
-
-        mCommands.add(new CommandFields("word", "Define a word"));
-        mCommands.add(new CommandFields("reddit", "Get the latest post from a subreddit"));
-        mCommands.add(new CommandFields("wikipedia", "Search something on wikipedia"));
+        Resources res = MProMain.getMProResources();
+        mCommands.add(new CommandFields("word", res.getString(R.string.command_description_word)));
+        mCommands.add(new CommandFields("reddit", res.getString(R.string.command_description_reddit)));
+        mCommands.add(new CommandFields("wikipedia", res.getString(R.string.command_description_wikipedia)));
     }
 
     public void update(String message) {

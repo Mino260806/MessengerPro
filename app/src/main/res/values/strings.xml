@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="toast_double_tap">Double tap to send.</string>
+    <string name="dialog_call_confirm">Are you sure you want to call ?</string>
+    <string name="command_description_word">Define a word</string>
+    <string name="command_description_reddit">Get the latest post from a subreddit</string>
+    <string name="command_description_wikipedia">Search something on wikipedia</string>
+    <string name="pref_category_general">General</string>
+    <string name="pref_enable_mpro">Enable Messenger Pro</string>
+    <string name="pref_category_text">Text</string>
+    <string name="pref_enable_formatting">Enable messages formatting</string>
+    <string name="pref_enable_commands">Enable commands</string>
+    <string name="pref_send_command_input">Send command input</string>
+    <string name="pref_category_image">Image</string>
+    <string name="pref_watermark_images">Watermark Images</string>
+    <string name="pref_watermark_text">Watermark text</string>
+    <string name="pref_watermark_text_size">Watermark text size</string>
+    <string name="pref_call_confirmation">Call confirmation</string>
+    <string name="pref_category_other">Other</string>
+    <string name="pref_double_tap_like">Double tap Like / Emoji button</string>
+    <string name="pref_category_about">About</string>
+    <string name="pref_github_page">Github Page</string>
+    <string name="moreoptions_attach_file">Attach a file</string>
+</resources>

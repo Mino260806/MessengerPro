@@ -2,61 +2,61 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:key="category_general_key"
-        android:title="General"/>
+        android:title="@string/pref_category_general"/>
         <SwitchPreference
             android:defaultValue="true"
             android:key="mpro_enabled"
-            android:title="Enable Messenger Pro" />
+            android:title="@string/pref_enable_mpro" />
     <PreferenceCategory
         android:key="category_text_key"
-        android:title="Text"/>
+        android:title="@string/pref_category_text"/>
         <SwitchPreference
             android:defaultValue="true"
             android:key="mpro_text_format"
-            android:title="Enable messages formatting" />
+            android:title="@string/pref_enable_formatting" />
         <SwitchPreference
             android:defaultValue="true"
             android:key="mpro_commands"
-            android:title="Enable commands" />
+            android:title="@string/pref_enable_commands" />
         <SwitchPreference
             android:defaultValue="true"
             android:key="mpro_commands_dont_send"
-            android:title="Send command input" />
+            android:title="@string/pref_send_command_input" />
     <PreferenceCategory
         android:key="category_image_key"
-        android:title="Image" />
+        android:title="@string/pref_category_image" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="mpro_image_watermark"
-            android:title="Watermark Images" />
+            android:title="@string/pref_watermark_images" />
         <EditTextPreference
             android:enabled="false"
             android:defaultValue="Messenger Pro"
             android:key="mpro_image_watermark_text"
-            android:title="Watermark text" />
+            android:title="@string/pref_watermark_text" />
         <SeekBarPreference
             android:enabled="false"
             android:defaultValue="50"
             android:max="200"
             android:key="mpro_image_watermark_text_size"
-            android:title="Watermark text size" />
+            android:title="@string/pref_watermark_text_size" />
     <PreferenceCategory
         android:key="category_other_key"
-        android:title="Other" />
+        android:title="@string/pref_category_other" />
         <SwitchPreference
             android:enabled="true"
-            android:title="Call confirmation"
+            android:title="@string/pref_call_confirmation"
             android:key="mpro_other_call_confirmation"
             android:defaultValue="true" />
         <SwitchPreference
             android:enabled="true"
-            android:title="Double tap Like / Emoji button"
+            android:title="@string/pref_double_tap_like"
             android:key="mpro_other_double_tap_emoji"
             android:defaultValue="false" />
     <PreferenceCategory
         android:key="category_about_key"
-        android:title="About" />
+        android:title="@string/pref_category_about" />
         <Preference
-            android:title="Github Page"
+            android:title="@string/pref_github_page"
             android:key="mpro_about" />
 </PreferenceScreen>

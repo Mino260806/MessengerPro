@@ -284,7 +284,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				Object dataStoreInit = XposedHelpers.newInstance(classes.X_MoreDrawerGenericGridItemDataStoreInit);
 				XposedHelpers.setObjectField(dataStoreInit, "A00", iconType);
 				XposedHelpers.setObjectField(dataStoreInit, "A03", colorType);
-				XposedHelpers.setObjectField(dataStoreInit, "A04", "Attach a file");
+				XposedHelpers.setObjectField(dataStoreInit, "A04", mResources.getString(R.string.moreoptions_attach_file));
 				XposedHelpers.setObjectField(dataStoreInit, "A05", Constants.MORE_DRAWER_ACTION_NAME);
 
 				Object dataStore = XposedHelpers.newInstance(classes.X_MoreDrawerGenericGridItemDataStore, dataStoreInit);
@@ -347,15 +347,15 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 					if (!MProMain.getPrefReader().isCallConfirmationEnabled()) return;
 					new MessengerDialogBuilder()
 							.setTitle("Confirm")
-							.setMessage("Are you sure you want to call ?") // TODO: add participant / group name
-							.setPositiveButton("Yes", (textId, listener) -> {
+							.setMessage(mResources.getString(R.string.dialog_call_confirm)) // TODO: add participant / group name
+							.setPositiveButton(mResources.getString(android.R.string.yes), (textId, listener) -> {
 								try {
 									XposedHilfer.invokeOriginalMethod(param);
 								} catch (Throwable e) {
 									XposedBridge.log(e);
 								}
 							})
-							.setNegativeButton("No", null)
+							.setNegativeButton(mResources.getString(android.R.string.no), null)
 							.build()
 							.show();
 					param.setResult(null);

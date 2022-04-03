@@ -203,7 +203,9 @@ public class MProMain {
                         mHandler.postDelayed((Runnable) () -> {
                             mWaitingForSecondClick = false;
                             if (!mDoubleClicked) {
-                                Toast.makeText(getContext(), "Double click to send.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(),
+                                        getMProResources().getString(R.string.toast_double_tap),
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }, 500);
                         // Disable all resulting touch events if no second click occurs
