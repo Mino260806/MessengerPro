@@ -13,9 +13,9 @@
 	<application
         android:allowBackup="true"
 		android:requestLegacyExternalStorage="true"
-        android:icon="@drawable/ic_launcher_foreground"
-        android:label="Messenger Pro"
-        android:theme="@style/Theme.AppCompat.Light"
+        android:icon="@drawable/ic_launcher_light"
+		android:roundIcon="@drawable/ic_launcher_light"
+        android:label="@string/app_name"
 		android:resizeableActivity="true">
 		<meta-data
 			android:name="xposedmodule"
