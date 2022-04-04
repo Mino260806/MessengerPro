@@ -13,6 +13,8 @@ import java.util.Map;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import kotlin.NotImplementedError;
+import tn.amin.mpro.MProMain;
+import tn.amin.mpro.R;
 import tn.amin.mpro.features.formatting.MessageUnicodeConverter;
 
 public class FreeDictionaryAPI extends AbstractAPI {
@@ -77,7 +79,7 @@ public class FreeDictionaryAPI extends AbstractAPI {
             }
         } catch (Exception e) {
             XposedBridge.log(e);
-            return "An error occured while trying to fetch word definition";
+            return MProMain.getMProResources().getString(R.string.command_error_word_define, word);
         }
 
         StringBuilder result = new StringBuilder();

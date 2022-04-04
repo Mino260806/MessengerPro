@@ -32,8 +32,8 @@ public class CommandsManager {
 
     static {
         mDispatcher.register(literal("word")
-                .then(literal("pronounce").then(argument("word", word()).executes(c -> comWordDefinition(getString(c, "word"), "pronounce"))))
-                .then(literal("define").then(argument("word", word()).executes(c -> comWordDefinition(getString(c, "word"), "define")))));
+                .then(literal("pronounce").then(argument("word", greedyString()).executes(c -> comWordDefinition(getString(c, "word"), "pronounce"))))
+                .then(literal("define").then(argument("word", greedyString()).executes(c -> comWordDefinition(getString(c, "word"), "define")))));
         mDispatcher.register(literal("reddit")
                 .then(argument("subreddit", string()).executes(c -> comLatestPost(getString(c, "subreddit"), ""))
                 .then(argument("sort", word()).executes(c -> comLatestPost(getString(c, "subreddit"), getString(c, "sort"))))));
@@ -106,6 +106,12 @@ public class CommandsManager {
             switch (type) {
                 case "pronounce": {
                     String url = FreeDictionaryAPI.fetchPronunciation(word);
+                    if (url.isEmpty()) {
+                        Resources res = MProMain.getMProResources();
+                        MProMain.getActivity().runOnUiThread(() ->
+                                MProMain.sendMessage(res.getString(R.string.command_error_word_pronounce, word)));
+                        return;
+                    }
                     Object mediaResource = MediaResourceBuilder.createFromUrl(url)
                             .setType("AUDIO")
                             .build();
