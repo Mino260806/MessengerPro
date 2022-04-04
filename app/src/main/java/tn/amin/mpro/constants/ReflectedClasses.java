@@ -19,6 +19,9 @@ public class ReflectedClasses {
     // Obfuscated Messenger classes (I Guessed their names)
     public Class<?> X_FancyDialogBuilderHelper;
     public Class<?> X_FancyDialogBuilder;
+    public Class<?> X_FancyDialogColorApplier;
+    public Class<?> X_LoadingDialog;
+    public Class<?> X_MUtilities;
     public Class<?> X_ButtonClicked;
     public Class<?> X_MentionsSearchAdapter;
     public Class<?> X_MediaResourceHelper;
@@ -39,6 +42,9 @@ public class ReflectedClasses {
         X_MediaResource = XposedHilfer.findClass("com.facebook.ui.media.attachments.model.MediaResource");
         X_FancyDialogBuilderHelper = XposedHilfer.findClass("X.G4p");
         X_FancyDialogBuilder = XposedHilfer.findClass("X.GPo");
+        X_FancyDialogColorApplier = XposedHilfer.findClass("X.2tN");
+        X_LoadingDialog = XposedHilfer.findClass("X.AGw");
+        X_MUtilities = XposedHilfer.findClass("X.0rQ");
         X_ButtonClicked = XposedHilfer.findClass("X.1pP");
         X_ResourcesImpl = XposedHilfer.findClass("android.content.res.ResourcesImpl");
         X_ComposeFragment = XposedHilfer.findClass("com.facebook.messaging.composer.ComposeFragment");

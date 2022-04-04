@@ -10,17 +10,15 @@ import androidx.core.content.res.ResourcesCompat;
 
 import de.robv.android.xposed.XposedHelpers;
 import tn.amin.mpro.MProMain;
+import tn.amin.mpro.internal.ui.DialogUtil;
 
 public class MessengerDialogBuilder extends ObjectBuilder {
     private Object mBuilder;
     private Object mWrapper;
 
-    final static private int COLOR_DARK = 2132607594;
-    final static private int COLOR_LIGHT = 2132607595;
-
     public MessengerDialogBuilder(Context context) {
         mBuilder = XposedHelpers.newInstance(MProMain.getReflectedClasses().X_FancyDialogBuilder,
-                MProMain.getContext(), getColorResource());
+                MProMain.getContext(), getTheme());
         mWrapper = XposedHelpers.getObjectField(mBuilder, "A00");
     }
 
@@ -79,11 +77,12 @@ public class MessengerDialogBuilder extends ObjectBuilder {
         return (Dialog) XposedHelpers.callMethod(mBuilder, "A00");
     }
 
-    private int getColorResource() {
-        if (MProMain.isDarkMode())
-            return COLOR_DARK;
-        else
-            return COLOR_LIGHT;
+    private int getTheme() {
+        return ((Number) XposedHelpers.callMethod(
+                DialogUtil.getMigColorScheme(),
+                "CBp",
+                XposedHelpers.getStaticObjectField(MProMain.getReflectedClasses().X_FancyDialogColorApplier, "A02")))
+                .intValue();
     }
 
     @Override

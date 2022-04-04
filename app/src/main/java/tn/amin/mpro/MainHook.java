@@ -4,6 +4,7 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.*;
+import tn.amin.mpro.builders.LoadingDialogBuilder;
 import tn.amin.mpro.builders.MediaResourceBuilder;
 import tn.amin.mpro.constants.Constants;
 import tn.amin.mpro.constants.ReflectedClasses;
@@ -387,17 +388,38 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				}
 				// If no attachment is pending, check if user sent an image in case we want to apply
 				// watermarks.
-				else {
+				else if (MProMain.getPrefReader().isWatermarkEnabled()) {
 					AbstractCollection mediaResources = (AbstractCollection) XposedHelpers.getObjectField(param.args[1], "A0h");
-					for (Object mediaResource: mediaResources) {
-						Enum mediaType = (Enum) XposedHelpers.getObjectField(mediaResource, "A0P");
-						String mediaTypeString = mediaType.name();
-						boolean isImage = mediaTypeString.equals("PHOTO");
-						if (isImage && MProMain.getPrefReader().isWatermarkEnabled()) {
-							Uri oldUri = ((Uri) XposedHelpers.getObjectField(mediaResource, "A0E"));
-							Uri newUri = ImageEditor.onImageLoaded(oldUri.getPath());
-							XposedHelpers.setObjectField(mediaResource, "A0E", newUri);
-						}
+					if (mediaResources.size() > 0) {
+						final LoadingDialogBuilder loadingDialog = new LoadingDialogBuilder()
+								.setText(mResources.getString(R.string.dialog_watermark));
+						MProMain.getActivity().runOnUiThread(loadingDialog::show);
+
+						// Watermarking may take a long time, so do it in a separate thread to prevent
+						// messenger from freezing
+						new Thread(() -> {
+							for (Object mediaResource: mediaResources) {
+								Enum mediaType = (Enum) XposedHelpers.getObjectField(mediaResource, "A0P");
+								String mediaTypeString = mediaType.name();
+								boolean isImage = mediaTypeString.equals("PHOTO");
+								if (isImage) {
+									Uri oldUri = ((Uri) XposedHelpers.getObjectField(mediaResource, "A0E"));
+									Uri newUri = ImageEditor.onImageLoaded(oldUri.getPath());
+									XposedHelpers.setObjectField(mediaResource, "A0E", newUri);
+								}
+							}
+							MProMain.getActivity().runOnUiThread(loadingDialog::dismiss);
+
+							try {
+								XposedHilfer.invokeOriginalMethod(param);
+							} catch (Throwable throwable) {
+								XposedBridge.log(throwable);
+							}
+						}).start();
+
+						// Prevent original method from getting executed since we are going to do it after
+						// watermarking is finished
+						param.setResult(null);
 					}
 				}
 			}
