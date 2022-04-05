@@ -537,5 +537,4 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 			}
 		});
 	}
-	public static ArrayList<Object> mDebugObjects = new ArrayList<>();
 }
