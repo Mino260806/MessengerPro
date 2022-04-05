@@ -81,7 +81,6 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 				if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
 				XposedBridge.log("MainActivity resumed...");
-				XposedBridge.log("MainActivity resumed...");
 				O_activity = new WeakReference<>((Activity) param.thisObject);
 
 				// Check if messenger version is correct before doing anything.
