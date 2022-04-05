@@ -67,7 +67,12 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
 		if (!lpparam.packageName.equals(Constants.TARGET_PACKAGE_NAME)) return;
 
-		/* When MainActivity is resumed: + check for messenger version, if supported, init everything
+        if (Constants.MPRO_DEBUG) {
+            initTestHooks();
+            Debugger.initDebugHooks();
+        }
+
+        /* When MainActivity is resumed: + check for messenger version, if supported, init everything
 		 *								 + capture activity object (onResume gets called after onCreate)
 		 *								 + reload preferences
 		 *								 + prepare cache dir since messenger erases it after shutdown
@@ -136,12 +141,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		mConversationMapper = new ConversationMapper();
 		mPrefReader = new PrefReader();
 
-		initHooks();
-		if (Constants.MPRO_DEBUG) {
-			initTestHooks();
-			Debugger.initDebugHooks();
-		}
-		XposedBridge.log("MessengerPro hook successfully loaded");
+        initHooks();
+        XposedBridge.log("MessengerPro hook successfully loaded");
 	}
 
 	/**
