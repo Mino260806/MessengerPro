@@ -16,6 +16,7 @@ import tn.amin.mpro.internal.Compatibility;
 import tn.amin.mpro.internal.Debugger;
 import tn.amin.mpro.internal.ListenerGetter;
 import tn.amin.mpro.internal.SendButtonOCL;
+import tn.amin.mpro.internal.ui.MessageUtil;
 import tn.amin.mpro.utils.XposedHilfer;
 
 import android.content.*;
@@ -378,16 +379,16 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 							mediaResourcesArray, 1);
 					XposedHelpers.setObjectField(param.args[1], "A0h", mediaResources);
 					// Remove the dummy text
+					MessageUtil.removeAttribute(param.args[1], "text");
 					XposedHelpers.setObjectField(param.args[1], "A0Z", null);
-					HashSet<String> newMessageTypes = new HashSet<String>();
-					Set<String> originalMessageTypes = (Set<String>)
-							XposedHelpers.getObjectField(param.args[1], "A1E");
-					// Remove "text" from message types to prevent NullPointerException
-					for (String messageType: originalMessageTypes) {
-						if (messageType.equals("text")) continue;
-						newMessageTypes.add(messageType);
-					}
-					XposedHelpers.setObjectField(param.args[1], "A1E", newMessageTypes);
+				} else if (isLikePending()) {
+					Class<Enum> X_MessageSource = (Class<Enum>) param.args[0].getClass();
+					Enum messageSource = Enum.valueOf(X_MessageSource, "COMPOSER_HOT_LIKE");
+					param.args[0] = messageSource;
+
+					MessageUtil.removeAttribute(param.args[1], "text");
+					XposedHelpers.setObjectField(param.args[1], "A0Z", null);
+					MessageUtil.setStickerId(param.args[1], "369239263222822");
 				}
 				// If no attachment is pending, check if user sent an image in case we want to apply
 				// watermarks.
@@ -537,4 +538,12 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 			}
 		});
 	}
+
+	private boolean likePending;
+	public boolean isLikePending() {
+		boolean field = likePending;
+		likePending = false;
+		return field;
+	}
+	public void setLikePending(boolean likePending) { this.likePending = likePending; }
 }

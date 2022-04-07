@@ -68,8 +68,6 @@ public class MProMain {
     }
 
     public static void sendMessage(String message, boolean clearEditText) {
-        XposedBridge.log("Sending message: " + message);
-
         EditText messageEdit = mainHook.getActiveMessageEdit();
         View sendButton = mainHook.getActiveSendButton();
 
@@ -86,6 +84,11 @@ public class MProMain {
             // Restore old message
             messageEdit.setText(oldMessage);
         }
+    }
+
+    public static void sendLike() {
+        mainHook.setLikePending(true);
+        sendMessage("dummy");
     }
 
     public static void putAttachment(Object mediaResource) {

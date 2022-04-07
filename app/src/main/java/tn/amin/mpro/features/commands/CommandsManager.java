@@ -39,12 +39,14 @@ public class CommandsManager {
                 .then(argument("sort", word()).executes(c -> comLatestPost(getString(c, "subreddit"), getString(c, "sort"))))));
         mDispatcher.register(literal("wikipedia")
                 .then(argument("language", word())
-                .then(argument("term", greedyString()).executes(c -> comWikipedia(getString(c, "term"), getString(c, "language"))))));
+                                .then(argument("term", greedyString()).executes(c -> comWikipedia(getString(c, "term"), getString(c, "language"))))));
+        mDispatcher.register(literal("like").executes(c -> comLike()));
 
         Resources res = MProMain.getMProResources();
         mCommands.add(new CommandFields("word", res.getString(R.string.command_description_word)));
         mCommands.add(new CommandFields("reddit", res.getString(R.string.command_description_reddit)));
         mCommands.add(new CommandFields("wikipedia", res.getString(R.string.command_description_wikipedia)));
+        mCommands.add(new CommandFields("like", res.getString(R.string.command_description_like)));
     }
 
     public void update(String message) {
@@ -137,6 +139,11 @@ public class CommandsManager {
             MProMain.getActivity().runOnUiThread(() ->
                     MProMain.sendMessage(article, true));
         }).start();
+        return 1;
+    }
+
+    private static int comLike() {
+        MProMain.sendLike();
         return 1;
     }
 }
