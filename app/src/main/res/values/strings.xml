@@ -25,4 +25,5 @@
     <string name="command_error_word_define">No definitions found for word \"%s\"</string>
     <string name="dialog_watermark">Applying watermarks</string>
     <string name="app_name">Messenger Pro</string>
+    <string name="command_description_like">Send a like</string>
 </resources>
