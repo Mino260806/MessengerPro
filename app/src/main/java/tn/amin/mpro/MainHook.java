@@ -8,8 +8,6 @@ import tn.amin.mpro.builders.LoadingDialogBuilder;
 import tn.amin.mpro.builders.MediaResourceBuilder;
 import tn.amin.mpro.constants.Constants;
 import tn.amin.mpro.constants.ReflectedClasses;
-import tn.amin.mpro.features.commands.CommandData;
-import tn.amin.mpro.features.commands.CommandsManager;
 import tn.amin.mpro.features.image.ImageEditor;
 import tn.amin.mpro.builders.MessengerDialogBuilder;
 import tn.amin.mpro.internal.Compatibility;
@@ -38,9 +36,7 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	// We use WeakReference to prevent leaks
@@ -382,13 +378,33 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 					MessageUtil.removeAttribute(param.args[1], "text");
 					XposedHelpers.setObjectField(param.args[1], "A0Z", null);
 				} else if (isLikePending()) {
+					int likeSize = getPendingLikeSize();
+					String likeStickerId = "";
+					switch (likeSize) {
+						case 0: {
+							likeStickerId = "369239263222822";
+							break;
+						}
+						case 1: {
+							likeStickerId = "369239343222814";
+							break;
+						}
+						case 2: {
+							likeStickerId = "369239383222810";
+							break;
+						}
+						default: {
+							return;
+						}
+					}
+
 					Class<Enum> X_MessageSource = (Class<Enum>) param.args[0].getClass();
 					Enum messageSource = Enum.valueOf(X_MessageSource, "COMPOSER_HOT_LIKE");
 					param.args[0] = messageSource;
 
 					MessageUtil.removeAttribute(param.args[1], "text");
 					XposedHelpers.setObjectField(param.args[1], "A0Z", null);
-					MessageUtil.setStickerId(param.args[1], "369239263222822");
+					MessageUtil.setStickerId(param.args[1], likeStickerId);
 				}
 				// If no attachment is pending, check if user sent an image in case we want to apply
 				// watermarks.
@@ -539,11 +555,14 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		});
 	}
 
-	private boolean likePending;
+	private int pendingLikeSize = -1;
 	public boolean isLikePending() {
-		boolean field = likePending;
-		likePending = false;
+		return pendingLikeSize != -1;
+	}
+	public int getPendingLikeSize() {
+		int field = pendingLikeSize;
+		pendingLikeSize = -1;
 		return field;
 	}
-	public void setLikePending(boolean likePending) { this.likePending = likePending; }
+	public void setPendingLikeSize(int pendingLikeSize) { this.pendingLikeSize = pendingLikeSize; }
 }

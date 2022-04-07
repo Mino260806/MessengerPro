@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.*;
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
@@ -40,7 +41,8 @@ public class CommandsManager {
         mDispatcher.register(literal("wikipedia")
                 .then(argument("language", word())
                                 .then(argument("term", greedyString()).executes(c -> comWikipedia(getString(c, "term"), getString(c, "language"))))));
-        mDispatcher.register(literal("like").executes(c -> comLike()));
+        mDispatcher.register(literal("like").executes(c -> comLike(1))
+                .then(argument("size", integer(1, 3)).executes(c -> comLike(getInteger(c, "size")))));
 
         Resources res = MProMain.getMProResources();
         mCommands.add(new CommandFields("word", res.getString(R.string.command_description_word)));
@@ -142,8 +144,8 @@ public class CommandsManager {
         return 1;
     }
 
-    private static int comLike() {
-        MProMain.sendLike();
+    private static int comLike(int likeSize) {
+        MProMain.sendLike(likeSize - 1);
         return 1;
     }
 }

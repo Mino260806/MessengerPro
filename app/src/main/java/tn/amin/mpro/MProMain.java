@@ -86,9 +86,9 @@ public class MProMain {
         }
     }
 
-    public static void sendLike() {
-        mainHook.setLikePending(true);
-        sendMessage("dummy");
+    public static void sendLike(int size) {
+        mainHook.setPendingLikeSize(size);
+        sendMessage(getMProResources().getString(R.string.command_error));
     }
 
     public static void putAttachment(Object mediaResource) {
@@ -97,7 +97,7 @@ public class MProMain {
 
     public static void sendAttachment(Object mediaResource) {
         putAttachment(mediaResource);
-        sendMessage("attachment");
+        sendMessage(getMProResources().getString(R.string.command_error));
     }
 
     public static void clearMessageInput() {
@@ -174,10 +174,6 @@ public class MProMain {
     public static PrefReader getPrefReader() { return mainHook.getPrefReader(); }
     public static ConversationMapper getConversationMapper() { return mainHook.getConversationMapper(); }
     public static Object getActiveCommandsParser() { return mainHook.getActiveCommandsParser(); }
-
-    public static boolean isDarkMode() {
-        return (getContext().getResources().getConfiguration().uiMode & 48) == 32;
-    }
 
     public static boolean isDarkMode(Context context) {
         return (context.getResources().getConfiguration().uiMode & 48) == 32;
