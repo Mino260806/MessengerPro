@@ -7,6 +7,10 @@ abstract public class ObjectBuilder {
         XposedHelpers.setObjectField(getWrapper(), fieldName, value);
     }
 
+    protected void callSetterInternal(String setter, Object value) {
+        XposedHelpers.callMethod(getWrapper(), setter, value);
+    }
+
     abstract protected Object getWrapper();
     abstract public Object build();
 }
