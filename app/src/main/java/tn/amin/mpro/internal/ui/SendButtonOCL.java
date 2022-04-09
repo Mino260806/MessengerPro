@@ -1,4 +1,4 @@
-package tn.amin.mpro.internal;
+package tn.amin.mpro.internal.ui;
 
 
 import android.text.Editable;
@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import de.robv.android.xposed.XposedHelpers;
 import tn.amin.mpro.MProMain;
+import tn.amin.mpro.internal.ListenerGetter;
 
 public class SendButtonOCL implements View.OnClickListener {
 

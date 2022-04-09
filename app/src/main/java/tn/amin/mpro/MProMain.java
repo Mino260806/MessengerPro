@@ -24,10 +24,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import tn.amin.mpro.constants.Constants;
 import tn.amin.mpro.constants.ReflectedClasses;
+import tn.amin.mpro.features.ConversationMapper;
+import tn.amin.mpro.storage.PrefReader;
 
 /**
  * This is the most important class in this module

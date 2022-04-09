@@ -1,6 +1,7 @@
-package tn.amin.mpro;
+package tn.amin.mpro.features;
 import android.text.*;
 
+import tn.amin.mpro.MProMain;
 import tn.amin.mpro.features.commands.CommandsManager;
 import tn.amin.mpro.features.formatting.MessageFormatter;
 

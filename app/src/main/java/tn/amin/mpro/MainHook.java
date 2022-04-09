@@ -4,27 +4,27 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.*;
+import io.paperdb.Paper;
 import tn.amin.mpro.builders.LoadingDialogBuilder;
 import tn.amin.mpro.builders.MediaResourceBuilder;
 import tn.amin.mpro.constants.Constants;
 import tn.amin.mpro.constants.ReflectedClasses;
+import tn.amin.mpro.features.ConversationMapper;
 import tn.amin.mpro.features.biometric.BiometricConversationLock;
 import tn.amin.mpro.features.image.ImageEditor;
 import tn.amin.mpro.builders.MessengerDialogBuilder;
 import tn.amin.mpro.internal.Compatibility;
 import tn.amin.mpro.internal.Debugger;
 import tn.amin.mpro.internal.ListenerGetter;
-import tn.amin.mpro.internal.SendButtonOCL;
+import tn.amin.mpro.internal.ui.SendButtonOCL;
 import tn.amin.mpro.internal.ui.MessageUtil;
+import tn.amin.mpro.storage.PrefReader;
 import tn.amin.mpro.utils.XposedHilfer;
 
 import android.content.*;
 
 import android.content.res.XModuleResources;
-import android.hardware.biometrics.BiometricPrompt;
 import android.net.Uri;
-import android.os.Build;
-import android.os.CancellationSignal;
 import android.os.StrictMode;
 import android.graphics.*;
 import android.widget.*;
@@ -32,7 +32,6 @@ import android.view.*;
 import android.graphics.drawable.*;
 import android.app.*;
 
-import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.documentfile.provider.DocumentFile;
 
@@ -56,7 +55,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	private boolean mIsInitialized = false;
 	private ConversationMapper mConversationMapper;
 	private PrefReader mPrefReader = null;
-	private BiometricConversationLock mBiometricConversationLock = new BiometricConversationLock();
+	private BiometricConversationLock mBiometricConversationLock = null;
 
 	@Override
 	public void initZygote(StartupParam startupParam) throws Throwable {
@@ -73,6 +72,22 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		if (Constants.MPRO_DEBUG) {
 		    init();
         }
+
+		/*
+		* Init Paper when activity is paused, save data
+		* */
+		XposedBridge.hookAllMethods(Activity.class, "onPause", new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
+
+				new Thread(() -> {
+					Paper.book().write(
+							Constants.PAPER_LOCKED_THREAD_KEYS,
+							mBiometricConversationLock.getLockedThreadKeys());
+				}).start();
+			}
+		});
 
 		/* When MainActivity is resumed: + check for messenger version, if supported, init everything
 		 *								 + capture activity object (onResume gets called after onCreate)
@@ -108,6 +123,10 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				// Disable network restrictions
 				StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 				StrictMode.setThreadPolicy(policy);
+
+				Paper.init(getContext());
+				ArrayList<String> lockedThreadKeys = Paper.book().read(Constants.PAPER_LOCKED_THREAD_KEYS);
+				mBiometricConversationLock = new BiometricConversationLock(lockedThreadKeys);
 
 				mPrefReader.reload();
 				if (Constants.MPRO_CACHE_DIR == null) {
