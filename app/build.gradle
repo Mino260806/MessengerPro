@@ -34,6 +34,8 @@ dependencies {
     implementation 'com.github.takusemba:spotlight:2.0.4'
     implementation 'com.mojang:brigadier:1.0.18'
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    implementation 'androidx.biometric:biometric:1.2.0-alpha04'
+    //implementation 'io.github.neonorbit:dexplore:1.0.1'
 
     implementation 'androidx.preference:preference:1.2.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'

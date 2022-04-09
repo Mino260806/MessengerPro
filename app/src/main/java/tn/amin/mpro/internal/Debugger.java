@@ -1,23 +1,39 @@
 package tn.amin.mpro.internal;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.hardware.biometrics.BiometricPrompt;
 import android.net.Uri;
+import android.os.Build;
+import android.os.CancellationSignal;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.net.URI;
+import java.util.AbstractCollection;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import tn.amin.mpro.MProMain;
 import tn.amin.mpro.constants.ReflectedClasses;
+import tn.amin.mpro.features.biometric.BiometricConversationLock;
 import tn.amin.mpro.utils.XposedHilfer;
 
 public class Debugger {
+    public static ArrayList<Object> mDebugArray = new ArrayList<>();
+    public static HashMap<Object, Throwable> mDebugMap = new HashMap();
+
     /**
      * Includes various hooks useful for debugging and placing
      * breakpoints
@@ -47,6 +63,8 @@ public class Debugger {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 StringBuilder path = new StringBuilder();
                 boolean log = false;
+                if (!log)
+                    return;
                 if (param.args.length == 2) {
                     if (param.args[0] instanceof String)
                         path.append((String) param.args[0]);
@@ -106,14 +124,19 @@ public class Debugger {
                 Integer density = (Integer) param.args[3];
 
                 final String file = value.string.toString();
+
+                XposedBridge.log("Loading drawable from file " + file);
+                Drawable drawable = (Drawable) XposedHilfer.invokeOriginalMethod(param);
+                param.setResult(drawable);
             }
         });
 
         XposedBridge.hookAllConstructors(classes.X_Message, new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 //				XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
 //				param.setResult(null);
+                mDebugMap.put(param.thisObject, new Throwable());
             }
         });
 
@@ -190,6 +213,152 @@ public class Debugger {
             }
         });
 
+        XposedBridge.hookAllMethods(Dialog.class, "dismiss", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        // React to message
+        XposedHilfer.hookAllMethods("com.facebook.messaging.reactions.MessageReactionsOverlayFragment", "A1D", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("com.facebook.messaging.reactions.MessageReactionsOverlayFragment", "A03", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        // Double tap to react
+        XposedHilfer.hookAllMethods("X.D5n", "A00", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllConstructors("X.D5n", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllConstructors("X.38e", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                super.afterHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("X.2X2", "A0D", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("X.2d8", "A08", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("X.6H7", "A00", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllConstructors("X.3BF", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                super.afterHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("X.3BF", "A18", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("X.2fe", "A02", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("X.36N", "A01", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("X.2Mr", "A01", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        /* This method returns messenger's theme
+         * 0 - light mode
+         * 1 - dark mode
+         * 2 - system */
+        XposedHilfer.hookAllMethods("X.1Qg", "A03", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                super.afterHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("X.4us", "C0g", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("android.app.Notification$Builder", "setContentIntent", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedBridge.hookAllMethods(Activity.class, "startActivity", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedBridge.hookAllMethods(ViewGroup.class, "addView", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllConstructors("X.3Ne", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
         XposedHilfer.hookAllMethods("X.GPo", "A00", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -216,13 +385,6 @@ public class Debugger {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
-            }
-        });
-
-        XposedHilfer.hookAllConstructors("com.facebook.messaging.attachments.OtherAttachmentData", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
             }
         });
     }

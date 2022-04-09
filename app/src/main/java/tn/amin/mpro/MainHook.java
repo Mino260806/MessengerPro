@@ -8,6 +8,7 @@ import tn.amin.mpro.builders.LoadingDialogBuilder;
 import tn.amin.mpro.builders.MediaResourceBuilder;
 import tn.amin.mpro.constants.Constants;
 import tn.amin.mpro.constants.ReflectedClasses;
+import tn.amin.mpro.features.biometric.BiometricConversationLock;
 import tn.amin.mpro.features.image.ImageEditor;
 import tn.amin.mpro.builders.MessengerDialogBuilder;
 import tn.amin.mpro.internal.Compatibility;
@@ -20,7 +21,10 @@ import tn.amin.mpro.utils.XposedHilfer;
 import android.content.*;
 
 import android.content.res.XModuleResources;
+import android.hardware.biometrics.BiometricPrompt;
 import android.net.Uri;
+import android.os.Build;
+import android.os.CancellationSignal;
 import android.os.StrictMode;
 import android.graphics.*;
 import android.widget.*;
@@ -28,6 +32,7 @@ import android.view.*;
 import android.graphics.drawable.*;
 import android.app.*;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.documentfile.provider.DocumentFile;
 
@@ -51,6 +56,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	private boolean mIsInitialized = false;
 	private ConversationMapper mConversationMapper;
 	private PrefReader mPrefReader = null;
+	private BiometricConversationLock mBiometricConversationLock = new BiometricConversationLock();
 
 	@Override
 	public void initZygote(StartupParam startupParam) throws Throwable {
@@ -503,6 +509,107 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	 * */
 	private void initTestHooks() {
 		ReflectedClasses classes = MProMain.getReflectedClasses();
+
+		XposedHilfer.hookAllMethods("X.4v9", "A00", new XC_MethodHook() {
+			@Override
+			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				Object dataHolder =
+						XposedHelpers.getObjectField(
+						XposedHelpers.getObjectField(param.thisObject,
+						"A02"), "A00");
+				Object threadKey =
+						XposedHelpers.getObjectField(
+						XposedHelpers.getObjectField(
+						XposedHelpers.getObjectField(
+						XposedHelpers.getObjectField(param.thisObject,
+						"A02"), "A00"),
+						"A02"), // ThreadSummary
+						"A0g"); // ThreadKey
+				AbstractCollection longClickItems = (AbstractCollection)
+						XposedHelpers.getObjectField(dataHolder, "A05");
+
+				ArrayList newLongClickItems =  new ArrayList(longClickItems);
+				Class<?> X_LongClickItem = newLongClickItems.get(0).getClass();
+
+				Object newLongClickItem;
+				if (!mBiometricConversationLock.isConversationLocked(threadKey.toString())) {
+					newLongClickItem = XposedHelpers.newInstance(X_LongClickItem,
+							Enum.valueOf(classes.X_IconType, "LOCK"),
+							"Lock",
+							"This will only allow authenticated users to access this conversation",
+							"lock",
+							Constants.MPRO_LOCK_CONVERSATION_ACTION_ID,
+							0);
+				}
+				else {
+					newLongClickItem = XposedHelpers.newInstance(X_LongClickItem,
+							Enum.valueOf(classes.X_IconType, "UNLOCK"),
+							"Unlock",
+							"This will disable authentication for this conversation",
+							"unlock",
+							Constants.MPRO_UNLOCK_CONVERSATION_ACTION_ID,
+							0);
+				}
+				newLongClickItems.add(newLongClickItem);
+
+				XposedHelpers.setObjectField(dataHolder, "A05",
+						XposedHelpers.callStaticMethod(classes.X_ImmutableList, "copyOf", newLongClickItems));
+			}
+		});
+
+		XposedHilfer.hookAllMethods("X.Adx", "Blg", new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				int itemId = XposedHelpers.getIntField(param.args[0], "A00");
+				boolean isIdApproved = true;
+				boolean unlock = false;
+				Object threadKey = null;
+				switch (itemId) {
+					case Constants.MPRO_UNLOCK_CONVERSATION_ACTION_ID:
+						unlock = true;
+					case Constants.MPRO_LOCK_CONVERSATION_ACTION_ID:
+						threadKey =
+								XposedHelpers.getObjectField(
+								XposedHelpers.getObjectField(
+								XposedHelpers.getObjectField(
+								XposedHelpers.getObjectField(
+								XposedHelpers.getObjectField(param.thisObject,
+										"A00"), "A00"), "A00"),
+										"A1L"), // ThreadSummary
+										"A0g"); // ThreadKey
+						break;
+					default:
+						isIdApproved = false;
+						break;
+				}
+				if (isIdApproved) {
+					// Dismiss long click dialog
+					XposedHelpers.callMethod(
+					XposedHelpers.getObjectField(
+					XposedHelpers.getObjectField(param.thisObject,
+					"A01"), "A02"), "A00");
+					param.setResult(null);
+
+					if (unlock) {
+						mBiometricConversationLock.unlockConversation(threadKey.toString());
+					} else {
+						mBiometricConversationLock.lockConversation(threadKey.toString());
+					}
+				}
+			}
+		});
+
+		// This method opens any conversation, see param.args[0] to know conv type
+		XposedHilfer.hookAllMethods("X.1Ri", "A0C", new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				Object threadKey = XposedHelpers.getObjectField(param.args[0], "A02");
+				if (mBiometricConversationLock.isConversationLocked(threadKey.toString())) {
+					mBiometricConversationLock.accessConversation(param);
+					param.setResult(null);
+				}
+			}
+		});
 	}
 
 	public PrefReader getPrefReader() { return mPrefReader; }

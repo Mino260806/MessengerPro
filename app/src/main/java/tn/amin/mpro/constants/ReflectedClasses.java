@@ -7,6 +7,7 @@ public class ReflectedClasses {
     public Class<?> X_ListenerInfo;
     public Class<?> X_ResourcesImpl;
     public Class<?> X_RegularImmutableList;
+    public Class<?> X_ImmutableList;
     // Messenger classes
     public Class<?> X_ComponentHost;
     public Class<?> X_ContainerView;
@@ -21,6 +22,7 @@ public class ReflectedClasses {
     public Class<?> X_FancyDialogBuilder;
     public Class<?> X_FancyDialogColorApplier;
     public Class<?> X_LoadingDialog;
+    public Class<?> X_UniversalDialog;
     public Class<?> X_MUtilities;
     public Class<?> X_ButtonClicked;
     public Class<?> X_MentionsSearchAdapter;
@@ -44,6 +46,7 @@ public class ReflectedClasses {
         X_FancyDialogBuilder = XposedHilfer.findClass("X.GPo");
         X_FancyDialogColorApplier = XposedHilfer.findClass("X.2tN");
         X_LoadingDialog = XposedHilfer.findClass("X.AGw");
+        X_UniversalDialog = XposedHilfer.findClass("X.3Ne");
         X_MUtilities = XposedHilfer.findClass("X.0rQ");
         X_ButtonClicked = XposedHilfer.findClass("X.1pP");
         X_ResourcesImpl = XposedHilfer.findClass("android.content.res.ResourcesImpl");
@@ -55,6 +58,7 @@ public class ReflectedClasses {
         X_MediaResourceInitilizer = XposedHilfer.findClass("X.48l");
         X_MediaResourceType = (Class<Enum>) XposedHilfer.findClass("X.2Qk");
         X_RegularImmutableList = XposedHilfer.findClass("com.google.common.collect.RegularImmutableList");
+        X_ImmutableList = XposedHilfer.findClass("com.google.common.collect.ImmutableList");
         X_MentionsSearchAdapter = XposedHilfer.findClass("X.4iE");
         X_MoreDrawerGenericGridItemData = XposedHilfer.findClass("X.ARa");
         X_MoreDrawerGenericGridItemDataStore = XposedHilfer.findClass("X.2xK");
