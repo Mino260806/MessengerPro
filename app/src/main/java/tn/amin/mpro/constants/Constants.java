@@ -14,6 +14,4 @@ public class Constants {
     public static final int MPRO_LOCK_CONVERSATION_ACTION_ID = 2608;
     public static final int MPRO_UNLOCK_CONVERSATION_ACTION_ID = 2609;
     public static final boolean MPRO_DEBUG = false;
-
-    public static final String PAPER_LOCKED_THREAD_KEYS = "locked_thread_keys";
 }
