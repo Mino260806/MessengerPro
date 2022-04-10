@@ -67,9 +67,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
 	@Override
 	public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-		XposedHilfer.setClassLoader(lpparam.classLoader);
-
 		if (!lpparam.packageName.equals(Constants.TARGET_PACKAGE_NAME)) return;
+		XposedHilfer.setClassLoader(lpparam.classLoader);
 
 		if (Constants.MPRO_DEBUG) {
 		    init();
@@ -83,7 +82,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
 
-				StorageManager.put(StorageManager.PAPER_LOCKED_THREAD_KEYS, mBiometricConversationLock.getLockedThreadKeys());
+				if (mBiometricConversationLock != null)
+					StorageManager.put(StorageManager.PAPER_LOCKED_THREAD_KEYS, mBiometricConversationLock.getLockedThreadKeys());
 
 				new Thread(StorageManager::save).start();
 			}
@@ -97,7 +97,6 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		XposedBridge.hookAllMethods(Activity.class, "onResume", new XC_MethodHook() {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-				if (mIsInitializing) return;
 			    if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
 				XposedBridge.log("MainActivity resumed...");
 				O_activity = new WeakReference<>((Activity) param.thisObject);
@@ -155,21 +154,25 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	}
 
 	private void init() {
-	    mIsInitializing = true;
+        mIsInitializing = true;
 
+        XposedBridge.log("MProMain.init()");
         MProMain.init(this);
 
         mConversationMapper = new ConversationMapper();
+        XposedBridge.log("new ConversationMapper()");
         mPrefReader = new PrefReader();
+        XposedBridge.log("new PrefReader()");
 
         initHooks();
+        XposedBridge.log("initHooks()");
         if (Constants.MPRO_DEBUG) {
             initTestHooks();
             Debugger.initDebugHooks();
         }
         XposedBridge.log("MessengerPro hook successfully loaded");
-        mIsInitializing = false;
         mIsInitialized = true;
+        mIsInitializing = false;
     }
 
 	/**
