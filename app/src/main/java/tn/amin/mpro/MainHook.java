@@ -54,6 +54,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
 	public XModuleResources mResources = null;
 	private boolean mIsInitialized = false;
+	private boolean mIsInitializing = false;
 	private ConversationMapper mConversationMapper;
 	private PrefReader mPrefReader = null;
 	private BiometricConversationLock mBiometricConversationLock = null;
@@ -96,7 +97,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		XposedBridge.hookAllMethods(Activity.class, "onResume", new XC_MethodHook() {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-				if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
+				if (mIsInitializing) return;
+			    if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
 				XposedBridge.log("MainActivity resumed...");
 				O_activity = new WeakReference<>((Activity) param.thisObject);
 
@@ -153,20 +155,22 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	}
 
 	private void init() {
-		mIsInitialized = true;
+	    mIsInitializing = true;
 
-		MProMain.init(this);
+        MProMain.init(this);
 
-		mConversationMapper = new ConversationMapper();
-		mPrefReader = new PrefReader();
+        mConversationMapper = new ConversationMapper();
+        mPrefReader = new PrefReader();
 
-		initHooks();
-		if (Constants.MPRO_DEBUG) {
-			initTestHooks();
-			Debugger.initDebugHooks();
-		}
-		XposedBridge.log("MessengerPro hook successfully loaded");
-	}
+        initHooks();
+        if (Constants.MPRO_DEBUG) {
+            initTestHooks();
+            Debugger.initDebugHooks();
+        }
+        XposedBridge.log("MessengerPro hook successfully loaded");
+        mIsInitializing = false;
+        mIsInitialized = true;
+    }
 
 	/**
 	* Init the essential hooks for Messenger Pro to work
