@@ -116,6 +116,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 						return;
 					}
 					else {
+						// We set ClassLoader again, in case facebook altered it
+						XposedHilfer.setClassLoader(param.thisObject.getClass().getClassLoader());
 						init();
 					}
 				}
