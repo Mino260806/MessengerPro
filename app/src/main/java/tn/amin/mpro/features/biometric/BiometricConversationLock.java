@@ -22,7 +22,15 @@ import tn.amin.mpro.MProMain;
 import tn.amin.mpro.utils.XposedHilfer;
 
 public class BiometricConversationLock {
-    public ArrayList<String> mLockedThreadKeys = new ArrayList();
+    public ArrayList<String> mLockedThreadKeys;
+
+    public BiometricConversationLock(ArrayList<String> lockedThreadKeys) {
+        if (lockedThreadKeys == null)
+            lockedThreadKeys = new ArrayList();
+        mLockedThreadKeys = lockedThreadKeys;
+    }
+
+    public BiometricConversationLock() { mLockedThreadKeys = new ArrayList(); }
 
     public boolean lockConversation(String threadKey) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -67,61 +75,7 @@ public class BiometricConversationLock {
         return mLockedThreadKeys.contains(threadKey);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.P)
-    public static class ConversationAccessCallback extends AuthenticationCallback {
-        XC_MethodHook.MethodHookParam mParam;
-
-        public ConversationAccessCallback(XC_MethodHook.MethodHookParam methodHookParam) {
-            mParam = methodHookParam;
-        }
-
-        @Override
-        public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
-            try {
-                XposedHilfer.invokeOriginalMethod(mParam);
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.P)
-    public class ConversationLockCallback extends AuthenticationCallback {
-        private String mThreadKey;
-
-        public ConversationLockCallback(String threadKey) {
-            mThreadKey = threadKey;
-        }
-
-        @Override
-        public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
-            try {
-                mLockedThreadKeys.add(mThreadKey);
-                Toast.makeText(MProMain.getContext(), "Conversation locked", Toast.LENGTH_SHORT).show();
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.P)
-    public class ConversationUnlockCallback extends AuthenticationCallback {
-        private String mThreadKey;
-
-        public ConversationUnlockCallback(String threadKey) {
-            mThreadKey = threadKey;
-        }
-
-        @Override
-        public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
-            try {
-                mLockedThreadKeys.remove(mThreadKey);
-                Toast.makeText(MProMain.getContext(), "Conversation unlocked", Toast.LENGTH_SHORT).show();
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
-    }
+    public ArrayList<String> getLockedThreadKeys() { return mLockedThreadKeys; }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     private static void setNegativeButtonOrCredentials(BiometricPrompt.Builder builder) {
@@ -141,8 +95,67 @@ public class BiometricConversationLock {
     @RequiresApi(api = Build.VERSION_CODES.P)
     private static void authenticate(BiometricPrompt biometricPrompt, AuthenticationCallback callback) {
         biometricPrompt.authenticate(new CancellationSignal(),
-                        ContextCompat.getMainExecutor(MProMain.getContext()),
-                        callback);
+                ContextCompat.getMainExecutor(MProMain.getContext()),
+                callback);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    public static class ConversationAccessCallback extends AuthenticationCallback {
+
+        XC_MethodHook.MethodHookParam mParam;
+
+        public ConversationAccessCallback(XC_MethodHook.MethodHookParam methodHookParam) {
+            mParam = methodHookParam;
+        }
+        @Override
+        public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
+            try {
+                XposedHilfer.invokeOriginalMethod(mParam);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    public class ConversationLockCallback extends AuthenticationCallback {
+
+        private String mThreadKey;
+
+        public ConversationLockCallback(String threadKey) {
+            mThreadKey = threadKey;
+        }
+
+        @Override
+        public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
+            try {
+                mLockedThreadKeys.add(mThreadKey);
+                Toast.makeText(MProMain.getContext(), "Conversation locked", Toast.LENGTH_SHORT).show();
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    public class ConversationUnlockCallback extends AuthenticationCallback {
+
+        private String mThreadKey;
+
+        public ConversationUnlockCallback(String threadKey) {
+            mThreadKey = threadKey;
+        }
+        @Override
+        public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
+            try {
+                mLockedThreadKeys.remove(mThreadKey);
+                Toast.makeText(MProMain.getContext(), "Conversation unlocked", Toast.LENGTH_SHORT).show();
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+
     }
 
     private static boolean isAuthenticationAvailable() {

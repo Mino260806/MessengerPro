@@ -19,6 +19,7 @@ import tn.amin.mpro.internal.ListenerGetter;
 import tn.amin.mpro.internal.ui.SendButtonOCL;
 import tn.amin.mpro.internal.ui.MessageUtil;
 import tn.amin.mpro.storage.PrefReader;
+import tn.amin.mpro.storage.StorageManager;
 import tn.amin.mpro.utils.XposedHilfer;
 
 import android.content.*;
@@ -74,18 +75,16 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         }
 
 		/*
-		* Init Paper when activity is paused, save data
+		* Save data when activity is paused
 		* */
 		XposedBridge.hookAllMethods(Activity.class, "onPause", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
 
-				new Thread(() -> {
-					Paper.book().write(
-							Constants.PAPER_LOCKED_THREAD_KEYS,
-							mBiometricConversationLock.getLockedThreadKeys());
-				}).start();
+				StorageManager.put(StorageManager.PAPER_LOCKED_THREAD_KEYS, mBiometricConversationLock.getLockedThreadKeys());
+
+				new Thread(StorageManager::save).start();
 			}
 		});
 
@@ -124,8 +123,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 				StrictMode.setThreadPolicy(policy);
 
-				Paper.init(getContext());
-				ArrayList<String> lockedThreadKeys = Paper.book().read(Constants.PAPER_LOCKED_THREAD_KEYS);
+				StorageManager.init();
+				ArrayList<String> lockedThreadKeys = StorageManager.read(StorageManager.PAPER_LOCKED_THREAD_KEYS);
 				mBiometricConversationLock = new BiometricConversationLock(lockedThreadKeys);
 
 				mPrefReader.reload();
