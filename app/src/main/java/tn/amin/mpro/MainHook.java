@@ -125,8 +125,10 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				StrictMode.setThreadPolicy(policy);
 
 				StorageManager.init();
-				ArrayList<String> lockedThreadKeys = StorageManager.read(StorageManager.PAPER_LOCKED_THREAD_KEYS);
-				mBiometricConversationLock = new BiometricConversationLock(lockedThreadKeys);
+				if (Constants.MPRO_DEBUG) {
+					ArrayList<String> lockedThreadKeys = StorageManager.read(StorageManager.PAPER_LOCKED_THREAD_KEYS);
+					mBiometricConversationLock = new BiometricConversationLock(lockedThreadKeys);
+				}
 
 				mPrefReader.reload();
 				if (Constants.MPRO_CACHE_DIR == null) {
