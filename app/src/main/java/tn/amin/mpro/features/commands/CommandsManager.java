@@ -40,15 +40,17 @@ public class CommandsManager {
                 .then(argument("sort", word()).executes(c -> comLatestPost(getString(c, "subreddit"), getString(c, "sort"))))));
         mDispatcher.register(literal("wikipedia")
                 .then(argument("language", word())
-                                .then(argument("term", greedyString()).executes(c -> comWikipedia(getString(c, "term"), getString(c, "language"))))));
+                .then(argument("term", greedyString()).executes(c -> comWikipedia(getString(c, "term"), getString(c, "language"))))));
         mDispatcher.register(literal("like").executes(c -> comLike(1))
                 .then(argument("size", integer(1, 3)).executes(c -> comLike(getInteger(c, "size")))));
+        mDispatcher.register(literal("empty").executes(c -> comEmpty()));
 
         Resources res = MProMain.getMProResources();
         mCommands.add(new CommandFields("word", res.getString(R.string.command_description_word)));
         mCommands.add(new CommandFields("reddit", res.getString(R.string.command_description_reddit)));
         mCommands.add(new CommandFields("wikipedia", res.getString(R.string.command_description_wikipedia)));
         mCommands.add(new CommandFields("like", res.getString(R.string.command_description_like)));
+        mCommands.add(new CommandFields("empty", res.getString(R.string.command_description_empty)));
     }
 
     public void update(String message) {
@@ -146,6 +148,11 @@ public class CommandsManager {
 
     private static int comLike(int likeSize) {
         MProMain.sendLike(likeSize - 1);
+        return 1;
+    }
+
+    private static int comEmpty() {
+        MProMain.sendMessage("\u0020\u200D\u0020");
         return 1;
     }
 }
