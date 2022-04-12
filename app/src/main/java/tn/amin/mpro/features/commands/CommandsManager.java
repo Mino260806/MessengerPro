@@ -25,6 +25,7 @@ import tn.amin.mpro.builders.MediaResourceBuilder;
 import tn.amin.mpro.features.commands.api.FreeDictionaryAPI;
 import tn.amin.mpro.features.commands.api.RedditAPI;
 import tn.amin.mpro.features.commands.api.WikipediaAPI;
+import tn.amin.mpro.utils.StringUtil;
 
 public class CommandsManager {
     private static final CommandDispatcher<Object> mDispatcher = new CommandDispatcher<>();
@@ -43,7 +44,9 @@ public class CommandsManager {
                 .then(argument("term", greedyString()).executes(c -> comWikipedia(getString(c, "term"), getString(c, "language"))))));
         mDispatcher.register(literal("like").executes(c -> comLike(1))
                 .then(argument("size", integer(1, 3)).executes(c -> comLike(getInteger(c, "size")))));
-        mDispatcher.register(literal("empty").executes(c -> comEmpty()));
+        mDispatcher.register(literal("empty").executes(c -> comEmpty(1, 1))
+                .then(argument("row", integer(1)).executes(c -> comEmpty(getInteger(c, "row"), 1))
+                .then(argument("column", integer(1)).executes(c -> comEmpty(getInteger(c, "row"), getInteger(c, "column"))))));
 
         Resources res = MProMain.getMProResources();
         mCommands.add(new CommandFields("word", res.getString(R.string.command_description_word)));
@@ -151,8 +154,13 @@ public class CommandsManager {
         return 1;
     }
 
-    private static int comEmpty() {
-        MProMain.sendMessage("\u0020\u200D\u0020");
+    private static int comEmpty(int row, int column) {
+        final String delim = "\u0020\u200D\u0020";
+        String rowMessage = delim + StringUtil.multiply(" ", column);
+        if (column > 1) rowMessage += delim;
+        rowMessage += '\n';
+        String message = StringUtil.multiply(rowMessage, row);;
+        MProMain.sendMessage(message);
         return 1;
     }
 }
