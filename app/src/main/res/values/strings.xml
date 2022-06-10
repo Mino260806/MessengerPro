@@ -27,4 +27,7 @@
     <string name="app_name">Messenger Pro</string>
     <string name="command_description_like">Send a like</string>
     <string name="command_error">An error occured</string>
+    <string name="command_description_empty">Send an empty message</string>
+    <string name="command_description_openai">Ask AI whatever pops in your mind</string>
+    <string name="pref_openai_api_token">OpenAI Api Token</string>
 </resources>

@@ -6,7 +6,11 @@
         <entry key="../../../../layout/custom_preview.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_settings.xml" value="0.14447463768115942" />
         <entry key="app/src/main/res/layout/main.xml" value="0.1" />
+        <entry key="app/src/main/res/xml/pref_control_center.xml" value="0.33" />
         <entry key="app/src/main/res/xml/pref_main.xml" value="0.125" />
+        <entry key="app/src/main/res/xml/pref_power_center.xml" value="0.15625" />
+        <entry key="app/src/main/res/xml/pref_settings.xml" value="0.33" />
+        <entry key="app/src/main/res/xml/provider_paths.xml" value="0.12760416666666666" />
       </map>
     </option>
   </component>

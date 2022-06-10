@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <SwitchPreference
+        android:title="Busy mode"
+        android:defaultValue="false"
+        android:key="mpro_cc_busy"
+        android:summary="React on messages with busy emoji"/>
+    <EditTextPreference
+        android:title="Busy mode emoji"
+        android:defaultValue="📴"
+        android:key="mpro_cc_busy_emoji"
+        android:summary="The emoji that will be used to react"/>
+</PreferenceScreen>

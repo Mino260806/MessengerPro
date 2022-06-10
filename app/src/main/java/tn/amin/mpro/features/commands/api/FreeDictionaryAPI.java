@@ -60,7 +60,7 @@ public class FreeDictionaryAPI extends AbstractAPI {
         JSONObject json;
         HashMap<String, ArrayList<String>> allDefinitions = new HashMap<>();
         try {
-            json = new JSONArray(fetchData(word))
+            json = new JSONArray(fetchData(word).responseString)
                     .getJSONObject(0);
             JSONArray meanings = json.getJSONArray("meanings");
             for (int i=0; i < meanings.length(); i++) {

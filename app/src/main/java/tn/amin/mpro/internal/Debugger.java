@@ -2,13 +2,19 @@ package tn.amin.mpro.internal;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.Notification;
+import android.content.ContentValues;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.drawable.Drawable;
 import android.hardware.biometrics.BiometricPrompt;
 import android.net.Uri;
 import android.os.Build;
 import android.os.CancellationSignal;
+import android.os.Handler;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +22,20 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import org.json.JSONObject;
+
 import java.io.File;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import tn.amin.mpro.MProMain;
@@ -34,6 +47,8 @@ public class Debugger {
     public static ArrayList<Object> mDebugArray = new ArrayList<>();
     public static HashMap<Object, Throwable> mDebugMap = new HashMap();
 
+    static boolean verbose = false;
+
     /**
      * Includes various hooks useful for debugging and placing
      * breakpoints
@@ -44,6 +59,8 @@ public class Debugger {
         XposedBridge.hookAllMethods(View.class, "performClick", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (!verbose) return;
+
                 View view = (View) param.thisObject;
                 View.OnClickListener defaultOCL = (View.OnClickListener) XposedHelpers
                         .getObjectField(
@@ -61,24 +78,20 @@ public class Debugger {
         XposedBridge.hookAllConstructors(File.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (!verbose) return;
+
                 StringBuilder path = new StringBuilder();
-                boolean log = false;
-                if (!log)
-                    return;
                 if (param.args.length == 2) {
                     if (param.args[0] instanceof String)
                         path.append((String) param.args[0]);
-                    else
-                        log = false;
                     path.append("/");
                     path.append((String) param.args[1]);
                 } else if (param.args[0] instanceof String)
                     path.append((String) param.args[0]);
                 else
                     path.append(((URI) param.args[0]).getPath());
-                if (log)
-                    XposedBridge.log("Accessing File: " + path.toString());
-//				if (path.toString().startsWith("/storage/emulated/0/DCIM/Camera/test.mp4")) {
+
+//                if (path.toString().startsWith("/storage/emulated/0/DCIM/Camera/test.mp4")) {
 //					XposedBridge.log(new Throwable());
 //				}
             }
@@ -87,6 +100,8 @@ public class Debugger {
                 String.class, "int", "int", String.class, new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        if (!verbose) return;
+
                         String file = (String) param.args[0];
                         int id = (Integer) param.args[1];
                         int assetCookie = (Integer) param.args[2];
@@ -220,7 +235,6 @@ public class Debugger {
             }
         });
 
-        // React to message
         XposedHilfer.hookAllMethods("com.facebook.messaging.reactions.MessageReactionsOverlayFragment", "A1D", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -271,10 +285,28 @@ public class Debugger {
             }
         });
 
+        /*
+        * React to any message
+        * */
         XposedHilfer.hookAllMethods("X.6H7", "A00", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllConstructors("X.6H7", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllConstructors("X.0us", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                mDebugArray.add(param.args[0]);
+                XposedBridge.unhookMethod(param.method, this);
             }
         });
 
@@ -359,32 +391,77 @@ public class Debugger {
             }
         });
 
-        XposedHilfer.hookAllMethods("X.GPo", "A00", new XC_MethodHook() {
+        XposedHilfer.hookAllMethods("X.26C", "A01", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
             }
         });
 
-        XposedHilfer.hookAllMethods("X.2tN", "A00", new XC_MethodHook() {
+        XposedHilfer.hookAllMethods("X.1IH", "putBoolean", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
             }
         });
 
-        XposedBridge.hookAllMethods(AssetManager.class, "open", new XC_MethodHook() {
+        XposedBridge.hookAllMethods(Notification.Builder.class, "setBubbleMetadata", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!((String) param.args[0]).equals("strings/default.frsc"))
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllMethods("com.facebook.orca.threadview.ThreadViewMessagesFragment", "A0G", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+            }
+        });
+
+//        XposedHilfer.hookAllMethods("X.35t", "A0N", XC_MethodReplacement.DO_NOTHING);
+
+        XposedHilfer.hookAllMethods("android.content.Intent", "setAction", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                String action = (String) param.args[0];
+                if (action == null) return;
+                if (action.equals("NotificationsPrefsService.SYNC_THREAD_FROM_SERVER")) {
                     super.beforeHookedMethod(param);
+                }
             }
         });
 
-        XposedHilfer.hookAllMethods("X.0wT", "getString", new XC_MethodHook() {
+        XposedHilfer.hookAllMethods("X.4iE", "BXZ", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
+                super.beforeHookedMethod(param);
+            }
+        });
+
+        XposedHilfer.hookAllConstructors("com.facebook.messaging.service.model.NewMessageResult", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                String msgId = (String) XposedHelpers.getObjectField(param.args[1], "A11");
+//                if (param.args[0].toString().equals("FROM_SERVER") &&
+//                    msgId.startsWith("mid.")) {
+//                    Object timestamp = XposedHelpers.getObjectField(param.args[1], "A03");
+//                    String msgText = (String) XposedHelpers.getObjectField(XposedHelpers.getObjectField(param.args[1], "A0Z"), "A00");
+//                    Object threadKey = XposedHelpers.getObjectField(param.args[1], "A0S");
+//
+//                    MProMain.getActivity().runOnUiThread(() -> {
+//                        Toast.makeText(MProMain.getContext(), msgText + ": " + msgId, Toast.LENGTH_SHORT).show();
+//                        Object messageReactor = XposedHelpers.newInstance(MProMain.getReflectedClasses().X_MessageReactor, mDebugArray.get(0));
+//                        XposedHelpers.callMethod(messageReactor,
+//                                "A00",
+//                                MProMain.getContext(),
+//                                threadKey,
+//                                0,
+//                                "\uD83E\uDD16",
+//                                msgId,
+//                                System.currentTimeMillis());
+//                    });
+//                }
             }
         });
     }

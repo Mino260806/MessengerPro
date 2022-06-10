@@ -47,7 +47,7 @@ public class RedditAPI extends AbstractAPI {
         if (!possibleSorts.contains(sort))
             sort = "top";
         try {
-            JSONObject json = new JSONObject(fetchData(subreddit, sort));
+            JSONObject json = new JSONObject(fetchData(subreddit, sort).responseString);
             JSONObject postJson = json.getJSONObject("data")
                     .getJSONArray("children")
                     .getJSONObject(0)

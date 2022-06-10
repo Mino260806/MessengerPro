@@ -1,8 +1,5 @@
-package tn.amin.mpro.builders;
+package tn.amin.mpro.builders.dialog;
 
-import android.app.Dialog;
-
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import tn.amin.mpro.MProMain;
 import tn.amin.mpro.internal.ui.DialogUtil;

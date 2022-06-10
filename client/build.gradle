@@ -1,0 +1,79 @@
+apply plugin: 'java-library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+dependencies {
+    api project(":api")
+    api 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.9.0'
+}
+
+ext {
+    libraryVersion = System.getProperty("libraryVersion")
+}
+
+version = libraryVersion
+group = 'com.theokanning.openai-gpt3-java'
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        ClientPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId project.group
+            artifactId 'client'
+            version libraryVersion
+            pom {
+                description = 'Basic retrofit client for OpenAI\'s GPT-3 API'
+                name = 'client'
+                url = 'https://github.com/theokanning/openai-java'
+                developers {
+                    developer {
+                        id = "theokanning"
+                        name = "Theo Kanning"
+                        email = "theokanning@gmail.com"
+                    }
+                }
+                scm {
+                    url = "https://github.com/theokanning/openai-java"
+                }
+                licenses {
+                    license {
+                        name = "The MIT License"
+                        url = "https://www.mit.edu/~amini/LICENSE.md"
+                        distribution = "repo"
+                    }
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getenv("BINTRAY_USER")
+    key = System.getenv("BINTRAY_KEY")
+
+    publications = ['ClientPublication']
+    pkg {
+        repo = 'openai-gpt3-java'
+        name = 'client'
+        vcsUrl = 'https://github.com/TheoKanning/openai-java.git'
+        licenses = ["MIT"]
+        publish = false
+        version {
+            name = libraryVersion
+        }
+    }
+}

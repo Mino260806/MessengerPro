@@ -21,7 +21,11 @@ public class StorageManager {
     }
 
     public static <T> T read(String key) {
-        return Paper.book().read(key);
+        return Paper.book().read(key, null);
+    }
+
+    public static <T> T read(String key, T defaultValue) {
+        return Paper.book().read(key, defaultValue);
     }
 
     public static void init() {

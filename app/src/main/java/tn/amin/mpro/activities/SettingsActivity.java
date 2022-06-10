@@ -1,22 +1,33 @@
 package tn.amin.mpro.activities;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
-import android.widget.TextView;
+import android.util.Log;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
 
-import java.util.prefs.Preferences;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
+import de.robv.android.xposed.XSharedPreferences;
 import tn.amin.mpro.MProMain;
 import tn.amin.mpro.R;
+import tn.amin.mpro.constants.Constants;
 
 public class SettingsActivity extends AppCompatActivity {
-    private static SharedPreferences sp;
+    private SettingsFragment mSettingsFragment = null;
+    private boolean mHasToCopyPreferences = false;
 
     @SuppressLint("WorldReadableFiles")
     @Override
@@ -28,20 +39,40 @@ public class SettingsActivity extends AppCompatActivity {
 
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_settings);
+        setResult(RESULT_OK);
 
         boolean fromMessenger = getIntent().getBooleanExtra("fromMessenger", false);
         int sharedPrefMode;
         if (fromMessenger)
             sharedPrefMode = Context.MODE_WORLD_READABLE;
-        else
+        else {
+            mHasToCopyPreferences = true;
             sharedPrefMode = Context.MODE_PRIVATE;
-        sp = getSharedPreferences("tn.amin.mpro_preferences", sharedPrefMode);
+        }
+        try {
+            getSharedPreferences("tn.amin.mpro_preferences", sharedPrefMode);
+        } catch (SecurityException e) {
+            // If SecurityException is raised, then user is using non-root lsposed, which
+            // integrates the activity inside facebook messenger, so we can open it in mode private
+            getSharedPreferences("tn.amin.mpro_preferences", Context.MODE_PRIVATE);
+        }
 
+        String settingsType = getIntent().getStringExtra("settingsType");
+        if (settingsType == null || settingsType.isEmpty())
+            settingsType = Constants.MPRO_SETTINGS_TYPE_SETTINGS;
+        mSettingsFragment = new SettingsFragment(settingsType);
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.settings_fragment, new SettingsFragment())
+                .add(R.id.settings_fragment, mSettingsFragment)
                 .commit();
 
-        setTitle("Messenger Pro settings");
+        switch (settingsType) {
+            case Constants.MPRO_SETTINGS_TYPE_POWER_CENTER:
+                setTitle("Messenger Pro Power Center");
+                break;
+            default:
+                setTitle("Messenger Pro Settings");
+                break;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package tn.amin.mpro.builders;
+package tn.amin.mpro.builders.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -10,6 +10,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import de.robv.android.xposed.XposedHelpers;
 import tn.amin.mpro.MProMain;
+import tn.amin.mpro.builders.ObjectBuilder;
 import tn.amin.mpro.internal.ui.DialogUtil;
 
 public class MessengerDialogBuilder extends ObjectBuilder {

@@ -12,11 +12,11 @@ public class WikipediaAPI extends AbstractAPI {
     public static String fetchArticle(String term, String language) {
         try {
             setUrlFormat("https://%s.wikipedia.org/w/api.php?action=opensearch&search=%s&limit=1&format=json");
-            JSONArray query = new JSONArray(fetchData(language, term));
+            JSONArray query = new JSONArray(fetchData(language, term).responseString);
             String articleUrl = query.getJSONArray(query.length()-1).getString(0);
             String articleTitle = Uri.parse(articleUrl).getLastPathSegment();
             setUrlFormat("https://%s.wikipedia.org/w/api.php?action=query&prop=extracts&exlimit=1&titles=%s&explaintext=1&exsectionformat=plain&format=json");
-            JSONObject article = new JSONObject(fetchData(language, articleTitle));
+            JSONObject article = new JSONObject(fetchData(language, articleTitle).responseString);
             JSONObject pages = article
                     .getJSONObject("query")
                     .getJSONObject("pages");

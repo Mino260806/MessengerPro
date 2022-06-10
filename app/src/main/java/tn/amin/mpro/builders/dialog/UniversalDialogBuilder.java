@@ -1,10 +1,11 @@
-package tn.amin.mpro.builders;
+package tn.amin.mpro.builders.dialog;
 
 import android.app.Dialog;
 
 import de.robv.android.xposed.XposedHelpers;
 import kotlin.NotImplementedError;
 import tn.amin.mpro.MProMain;
+import tn.amin.mpro.builders.ObjectBuilder;
 
 public class UniversalDialogBuilder extends ObjectBuilder {
     private Dialog mDialog = null;

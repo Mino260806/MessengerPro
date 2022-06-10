@@ -4,20 +4,24 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.*;
-import io.paperdb.Paper;
-import tn.amin.mpro.builders.LoadingDialogBuilder;
+import tn.amin.mpro.builders.dialog.LoadingDialogBuilder;
 import tn.amin.mpro.builders.MediaResourceBuilder;
 import tn.amin.mpro.constants.Constants;
 import tn.amin.mpro.constants.ReflectedClasses;
 import tn.amin.mpro.features.ConversationMapper;
 import tn.amin.mpro.features.biometric.BiometricConversationLock;
+import tn.amin.mpro.features.commands.CommandData;
 import tn.amin.mpro.features.image.ImageEditor;
-import tn.amin.mpro.builders.MessengerDialogBuilder;
+import tn.amin.mpro.builders.dialog.MessengerDialogBuilder;
 import tn.amin.mpro.internal.Compatibility;
 import tn.amin.mpro.internal.Debugger;
 import tn.amin.mpro.internal.ListenerGetter;
+import tn.amin.mpro.internal.ui.MoreDrawerItemsExtender;
+import tn.amin.mpro.internal.ui.MoreDrawerItemsExtender.MoreDrawerItemModel;
 import tn.amin.mpro.internal.ui.SendButtonOCL;
 import tn.amin.mpro.internal.ui.MessageUtil;
+import tn.amin.mpro.internal.ui.TitleBarButtonsExtender;
+import tn.amin.mpro.internal.ui.TitleBarButtonsExtender.TitleBarButtonModel;
 import tn.amin.mpro.storage.PrefReader;
 import tn.amin.mpro.storage.StorageManager;
 import tn.amin.mpro.utils.XposedHilfer;
@@ -27,7 +31,6 @@ import android.content.*;
 import android.content.res.XModuleResources;
 import android.net.Uri;
 import android.os.StrictMode;
-import android.graphics.*;
 import android.widget.*;
 import android.view.*;
 import android.graphics.drawable.*;
@@ -36,28 +39,35 @@ import android.app.*;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.documentfile.provider.DocumentFile;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 	// We use WeakReference to prevent leaks
 	public WeakReference<Activity> O_activity = null;
-	public ArrayList<EditText> O_messageEdits = new ArrayList<>();
-	public ArrayList<View> O_sendButtons = new ArrayList<>();
-	public ArrayList<View> O_likeButtons = new ArrayList<>();
-	public ArrayList<ViewGroup> O_composerViews = new ArrayList<>();
+	public ArrayList<EditText> O_messageEdits = new ArrayList();
+	public ArrayList<View> O_sendButtons = new ArrayList();
+	public ArrayList<View> O_likeButtons = new ArrayList();
+	public ArrayList<ViewGroup> O_composerViews = new ArrayList();
+	public ArrayList<Object> O_composeFragments = new ArrayList();
 	public WeakReference<ViewGroup> O_contentView;
+	public WeakReference<Object> O_threadViewMessagesFragment = null;
+
+	private boolean mIsInitialized = false;
 
 	public XModuleResources mResources = null;
-	private boolean mIsInitialized = false;
-	private boolean mIsInitializing = false;
 	private ConversationMapper mConversationMapper;
 	private PrefReader mPrefReader = null;
 	private BiometricConversationLock mBiometricConversationLock = null;
+	private TitleBarButtonsExtender mTitleBarButtonsExtender;
+	private MoreDrawerItemsExtender mMoreDrawerItemsExtender;
 
 	@Override
 	public void initZygote(StartupParam startupParam) throws Throwable {
@@ -71,7 +81,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		XposedHilfer.setClassLoader(lpparam.classLoader);
 
 		if (Constants.MPRO_DEBUG) {
-		    init();
+		    MProMain.getReflectedClasses().init();
+			Debugger.initDebugHooks();
         }
 
 		/*
@@ -98,7 +109,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 			    if (!param.thisObject.getClass().getName().equals("com.facebook.messenger.neue.MainActivity")) return;
-				XposedBridge.log("MainActivity resumed...");
+			    XposedBridge.log("MainActivity resumed...");
 				O_activity = new WeakReference<>((Activity) param.thisObject);
 
 				// Check if messenger version is correct before doing anything.
@@ -126,13 +137,6 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 				StrictMode.setThreadPolicy(policy);
 
-				StorageManager.init();
-				if (Constants.MPRO_DEBUG) {
-					ArrayList<String> lockedThreadKeys = StorageManager.read(StorageManager.PAPER_LOCKED_THREAD_KEYS);
-					mBiometricConversationLock = new BiometricConversationLock(lockedThreadKeys);
-				}
-
-				mPrefReader.reload();
 				if (Constants.MPRO_CACHE_DIR == null) {
 					Constants.MPRO_CACHE_DIR = new File(getContext().getCacheDir(), "fb_temp/mpro");
 					if (!Constants.MPRO_CACHE_DIR.exists()) {
@@ -141,6 +145,20 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				}
 			}
 		});
+
+		// This must be called before anything is initialized
+		try {
+			ReflectedClasses classes = new ReflectedClasses();
+			classes.initUrgent();
+			XposedHilfer.hookAllConstructors("X.0us", new XC_MethodHook() {
+				@Override
+				protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+					MProMain.classInjector = param.args[0];
+					XposedBridge.unhookMethod(param.method, this);
+				}
+			});
+		} catch (Throwable ignored) {
+		}
 	}
 
 	private void setupListeners() {
@@ -152,32 +170,41 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		messageEdit.addTextChangedListener(mConversationMapper);
 
 		View likeButton = O_likeButtons.get(O_likeButtons.size() - 1);
-		XposedHelpers.setAdditionalInstanceField(likeButton, "originalOnTouchListener",
-				ListenerGetter.from(likeButton).getOnTouchListener());
 		MProMain.setupLikeButtonListener(O_likeButtons.get(O_likeButtons.size() - 1));
 	}
 
 	private void init() {
-        mIsInitializing = true;
-
-        XposedBridge.log("MProMain.init()");
+		XposedBridge.log("MProMain.init()");
         MProMain.init(this);
 
-        mConversationMapper = new ConversationMapper();
+        XposedBridge.log("StorageManager.init()");
+		StorageManager.init();
+		if (Constants.MPRO_DEBUG) {
+			ArrayList<String> lockedThreadKeys = StorageManager.read(StorageManager.PAPER_LOCKED_THREAD_KEYS);
+			mBiometricConversationLock = new BiometricConversationLock(lockedThreadKeys);
+		}
+
+		mConversationMapper = new ConversationMapper();
         XposedBridge.log("new ConversationMapper()");
         mPrefReader = new PrefReader();
         XposedBridge.log("new PrefReader()");
+        mTitleBarButtonsExtender = new TitleBarButtonsExtender()
+				.addButton(new TitleBarButtonModel(R.drawable.titlebar_power_center, "Messenger Pro power center", Constants.TITLEBAR_CONTROL_CENTER_ACTION))
+				.addButton(new TitleBarButtonModel(R.drawable.titlebar_settings, "Messenger Pro settings", Constants.TITLEBAR_SETTINGS_ACTION));
+        XposedBridge.log("new ToolBarButtonsExtender()");
+		mMoreDrawerItemsExtender = new MoreDrawerItemsExtender()
+				.addItem(new MoreDrawerItemModel("Attach file", "DOCUMENT_COMPLETE", "RED", Constants.MORE_DRAWER_ATTACHFILE_ACTION));
+//				.addItem(new MoreDrawerItemModel("Schedule message", "CLOCK", "BLUE_GREY_75", Constants.MORE_DRAWER_SCHEDULEMESSAGE_ACTION));
+		XposedBridge.log("new ToolBarButtonsExtender()");
 
         initHooks();
         XposedBridge.log("initHooks()");
         if (Constants.MPRO_DEBUG) {
             initTestHooks();
-            Debugger.initDebugHooks();
         }
         XposedBridge.log("MessengerPro hook successfully loaded");
         mIsInitialized = true;
-        mIsInitializing = false;
-    }
+	}
 
 	/**
 	* Init the essential hooks for Messenger Pro to work
@@ -198,12 +225,17 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
 				O_composerViews.add(oneLineComposerView);
 				O_sendButtons.add((ImageView) XposedHelpers.getObjectField(oneLineComposerView, "A0O"));
-				O_likeButtons.add((ImageView) XposedHelpers.getObjectField(getActiveComposerView(), "A0N"));
+				O_likeButtons.add((ImageView) XposedHelpers.getObjectField(getActiveComposerViewOrDefault(), "A0N"));
 				O_messageEdits.add((EditText) XposedHelpers.getObjectField(container, "A0B"));
 
-//				GradientDrawable border = new GradientDrawable();
-//				border.setStroke(5, Color.BLACK);
-//				container.setBackground(border);
+				O_composeFragments.add(
+						XposedHelpers.getObjectField(
+						XposedHelpers.getObjectField(
+						oneLineComposerView, "A0L"), "A00"));
+//				O_threadViewMessagesFragment = new WeakReference(
+//						XposedHelpers.getObjectField(
+//						XposedHelpers.getObjectField(
+//						O_composeFragments.get(O_composeFragments.size()-1), "A0G"), "A00"));
 
 				setupListeners();
 				XposedBridge.log("Found all views successfully");
@@ -230,34 +262,11 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 		XposedHilfer.hookAllMethods("X.1nK", "B1t", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				ArrayList result = (ArrayList) XposedHilfer.invokeOriginalMethod(param);
-				if (result == null || result.size() == 0) return;
+				ArrayList buttonModels = (ArrayList) XposedHilfer.invokeOriginalMethod(param);
+				if (buttonModels == null || buttonModels.size() == 0) return;
 
-				Bitmap bitmapModel = ((BitmapDrawable)XposedHelpers.getObjectField(XposedHelpers.getObjectField(result.get(0), "A01"), "A04")).getBitmap();
-				int dpi = bitmapModel.getDensity();
-				int width = bitmapModel.getWidth();
-				int height = bitmapModel.getHeight();
-
-				BitmapDrawable drawable = (BitmapDrawable) ResourcesCompat.getDrawable(mResources, R.drawable.settings, null);
-				Bitmap b = drawable.getBitmap();
-				Bitmap bitmapResized = Bitmap.createScaledBitmap(b, width / 2, height / 2, false);
-				bitmapResized.setDensity(dpi);
-				Drawable buttonIcon = new BitmapDrawable(mResources, bitmapResized);
-
-				// It would have been easier to use XposedHelpers.findClass but using getParameterTypes()
-				// will save time when updating obfuscated classes for a newer version
-				Object buttonDataModel = result.get(0);
-				Object buttonIconDataModel = XposedHelpers.getObjectField(buttonDataModel, "A01");
-				Object buttonIconData = XposedHelpers.newInstance(buttonIconDataModel.getClass(), buttonIcon,
-						Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
-				Object buttonDataInit = buttonDataModel.getClass().getDeclaredConstructors()[0]
-						.getParameterTypes()[0].newInstance();
-				XposedHelpers.setObjectField(buttonDataInit, "A01", buttonIconData);
-				XposedHelpers.setObjectField(buttonDataInit, "A04", "Messenger Pro Settings");
-				XposedHelpers.setObjectField(buttonDataInit, "A05", Constants.TITLEBAR_BUTTON_ACTION_NAME);
-				Object buttonData = XposedHelpers.newInstance(buttonDataModel.getClass(), buttonDataInit);
-				result.add(buttonData);
-				param.setResult(result);
+				mTitleBarButtonsExtender.extend(buttonModels);
+				param.setResult(buttonModels);
 			}
 		});
 
@@ -287,19 +296,43 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				int requestCode = (Integer) param.args[0];
 				int resultCode = (Integer) param.args[1];
 				Intent data = (Intent) param.args[2];
-				if (requestCode == Constants.MPRO_ATTACHFILE_REQUEST_CODE) {
-					if (resultCode == Activity.RESULT_OK) {
-						Uri selectedFile = data.getData();
-						if (selectedFile != null) {
-							DocumentFile documentFile = DocumentFile.fromSingleUri(getContext(), selectedFile);
-							String fileName = documentFile.getName();
-							InputStream inputStream = getActivity().getContentResolver().openInputStream(selectedFile);
-							MProMain.sendAttachment(MediaResourceBuilder.createFromFile(fileName, inputStream).build());
+
+				XposedBridge.log("onActivityResult: " + requestCode);
+
+				switch (requestCode) {
+					case Constants.MPRO_ATTACHFILE_REQUEST_CODE: {
+						if (resultCode == Activity.RESULT_OK) {
+							Uri selectedFile = data.getData();
+							if (selectedFile != null) {
+								DocumentFile documentFile = DocumentFile.fromSingleUri(getContext(), selectedFile);
+								String fileName = documentFile.getName();
+								InputStream inputStream = getActivity().getContentResolver().openInputStream(selectedFile);
+								MProMain.sendAttachment(MediaResourceBuilder.createFromFile(fileName, inputStream).build());
+							}
 						}
+						// Cancel FbFragmentActivity.onActivityResult to prevent crash
+						// because of unknown requestCode
+						param.setResult(null);
+						break;
 					}
-					// Cancel FbFragmentActivity.onActivityResult to prevent crash
-					// because of unknown requestCode
-					param.setResult(null);
+					case Constants.MPRO_SETTINGS_REQUEST_CODE: {
+						if (resultCode == Activity.RESULT_OK) {
+							mPrefReader.reload();
+						}
+						param.setResult(null);
+						break;
+					}
+					case Constants.MPRO_RETRIEVE_SHARED_PREFS_REQUEST_CODE: {
+						if (resultCode == Activity.RESULT_OK) {
+							String prefPath = data.getStringExtra("prefPath");
+							HashMap<String, ?> prefMap = (HashMap<String, ?>)
+									data.getSerializableExtra("prefMap");
+							if (!mPrefReader.setSharedPreferences(prefPath)) {
+								mPrefReader.setSharedPreferences(prefMap);
+							}
+						}
+						break;
+					}
 				}
 			}
 		});
@@ -312,47 +345,28 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
 				param.setResult(null);
 
-				Object iconType = Enum.valueOf(classes.X_IconType, "DOCUMENT_COMPLETE");
-				Object colorType = Enum.valueOf(classes.X_ColorType, "RED");
-				Object dataStoreInit = XposedHelpers.newInstance(classes.X_MoreDrawerGenericGridItemDataStoreInit);
-				XposedHelpers.setObjectField(dataStoreInit, "A00", iconType);
-				XposedHelpers.setObjectField(dataStoreInit, "A03", colorType);
-				XposedHelpers.setObjectField(dataStoreInit, "A04", mResources.getString(R.string.moreoptions_attach_file));
-				XposedHelpers.setObjectField(dataStoreInit, "A05", Constants.MORE_DRAWER_ACTION_NAME);
-
-				Object dataStore = XposedHelpers.newInstance(classes.X_MoreDrawerGenericGridItemDataStore, dataStoreInit);
-				Object data = XposedHelpers.newInstance(classes.X_MoreDrawerGenericGridItemData, dataStore);
-
-				AbstractCollection<Object> listOfViewHolders = (AbstractCollection<Object>)
-						XposedHelpers.getObjectField(
-						XposedHelpers.getObjectField(param.args[0], "A03"), "A02");
-				ArrayList<Object> newListOfViewHolders = new ArrayList<Object>(listOfViewHolders);
-				newListOfViewHolders.add(data);
-				Object newList = XposedHelpers.newInstance(classes.X_RegularImmutableList, newListOfViewHolders.toArray(), newListOfViewHolders.size());
-				XposedHelpers.setObjectField(XposedHelpers.getObjectField(param.args[0], "A03"),
-						"A02", newList);
+				mMoreDrawerItemsExtender.extend(param.args[0]);
 			}
 		});
 
 		/*
-		 * TitleBarButton onClick, first argument is actionName
+		 * TitleBarButton onClick
 		 * */
 		XposedHilfer.hookAllMethods("X.1nK", "BUb", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				String buttonName = (String) param.args[0];
-				boolean cancelOriginalMethod = true;
-				switch (buttonName) {
-					case Constants.TITLEBAR_BUTTON_ACTION_NAME:
-						Intent intent = new Intent("tn.amin.mpro.SETTINGS");
-						intent.putExtra("fromMessenger", true);
-						getActivity().startActivity(intent);
+				String actionName = (String) param.args[0];
+				switch (actionName) {
+					case Constants.TITLEBAR_SETTINGS_ACTION:
+						MProMain.startSettings(Constants.MPRO_SETTINGS_TYPE_SETTINGS);
+						break;
+					case Constants.TITLEBAR_CONTROL_CENTER_ACTION:
+						MProMain.startSettings(Constants.MPRO_SETTINGS_TYPE_POWER_CENTER);
 						break;
 					default:
-						cancelOriginalMethod = false;
+						return;
 				}
-				if (cancelOriginalMethod)
-					param.setResult(null);
+				param.setResult(null);
 			}
 		});
 
@@ -364,9 +378,17 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				super.beforeHookedMethod(param);
 				String actionName = (String) XposedHelpers.getObjectField(param.args[0], "A05");
-				if (actionName.equals(Constants.MORE_DRAWER_ACTION_NAME)) {
-					MProMain.startFileChooser();
+				switch (actionName) {
+					case Constants.MORE_DRAWER_ATTACHFILE_ACTION:
+						MProMain.startFileChooser();
+						break;
+					case Constants.MORE_DRAWER_SCHEDULEMESSAGE_ACTION:
+						// TODO
+						break;
+					default:
+						return;
 				}
+				param.setResult(null);
 			}
 		});
 
@@ -482,7 +504,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
 		/*
 		* MentionsSearchAdapter.onBindViewHolder
-		* If command type is -1 (its source is MPro), setup its icon and its onClickListener
+		* If its source is MPro, setup its icon and its onClickListener
 		* */
 		XposedBridge.hookAllMethods(classes.X_MentionsSearchAdapter, "BRu", new XC_MethodHook() {
 			@Override
@@ -491,13 +513,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				View bindedView = (View) XposedHelpers.getObjectField(param.args[0], "A0I");
 				Object mentionData = ((List) XposedHelpers.getObjectField(param.thisObject, "A03")).get(position);
 				int type = (Integer) XposedHelpers.callMethod(mentionData, "B4K");
-				if (type == -1) {
-					bindedView.setOnClickListener(view -> {
-						MProMain.showCommandsAutoComplete(null);
-						String commandLiteral = "/" + XposedHelpers.callMethod(mentionData, "B3J");
-						getActiveMessageEdit().setText(commandLiteral);
-						getActiveMessageEdit().setSelection(commandLiteral.length());
-					});
+				if (type == Constants.MPRO_MENTIONS_AUTOCOMPLETE_TYPE) {
+					bindedView.setOnClickListener(new CommandData.OnClickListener(mentionData));
 					// Assign view icon
 					String[] split = ((String) XposedHelpers.callMethod(mentionData, "AtU")).split("/");
 					String drawableResourceName = split[split.length - 1];
@@ -507,6 +524,9 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 						ImageView fbDraweeView = (ImageView) XposedHelpers.getObjectField(bindedView, "A00");
 						fbDraweeView.setImageDrawable(drawable);
 					}
+				}
+				else if (ListenerGetter.from(bindedView).getOnClickListener() instanceof CommandData.OnClickListener) {
+					bindedView.setOnClickListener(XposedHilfer.getFirstObjectFieldByType(param.thisObject, View.OnClickListener.class));
 				}
 			}
 		});
@@ -612,12 +632,14 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 						break;
 				}
 				if (isIdApproved) {
+					param.setResult(null);
+				}
+				if (threadKey != null) {
 					// Dismiss long click dialog
 					XposedHelpers.callMethod(
 					XposedHelpers.getObjectField(
-					XposedHelpers.getObjectField(param.thisObject,
-					"A01"), "A02"), "A00");
-					param.setResult(null);
+					XposedHelpers.getObjectField(
+					param.thisObject, "A01"), "A02"), "A00");
 
 					if (unlock) {
 						mBiometricConversationLock.unlockConversation(threadKey.toString());
@@ -628,7 +650,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 			}
 		});
 
-		// This method opens any conversation, see param.args[0] to know conv type
+		// This method opens any conversation (does not work in chatheads and bubbles)
 		XposedHilfer.hookAllMethods("X.1Ri", "A0C", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -639,25 +661,80 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 				}
 			}
 		});
+
+		// When a message is received
+		XposedHelpers.findAndHookMethod(ContentValues.class, "put", String.class, String.class, new XC_MethodHook() {
+			@Override
+			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				if (param.args[0].equals("montage_reply_message_id")) {
+					String msgTimestamp = ((ContentValues) param.thisObject).getAsString("timestamp_sent_ms");
+					if (msgTimestamp == null || msgTimestamp.isEmpty()) {
+						msgTimestamp = ((ContentValues) param.thisObject).getAsString("timestamp_ms");
+					}
+					// If message was sent before messenger was started, no need to react,
+					// or MPro wil spam reacts on many messages.
+					if (Long.parseLong(msgTimestamp) < MProMain.startupTimeMillis) return;
+					if (!getPrefReader().isUserBusy()) return;
+					String msgText = ((ContentValues) param.thisObject).getAsString("text");
+					String msgId = ((ContentValues) param.thisObject).getAsString("msg_id");
+					String sender = ((ContentValues) param.thisObject).getAsString("sender");
+					String threadKeyString = ((ContentValues) param.thisObject).getAsString("thread_key");
+					if (threadKeyString == null || sender == null) {
+						XposedBridge.log(new Throwable("thread_key cannot be null"));
+					}
+					if (!threadKeyString.split(":")[0].equals("ONE_TO_ONE"))
+						return;
+					if (msgId.startsWith("mid.")) {
+						Object threadKey = XposedHelpers.callStaticMethod(MProMain.getReflectedClasses().X_ThreadKey, "A0F", threadKeyString);
+						Object lastThreadKey = getLastThreadKey();
+						// If I'm not in the conversation
+						if (threadKey != null && threadKey.equals(lastThreadKey)) return;
+
+						JSONObject senderJson = new JSONObject(sender);
+						String senderFbId = senderJson.getString("user_key").split(":")[1];
+						// If I did not send the message
+						if (senderFbId.equals(MProMain.user.getFbId())) return;
+
+						MProMain.getActivity().runOnUiThread(() -> {
+							MProMain.reactToMessage(threadKey, msgId, mPrefReader.getBusyEmoji());
+						});
+					}
+				}
+			}
+		});
 	}
 
 	public PrefReader getPrefReader() { return mPrefReader; }
 	public ConversationMapper getConversationMapper() { return mConversationMapper; }
-	public ViewGroup getActiveComposerView() {
-		ViewGroup composerView = (ViewGroup) getActiveView(O_composerViews);
+	public ViewGroup getActiveComposerViewOrNull() {
+		ViewGroup composerView = getActiveView(O_composerViews);
+		return composerView;
+	}
+	public ViewGroup getActiveComposerViewOrDefault() {
+		ViewGroup composerView = getActiveView(O_composerViews);
 		return composerView == null ? O_composerViews.get(0) : composerView;
 	}
 	public View getActiveSendButton() { return O_sendButtons.get(
-			O_composerViews.indexOf(getActiveComposerView())
+			O_composerViews.indexOf(getActiveComposerViewOrDefault())
 	); }
 	public EditText getActiveMessageEdit() { return O_messageEdits.get(
-			O_composerViews.indexOf(getActiveComposerView())
+			O_composerViews.indexOf(getActiveComposerViewOrDefault())
 	); }
 	public Object getActiveCommandsParser() {
-		ViewGroup composerView = getActiveComposerView();
-		if (composerView == null) return null;
+		ViewGroup composerView = getActiveComposerViewOrDefault();
 		return XposedHelpers.getObjectField(composerView, "A0c");
 	}
+	public Object getActiveComposeFragmentOrNull() {
+		Object composerView = getActiveComposerViewOrNull();
+		return composerView != null ? O_composeFragments.get(O_composerViews.indexOf(composerView)) : null;
+	}
+	public Object getLastThreadKey() {
+		Object composerFragment = getActiveComposeFragmentOrNull();
+		if (composerFragment == null) return null;
+		return XposedHelpers.callStaticMethod(
+			O_composeFragments.get(0).getClass(), "A00", composerFragment);
+	}
+
 	public Activity getActivity() { return O_activity.get(); }
 	public Context getContext() { return O_activity.get(); }
 	private <T> T getActiveView(ArrayList<T> viewArray) {

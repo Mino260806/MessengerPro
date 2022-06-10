@@ -1,6 +1,12 @@
 package tn.amin.mpro.features.commands;
 
+import android.view.View;
+
+import com.mojang.brigadier.Command;
+
+import de.robv.android.xposed.XposedHelpers;
 import tn.amin.mpro.MProMain;
+import tn.amin.mpro.constants.Constants;
 
 public class CommandData {
     public static Object newInstance(CommandFields cf) {
@@ -25,7 +31,7 @@ public class CommandData {
                         }
 
                         case "B4K": {
-                            return -1;
+                            return Constants.MPRO_MENTIONS_AUTOCOMPLETE_TYPE;
                         }
 
                         case "AtU": {
@@ -48,7 +54,18 @@ public class CommandData {
         return thisObject;
     }
 
-//    private static String getDescriptionForCommand() {
-//
-//    }
+    public static class OnClickListener implements View.OnClickListener {
+        private final Object mMentionData;
+        public OnClickListener(Object mentionData) {
+            mMentionData = mentionData;
+        }
+
+        @Override
+        public void onClick(View view) {
+            MProMain.showCommandsAutoComplete(null);
+            String commandLiteral = "/" + XposedHelpers.callMethod(mMentionData, "B3J");
+            MProMain.getActiveMessageEdit().setText(commandLiteral);
+            MProMain.getActiveMessageEdit().setSelection(commandLiteral.length());
+        }
+    }
 }

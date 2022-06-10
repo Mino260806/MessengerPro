@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Handler;
@@ -24,10 +25,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import tn.amin.mpro.activities.SettingsActivity;
+import tn.amin.mpro.builders.MessageBuilder;
 import tn.amin.mpro.constants.Constants;
 import tn.amin.mpro.constants.ReflectedClasses;
 import tn.amin.mpro.features.ConversationMapper;
+import tn.amin.mpro.internal.ListenerGetter;
+import tn.amin.mpro.orca.User;
 import tn.amin.mpro.storage.PrefReader;
 
 /**
@@ -37,12 +43,19 @@ import tn.amin.mpro.storage.PrefReader;
 public class MProMain {
     static MainHook mainHook;
 
+    public static Object classInjector = null;
     public static boolean formatNextMessage = true;
     private static final ReflectedClasses mReflectedClasses = new ReflectedClasses();
+
+    public static User user;
+    public static long startupTimeMillis = -1;
 
     public static void init(MainHook mainHook) {
         MProMain.mainHook = mainHook;
         mReflectedClasses.init();
+
+        user = new User();
+        startupTimeMillis = System.currentTimeMillis();
     }
 
     public static void showCommandsAutoComplete(List<Object> commandsList) {
@@ -64,7 +77,7 @@ public class MProMain {
         }
     }
 
-    public static void sendMessage(String message) {
+    public static void sendMessage(final String message) {
         sendMessage(message, false);
     }
 
@@ -99,6 +112,19 @@ public class MProMain {
     public static void sendAttachment(Object mediaResource) {
         putAttachment(mediaResource);
         sendMessage(getMProResources().getString(R.string.command_error));
+    }
+
+    public static void reactToMessage(Object threadKey, String msgId, String emoji) {
+        XposedBridge.log("Reacting to message with id " + msgId);
+        Object messageReactor = XposedHelpers.newInstance(MProMain.getReflectedClasses().X_MessageReactor, MProMain.classInjector);
+        XposedHelpers.callMethod(messageReactor,
+                "A00",
+                MProMain.getContext(),
+                threadKey,
+                0,
+                emoji,
+                msgId,
+                System.currentTimeMillis());
     }
 
     public static void clearMessageInput() {
@@ -174,6 +200,10 @@ public class MProMain {
     public static Resources getMProResources() { return mainHook.mResources; }
     public static PrefReader getPrefReader() { return mainHook.getPrefReader(); }
     public static ConversationMapper getConversationMapper() { return mainHook.getConversationMapper(); }
+    public static EditText getActiveMessageEdit() {
+        return mainHook.getActiveMessageEdit();
+    }
+
     public static Object getActiveCommandsParser() { return mainHook.getActiveCommandsParser(); }
 
     public static boolean isDarkMode(Context context) {
@@ -182,6 +212,9 @@ public class MProMain {
 
     @SuppressLint("ClickableViewAccessibility")
     public static void setupLikeButtonListener(View likeButton) {
+        if (XposedHelpers.getAdditionalInstanceField(likeButton, "originalOnTouchListener") != null) return;
+        XposedHelpers.setAdditionalInstanceField(likeButton, "originalOnTouchListener",
+                ListenerGetter.from(likeButton).getOnTouchListener());
         likeButton.setOnTouchListener(new View.OnTouchListener() {
             private boolean mWaitingForSecondClick = false;
             private boolean mDoubleClicked = false;
@@ -220,5 +253,31 @@ public class MProMain {
                 return false;
             }
         });
+    }
+
+    public static void startSettings() {
+        startSettings(Constants.MPRO_SETTINGS_TYPE_SETTINGS);
+    }
+
+    public static void startSettings(String settingsType) {
+        PackageManager pm = getActivity().getPackageManager();
+        Intent intent = new Intent("tn.amin.mpro.SETTINGS");
+        if (intent.resolveActivity(pm) == null) {
+            Toast.makeText(getContext(), "Please install module's apk.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        intent.putExtra("settingsType", settingsType);
+        intent.putExtra("fromMessenger", true);
+        getActivity().startActivityForResult(intent, Constants.MPRO_SETTINGS_REQUEST_CODE);
+    }
+
+    public static void startRetrieveSharedPreferences() {
+        PackageManager pm = getActivity().getPackageManager();
+        Intent intent = new Intent("tn.amin.mpro.SHARED_PREFS");
+        if (intent.resolveActivity(pm) == null) {
+            Toast.makeText(getContext(), "Please install module's apk", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        getActivity().startActivityForResult(intent, Constants.MPRO_RETRIEVE_SHARED_PREFS_REQUEST_CODE);
     }
 }
