@@ -1,7 +1,8 @@
 
 # MessengerPro
-An Xposed module which extends Facebook Messenger with a bunch of exciting features
-A no root apk is also available
+An Xposed module which extends Facebook Messenger with a bunch of exciting features.
+
+A no root apk is also available.
 
 ## Warning
 This module is still in alpha phase, so you will most likely encounter bugs. Please open a github issue if you do.  
