@@ -1,6 +1,7 @@
 
 # MessengerPro
 An Xposed module which extends Facebook Messenger with a bunch of exciting features
+A no root apk is also available
 
 ## Warning
 This module is still in alpha phase, so you will most likely encounter bugs. Please open a github issue if you do.  
@@ -21,10 +22,12 @@ It will work if and only if use **Messenger version 350.0.0.7.89 Android 9.0+ re
 - [A bunch of feature\-rich commands](https://user-images.githubusercontent.com/53614199/160291859-b861c406-c41b-4138-84f5-5347139a3c89.png). Currently supported commands
   - /wikipedia \[ISO 2 letter language code\] \[article title\]
   - /reddit \[subreddit\] \[sort(optional)\]
-  - /word pronounce \[word\] (/word define will be added in a future release)
-  - I am open for more suggestions
+  - /word (pronounce or define) \[word\]
+  - /empty \[rows(optional) columns(optional)\]
+  - and much more...
 - [Access to Messenger Pro settings](https://user-images.githubusercontent.com/53614199/160292411-d07eca6e-fd3c-4a92-b12a-8e94d4aa4b5e.png)
   from the top right corner. You can disable/enable the previous features to match your preferences.
+- Lock any conversation with fingerprint / screen lock pin
 
 ## Compatibility
-This module is confirmed to work on all android versions above Android 9.0
+This module is confirmed to work on all android versions equal to or above Android 9.0
