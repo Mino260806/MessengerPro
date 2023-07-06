@@ -79,7 +79,7 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="Messenger Pro revived !" />
+            android:value="Enhance Facebook Messenger app with loads of exciting features !" />
         <meta-data
             android:name="xposedminversion"
             android:value="53" />
