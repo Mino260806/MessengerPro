@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:title="@string/pref_toolbar_summon"/>
+    <DropDownPreference
+        android:defaultValue="1"
+        android:key="mpro_toolbar_summon_fingers"
+        android:title="@string/pref_toolbar_summon_fingers"
+        android:entries="@array/swipe_fingers_count"
+        android:entryValues="@array/swipe_fingers_count_values"
+        app:useSimpleSummaryProvider="true" />
+    <DropDownPreference
+        android:defaultValue="LEFT"
+        android:key="mpro_toolbar_summon_direction"
+        android:title="@string/pref_toolbar_summon_direction"
+        android:entries="@array/swipe_direction"
+        android:entryValues="@array/swipe_direction_values"
+        app:useSimpleSummaryProvider="true" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_toolbar_summon_edge"
+        android:summary="@string/use_multi_finger_to_disable"
+        android:title="@string/pref_toolbar_summon_edge" />
+
+    <PreferenceCategory
+        android:title="@string/pref_toolbar_message"/>
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_text_format_toolbar"
+        android:title="@string/pref_toolbar_message_formatting" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_conversation_seen_toolbar"
+        android:title="@string/pref_toolbar_message_seen" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_conversation_typing_indicator_toolbar"
+        android:title="@string/pref_toolbar_message_typing" />
+
+    <PreferenceCategory
+        android:title="@string/pref_toolbar_conv"/>
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_conversation_attach_toolbar"
+        android:title="@string/pref_toolbar_conv_attach" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_conversation_lock_toolbar"
+        android:title="@string/pref_toolbar_conv_lock" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_conversation_copy_threadkey_toolbar"
+        android:title="@string/pref_toolbar_conv_threadkey" />
+
+    <PreferenceCategory
+        android:title="@string/pref_toolbar_settings"/>
+    <SwitchPreference
+        android:defaultValue="true"
+        android:title="@string/pref_toolbar_settings"
+        android:key="mpro_settings_toolbar"
+        android:enabled="false" />
+</PreferenceScreen>

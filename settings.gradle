@@ -1,0 +1,2 @@
+include ':app'
+rootProject.name = "Messenger Pro 2"

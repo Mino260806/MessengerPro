@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="xposedscope">
+        <item>com.facebook.orca</item>
+    </string-array>
+    <!-- Reply Preference -->
+    <string-array name="reply_entries">
+        <item>Reply</item>
+        <item>Reply to all</item>
+    </string-array>
+
+    <string-array name="swipe_fingers_count">
+        <item>@string/finger_count_1</item>
+        <item>@string/finger_count_2</item>
+        <item>@string/finger_count_3</item>
+        <item>@string/finger_count_4</item>
+        <item>@string/finger_count_5</item>
+    </string-array>
+
+    <string-array name="swipe_fingers_count_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="swipe_direction_values">
+        <item>LEFT</item>
+        <item>RIGHT</item>
+        <item>UP</item>
+        <item>DOWN</item>
+    </string-array>
+
+    <string-array name="swipe_direction">
+        <item>@string/left</item>
+        <item>@string/right</item>
+        <item>@string/up</item>
+        <item>@string/down</item>
+    </string-array>
+
+    <string-array name="reply_values">
+        <item>reply</item>
+        <item>reply_all</item>
+    </string-array>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
+    <string name="up">Up</string>
+    <string name="down">Down</string>
+    <string name="finger_count_1">1 finger</string>
+    <string name="finger_count_2">2 fingers</string>
+    <string name="finger_count_3">3 fingers</string>
+    <string name="finger_count_4">4 fingers</string>
+    <string name="finger_count_5">5 fingers</string>
+</resources>

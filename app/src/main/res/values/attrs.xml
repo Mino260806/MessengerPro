@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="colorSemiTransparentOverlay" format="color" />
+    <attr name="colorSurfaceWeak" format="color" />
+    <attr name="colorOnSurfaceWeak" format="color" />
+    <attr name="colorDarkOverlay" format="color" />
+</resources>

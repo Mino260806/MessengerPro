@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:title="@string/pref_unobfuscator"
+        android:key="mpro_advanced_unobfuscator" />
+
+    <Preference
+        android:title="@string/pref_apicodes"
+        android:key="mpro_advanced_apicodes" />
+
+    <Preference
+        android:title="@string/pref_hookstate"
+        android:key="mpro_advanced_hookstate" />
+</PreferenceScreen>

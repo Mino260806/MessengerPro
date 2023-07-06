@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Preference
+        android:key="mpro_root_features"
+        android:title="@string/pref_features"
+        android:summary="@string/pref_features_summary"/>
+
+    <Preference
+        android:key="mpro_root_toolbar"
+        android:title="@string/pref_toolbar"
+        android:summary="@string/pref_toolbar_summary"/>
+
+
+    <Preference
+        android:title="@string/pref_advanced"
+        android:key="mpro_root_advanced"
+        android:summary="For debugging"/>
+
+    <Preference
+        android:title="@string/pref_about"
+        android:key="mpro_root_about" />
+</PreferenceScreen>

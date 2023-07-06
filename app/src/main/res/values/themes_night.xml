@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.AppTheme.Night" parent="Theme.Material3.DayNight">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorOnSurface">#cacaca</item>
+        <item name="colorSemiTransparentOverlay">#80FFFFFF</item>
+        <item name="colorSurfaceWeak">#6E6E6E</item>
+        <item name="colorOnSurfaceWeak">#E6E6E6</item>
+        <item name="colorDarkOverlay">#40FFFFFF</item>
+    </style>
+
+    <style name="AppTheme.Night" parent="Base.AppTheme.Night" />
+</resources>

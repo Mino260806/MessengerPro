@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <EditTextPreference
+        android:title="API_CONVERSATION_ENTER"
+        android:key="API_CONVERSATION_ENTER"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+
+    <EditTextPreference
+        android:title="API_CONVERSATION_LEAVE"
+        android:key="API_CONVERSATION_LEAVE"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+
+    <EditTextPreference
+        android:title="API_NOTIFICATION"
+        android:key="API_NOTIFICATION"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+
+    <EditTextPreference
+        android:title="API_MESSAGE_SEEN"
+        android:key="API_MESSAGE_SEEN"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+</PreferenceScreen>

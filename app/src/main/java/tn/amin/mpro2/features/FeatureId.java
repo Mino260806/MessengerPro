@@ -1,0 +1,18 @@
+package tn.amin.mpro2.features;
+
+public enum FeatureId {
+    INTERNAL_THREADKEY_DETECTOR,
+
+    SETTINGS_LAUNCH,
+    UNSEEN,
+    UNTYPING,
+    TYPING,
+    FORMATTING,
+    FILE_ATTACH,
+    CONV_LOCK,
+    THREADKEY_COPY,
+    DEFAULT_CAMERA,
+
+    TASKER_TYPING_INDICATOR_RECEIVED,
+    TASKER_MESSAGE_RECEIVED,
+}

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:key="category_conversation_key"
+        android:title="@string/pref_category_conversation"/>
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="mpro_conversation_seen"
+        android:title="@string/pref_disable_msg_seen" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="mpro_conversation_typing_indicator"
+        android:title="@string/pref_disable_typing_indicator" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_conversation_lock"
+        android:title="@string/pref_enable_conversation_lock" />
+
+    <PreferenceCategory
+        android:key="category_text_key"
+        android:title="@string/pref_category_text"/>
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_text_format"
+        android:title="@string/pref_enable_formatting" />
+
+    <PreferenceCategory
+        android:key="category_command_key"
+        android:title="Commands"/>
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_commands"
+        android:title="@string/pref_enable_commands" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_commands_send_input"
+        android:title="@string/pref_send_command_input" />
+
+    <PreferenceCategory
+        android:key="category_image_key"
+        android:title="@string/pref_category_image" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="mpro_image_default_camera"
+        android:title="@string/pref_default_camera" />
+
+    <PreferenceCategory
+        android:key="category_other_key"
+        android:title="@string/pref_category_other" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_other_settings_longpress_top"
+        android:title="@string/pref_other_settings_longpress_top" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="mpro_other_allow_logs"
+        android:title="@string/pref_allow_logs" />
+</PreferenceScreen>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <EditTextPreference
+        android:title="TypingIndicatorDispatcher"
+        android:key="TypingIndicatorDispatcher"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="Message/getText"
+        android:key="Message/getText"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="Message-threadKey"
+        android:key="Message-threadKey"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="Message-id"
+        android:key="Message-id"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+</PreferenceScreen>

@@ -1,0 +1,14 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.AppTheme" parent="Theme.Material3.DayNight">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorOnSurface">#3a3a3a</item>
+        <item name="colorSemiTransparentOverlay">#a0000000</item>
+        <item name="colorSurfaceWeak">#BEBEBE</item>
+        <item name="colorOnSurfaceWeak">#3a3a3a</item>
+        <item name="colorDarkOverlay">#66000000</item>
+    </style>
+
+    <style name="AppTheme" parent="Base.AppTheme" />
+</resources>
