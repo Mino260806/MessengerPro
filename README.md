@@ -42,7 +42,7 @@ Note: Messenger Pro is an **LSPosed module**, brought possible to non-rooted dev
 | 12              | ✔    | ❌ [issue](LSPosed/LSPatch#216) |
 | 11              | ✔    | ✔                              |
 | 10              | ✔    | ?                              |
-| 9               | ?    |                                |
+| 9               | ?    | ✔                              |
 | 8               | ?    | ?                              |
 | 7               | ?    | ?                              |
 
