@@ -26,7 +26,7 @@ A powerful mod for **Facebook Messenger** 💬, providing a comprehensive set of
 
 - ... Be Pro 😎
 
-More details in the [wiki](wiki/Features)
+More details in the [wiki](https://github.com/Mino260806/MessengerPro/wiki/Features)
 
 ## Compatibility
 
@@ -50,7 +50,7 @@ If you own an untested device (?), please let us know of messenger pro compatibi
 
 ## Installation Instuctions
 
-See the [wiki](wiki/Install)
+See the [wiki](https://github.com/Mino260806/MessengerPro/wiki/Install)
 
 ## Support the developer
 
