@@ -108,4 +108,12 @@
     <string name="pref_toolbar_summon_edge">From Edge</string>
     <string name="use_multi_finger_to_disable">Select more than 1 finger to disable</string>
     <string name="pref_other_settings_longpress_top">Launch settings by long pressing on top</string>
+    <string name="feature_prevent_seen_description">Prevents seen indicator when enabled</string>
+    <string name="feature_info">Feature Info</string>
+    <string name="feature_prevent_typing_indicator">Prevents typing indicator when enabled</string>
+    <string name="feature_message_formatting">Enables formatting of messages when enabled</string>
+    <string name="feature_launch_settings">Launches Messenger Pro settings</string>
+    <string name="feature_copy_threadkey">Copies the active conversation thread key</string>
+    <string name="feature_conv_lock">Locks the active conversation</string>
+    <string name="feature_attach_file">Attaches any file to the active conversation</string>
 </resources>

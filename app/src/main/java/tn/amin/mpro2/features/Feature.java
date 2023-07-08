@@ -2,6 +2,7 @@ package tn.amin.mpro2.features;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import tn.amin.mpro2.hook.HookId;
 import tn.amin.mpro2.orca.OrcaGateway;
@@ -31,6 +32,11 @@ public abstract class Feature {
         return null;
     }
 
+    @Nullable
+    public @StringRes Integer getToolbarDescription() {
+        return null;
+    }
+    
     @Nullable
     public @DrawableRes Integer getDrawableResource() {
         return null;

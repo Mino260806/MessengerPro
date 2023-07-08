@@ -50,6 +50,12 @@ public class SettingsFeature extends Feature {
 
     @Nullable
     @Override
+    public Integer getToolbarDescription() {
+        return R.string.feature_launch_settings;
+    }
+
+    @Nullable
+    @Override
     public Integer getDrawableResource() {
         return R.drawable.ic_toolbar_settings;
     }

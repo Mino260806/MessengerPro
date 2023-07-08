@@ -52,6 +52,12 @@ public class UntypingFeature extends Feature
 
     @Nullable
     @Override
+    public Integer getToolbarDescription() {
+        return R.string.feature_prevent_typing_indicator;
+    }
+
+    @Nullable
+    @Override
     public Integer getDrawableResource() {
         return R.drawable.ic_toolbar_typing;
     }

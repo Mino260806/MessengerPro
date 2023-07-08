@@ -3,7 +3,9 @@ package tn.amin.mpro2.ui.toolbar;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +129,8 @@ public class MProToolbar extends LinearLayout implements
                 if (feature.getType() == FeatureType.CHECKABLE_STATE) {
                     CheckBoxToolbarButton button = addCheckboxButton(
                             Objects.requireNonNull(feature.getDrawableResource()),
-                            feature.getPreferenceKey());
+                            feature.getPreferenceKey(),
+                            feature.getToolbarDescription());
                     button.setStateProvider(feature::isEnabled);
                     button.setActivationListener(feature::setEnabled);
                 }
@@ -137,6 +141,7 @@ public class MProToolbar extends LinearLayout implements
                     SimpleToolbarButton button = addNormalButton(
                             Objects.requireNonNull(feature.getDrawableResource()),
                             feature.getPreferenceKey(),
+                            feature.getToolbarDescription(),
                             last);
                     button.setOnClickListener(view -> {
                         hide();
@@ -198,16 +203,16 @@ public class MProToolbar extends LinearLayout implements
         mSeparators.add(sep);
     }
 
-    private SimpleToolbarButton addNormalButton(@DrawableRes int iconId, String key) {
-        return addNormalButton(iconId, key, false);
+    private SimpleToolbarButton addNormalButton(@DrawableRes int iconId, String key, @Nullable @StringRes Integer description) {
+        return addNormalButton(iconId, key, description, false);
     }
 
-    private SimpleToolbarButton addNormalButton(@DrawableRes int iconId, String key, boolean last) {
+    private SimpleToolbarButton addNormalButton(@DrawableRes int iconId, String key, @Nullable @StringRes Integer description, boolean last) {
         SimpleToolbarButton button = new SimpleToolbarButton(getContext());
 
         button.setIcon(iconId, buttonSize, resources);
         button.setTag(key);
-        configAndAddButton(button, last);
+        configAndAddButton(button, description, last);
 
         mButtons.add(button);
         mNextSeparatorKeys.add(key);
@@ -215,16 +220,16 @@ public class MProToolbar extends LinearLayout implements
         return button;
     }
 
-    private CheckBoxToolbarButton addCheckboxButton(@DrawableRes int iconId, String key) {
-        return addCheckboxButton(iconId, key, false);
+    private CheckBoxToolbarButton addCheckboxButton(@DrawableRes int iconId, String key, @Nullable @StringRes Integer description) {
+        return addCheckboxButton(iconId, key, description, false);
     }
 
-    private CheckBoxToolbarButton addCheckboxButton(@DrawableRes int iconId, String key, boolean last) {
+    private CheckBoxToolbarButton addCheckboxButton(@DrawableRes int iconId, String key, @Nullable @StringRes Integer description, boolean last) {
         CheckBoxToolbarButton button = new CheckBoxToolbarButton(getContext());
 
         button.setIcon(iconId, buttonSize, resources);
         button.setTag(key);
-        configAndAddButton(button, last);
+        configAndAddButton(button, description, last);
 
         mButtons.add(button);
         mNextSeparatorKeys.add(key);
@@ -232,8 +237,20 @@ public class MProToolbar extends LinearLayout implements
         return button;
     }
 
-    private void configAndAddButton(View button, boolean last) {
+    private void configAndAddButton(View button, @Nullable @StringRes Integer description, boolean last) {
         button.setForegroundGravity(Gravity.CENTER);
+        button.setLongClickable(true);
+        if (description != null) {
+            button.setOnLongClickListener((b) -> {
+                new AlertDialog.Builder(getContext())
+                        .setTitle(resources.getText(R.string.feature_info))
+                        .setMessage(resources.getText(description))
+                        .setPositiveButton(resources.getString(android.R.string.ok), (d, i) -> {})
+                        .show();
+                return true;
+            });
+        }
+
         addView(button, getButtonLayoutParams(last));
     }
 

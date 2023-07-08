@@ -49,6 +49,12 @@ public class CopyThreadKeyFeature extends Feature {
 
     @Nullable
     @Override
+    public Integer getToolbarDescription() {
+        return R.string.feature_copy_threadkey;
+    }
+
+    @Nullable
+    @Override
     public Integer getDrawableResource() {
         return R.drawable.ic_toolbar_clipboard;
     }

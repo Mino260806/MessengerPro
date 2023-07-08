@@ -80,6 +80,12 @@ public class ConversationLockFeature extends Feature
 
     @Nullable
     @Override
+    public Integer getToolbarDescription() {
+        return R.string.feature_conv_lock;
+    }
+
+    @Nullable
+    @Override
     public Integer getDrawableResource() {
         return R.drawable.ic_toolbar_lock;
     }

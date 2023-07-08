@@ -54,6 +54,12 @@ public class FormattingFeature extends Feature
 
     @Nullable
     @Override
+    public Integer getToolbarDescription() {
+        return R.string.feature_message_formatting;
+    }
+
+    @Nullable
+    @Override
     public Integer getDrawableResource() {
         return R.drawable.ic_toolbar_formatting;
     }
