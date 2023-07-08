@@ -1,14 +1,17 @@
 package tn.amin.mpro2.features.util.message.formatting;
+
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-import tn.amin.mpro2.features.util.message.formatting.conversion.ShiftConversionMethod;
-import tn.amin.mpro2.file.StorageConstants;
 import tn.amin.mpro2.features.util.message.formatting.conversion.AddConversionMethod;
 import tn.amin.mpro2.features.util.message.formatting.conversion.ConversionMethod;
 import tn.amin.mpro2.features.util.message.formatting.conversion.ReplaceConversionMethod;
+import tn.amin.mpro2.features.util.message.formatting.conversion.ShiftConversionMethod;
+import tn.amin.mpro2.file.StorageConstants;
 
 public class MessageUnicodeConverter
 {

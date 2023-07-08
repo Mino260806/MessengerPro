@@ -1,7 +1,5 @@
 package tn.amin.mpro2.messaging;
 
-import java.io.File;
-
 import tn.amin.mpro2.orca.datatype.MediaAttachment;
 
 public interface MessageSender {

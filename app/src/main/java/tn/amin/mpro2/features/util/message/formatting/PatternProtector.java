@@ -1,7 +1,6 @@
 package tn.amin.mpro2.features.util.message.formatting;
 
 import android.text.Editable;
-import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;

@@ -5,10 +5,8 @@ import tn.amin.mpro2.features.FeatureId;
 import tn.amin.mpro2.features.FeatureType;
 import tn.amin.mpro2.hook.HookId;
 import tn.amin.mpro2.hook.all.MessageReceivedHook;
-import tn.amin.mpro2.hook.all.TypingIndicatorReceivedHook;
 import tn.amin.mpro2.orca.OrcaGateway;
 import tn.amin.mpro2.tasker.ActivityOnMessageConfig;
-import tn.amin.mpro2.tasker.ActivityOnUserTypingConfig;
 
 public class TaskerEventMessageFeature extends Feature
         implements MessageReceivedHook.MessageReceivedListener {

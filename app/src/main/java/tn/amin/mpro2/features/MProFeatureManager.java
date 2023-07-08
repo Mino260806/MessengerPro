@@ -1,14 +1,14 @@
 package tn.amin.mpro2.features;
 
 import tn.amin.mpro2.features.action.AttachFileFeature;
+import tn.amin.mpro2.features.action.ConversationLockFeature;
 import tn.amin.mpro2.features.action.CopyThreadKeyFeature;
 import tn.amin.mpro2.features.action.SettingsFeature;
+import tn.amin.mpro2.features.internal.ThreadKeyDetectorFeature;
 import tn.amin.mpro2.features.state.CommandsFeature;
-import tn.amin.mpro2.features.action.ConversationLockFeature;
 import tn.amin.mpro2.features.state.DefaultCameraFeature;
 import tn.amin.mpro2.features.state.FormattingFeature;
 import tn.amin.mpro2.features.state.UnseenFeature;
-import tn.amin.mpro2.features.internal.ThreadKeyDetectorFeature;
 import tn.amin.mpro2.features.state.UntypingFeature;
 import tn.amin.mpro2.features.tasker.TaskerEventMessageFeature;
 import tn.amin.mpro2.features.tasker.TaskerEventTypingIndicatorFeature;

@@ -5,10 +5,8 @@ import android.content.SharedPreferences;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Predicate;
 
-import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.hook.state.HookState;
 import tn.amin.mpro2.hook.state.HookStateTracker;
 import tn.amin.mpro2.orca.OrcaGateway;

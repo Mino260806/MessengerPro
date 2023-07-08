@@ -1,5 +1,14 @@
 package tn.amin.mpro2.features.util.message.command;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
+import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
+import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+
 import android.os.Handler;
 import android.os.Looper;
 
@@ -8,22 +17,17 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import static com.mojang.brigadier.arguments.IntegerArgumentType.*;
-import static com.mojang.brigadier.arguments.StringArgumentType.*;
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
-import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
-
 import java.io.File;
 import java.util.ArrayList;
 
 import de.robv.android.xposed.XposedBridge;
 import tn.amin.mpro2.R;
+import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.util.message.command.api.ApiResult;
 import tn.amin.mpro2.features.util.message.command.api.DuckDuckGoAPI;
 import tn.amin.mpro2.features.util.message.command.api.FreeDictionaryAPI;
 import tn.amin.mpro2.features.util.message.command.api.RedditAPI;
 import tn.amin.mpro2.features.util.message.command.api.WikipediaAPI;
-import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.file.FileHelper;
 import tn.amin.mpro2.messaging.MessageSender;
 import tn.amin.mpro2.orca.OrcaGateway;

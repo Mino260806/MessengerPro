@@ -1,13 +1,11 @@
 package tn.amin.mpro2.ui.toolbar;
 
-import android.app.Activity;
 import android.view.MotionEvent;
 
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.ui.touch.MultiFingerSwipeDetector;
 import tn.amin.mpro2.ui.touch.SwipeDirection;
 import tn.amin.mpro2.ui.touch.TapDetector;
-import tn.amin.mpro2.util.DimUtil;
 
 public class ToolbarGestureDetectorHelper implements MultiFingerSwipeDetector.OnSwipeListener, TapDetector.OnTapListener {
     private final SwipeableToolbar mToolbar;

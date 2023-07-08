@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import tn.amin.mpro2.debug.Logger;
 
 public class BroadcastReceiverHook {
     public BroadcastReceiverHook(String broadcastReceiverName, ClassLoader classLoader,

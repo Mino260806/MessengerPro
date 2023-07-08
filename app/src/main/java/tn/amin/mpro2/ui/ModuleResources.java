@@ -15,7 +15,6 @@ import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 
 import tn.amin.mpro2.R;
-import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.util.DimUtil;
 
 public class ModuleResources {

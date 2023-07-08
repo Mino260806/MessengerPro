@@ -1,10 +1,5 @@
 package tn.amin.mpro2.util;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.ToIntFunction;
-
 public class IntRange {
     public int start;
     public int end;

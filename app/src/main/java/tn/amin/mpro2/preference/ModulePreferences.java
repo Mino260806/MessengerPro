@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import tn.amin.mpro2.file.StorageConstants;
 import tn.amin.mpro2.debug.Logger;
+import tn.amin.mpro2.file.StorageConstants;
 import tn.amin.mpro2.ui.touch.SwipeDirection;
 
 

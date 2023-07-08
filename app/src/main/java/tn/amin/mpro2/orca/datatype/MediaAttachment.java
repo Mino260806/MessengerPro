@@ -1,7 +1,5 @@
 package tn.amin.mpro2.orca.datatype;
 
-import org.apache.commons.io.FilenameUtils;
-
 import java.io.File;
 
 import tn.amin.mpro2.orca.builder.AttachmentBuilder;

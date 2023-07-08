@@ -5,19 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import androidx.appcompat.widget.AppCompatImageButton;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 import tn.amin.mpro2.R;
-import tn.amin.mpro2.hook.HookId;
 import tn.amin.mpro2.hook.state.HookState;
 
 public class HookStateAdapter extends BaseAdapter {

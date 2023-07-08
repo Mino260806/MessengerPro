@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import tn.amin.mpro2.debug.Logger;
-
 public class MapSharedPreferences implements SharedPreferences {
     private final HashMap<String, Object> mMap;
 

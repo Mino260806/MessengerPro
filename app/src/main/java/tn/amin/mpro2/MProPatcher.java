@@ -40,10 +40,8 @@ import tn.amin.mpro2.orca.connector.MailboxConnector;
 import tn.amin.mpro2.orca.datatype.GenericMessage;
 import tn.amin.mpro2.preference.MapSharedPreferences;
 import tn.amin.mpro2.preference.ModulePreferences;
-import tn.amin.mpro2.ui.touch.LongPressDetector;
-import tn.amin.mpro2.ui.touch.MultiFingerSwipeDetector;
 import tn.amin.mpro2.ui.toolbar.MProToolbar;
-import tn.amin.mpro2.ui.toolbar.ToolbarGestureDetectorHelper;
+import tn.amin.mpro2.ui.touch.LongPressDetector;
 import tn.amin.mpro2.util.Range;
 
 

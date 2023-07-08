@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.VectorDrawable;
@@ -16,11 +15,9 @@ import android.view.View;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import tn.amin.mpro2.R;
 import tn.amin.mpro2.ui.ModuleResources;
-import tn.amin.mpro2.util.BitmapUtil;
 
 @SuppressLint("AppCompatCustomView")
 public class SimpleToolbarButton extends View implements View.OnTouchListener {

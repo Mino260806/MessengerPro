@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import tn.amin.mpro2.util.IntRange;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.orca.datatype.GenericMessage;
 import tn.amin.mpro2.orca.datatype.MediaAttachment;
@@ -23,6 +22,7 @@ import tn.amin.mpro2.text.parser.node.LinkNode;
 import tn.amin.mpro2.text.parser.node.Node;
 import tn.amin.mpro2.text.parser.node.scanner.LinkNodeScanner;
 import tn.amin.mpro2.text.parser.node.scanner.SimpleNodeScanner;
+import tn.amin.mpro2.util.IntRange;
 
 public class MessageParser {
     private final TextParser mParser;

@@ -5,7 +5,6 @@ import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
 
-import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.util.Range;
 
 public class LongPressDetector {

@@ -2,7 +2,6 @@ package tn.amin.mpro2.hook.helper;
 
 import android.content.Intent;
 
-
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;

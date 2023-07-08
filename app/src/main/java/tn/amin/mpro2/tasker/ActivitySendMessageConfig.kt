@@ -18,9 +18,8 @@ import com.joaomgcd.taskerpluginlibrary.runner.TaskerPluginResult
 import com.joaomgcd.taskerpluginlibrary.runner.TaskerPluginResultError
 import com.joaomgcd.taskerpluginlibrary.runner.TaskerPluginResultSucess
 import org.apache.commons.lang3.math.NumberUtils
-import tn.amin.mpro2.orca.OrcaBridge
 import tn.amin.mpro2.R
-import java.lang.NullPointerException
+import tn.amin.mpro2.orca.OrcaBridge
 
 class ActivitySendMessageConfig : Activity(), TaskerPluginConfig<SendMessageInput> {
     override val context get() = applicationContext

@@ -1,6 +1,5 @@
 package tn.amin.mpro2.features.util.biometric;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.hardware.biometrics.BiometricPrompt;

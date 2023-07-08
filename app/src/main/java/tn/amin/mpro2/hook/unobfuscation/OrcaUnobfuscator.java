@@ -2,8 +2,6 @@ package tn.amin.mpro2.hook.unobfuscation;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -25,7 +23,6 @@ import io.github.neonorbit.dexplore.result.ClassData;
 import io.github.neonorbit.dexplore.result.FieldData;
 import io.github.neonorbit.dexplore.result.MethodData;
 import io.github.neonorbit.dexplore.util.DexLog;
-import tn.amin.mpro2.constants.OrcaInfo;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.file.StorageConstants;
 
