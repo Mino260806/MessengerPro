@@ -38,8 +38,8 @@ Note: Messenger Pro is an **LSPosed module**, brought possible to non-rooted dev
 
 | Android Version | Root | No Root                        |
 |:---------------:|:---- | ------------------------------ |
-| 13              | ✔    | ❌ [issue](LSPosed/LSPatch#216) |
-| 12              | ✔    | ❌ [issue](LSPosed/LSPatch#216) |
+| 13              | ✔    | ❌ [issue]([LSPatch#216](https://github.com/LSPosed/LSPatch/issues/216)) |
+| 12              | ✔    | ❌ [issue]([LSPatch#216](https://github.com/LSPosed/LSPatch/issues/216)) |
 | 11              | ✔    | ✔                              |
 | 10              | ✔    | ?                              |
 | 9               | ?    | ✔                              |
