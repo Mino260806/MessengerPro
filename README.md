@@ -11,8 +11,8 @@ A powerful mod for **Facebook Messenger** 💬, providing a comprehensive set of
 - Prevent message seen indicator (houray 🥳)
 
 - Prevent typing indicator
-  
-  Format your messages with bold, italic, underline, and more
+
+- Format your messages with bold, italic, underline, and more
 
 - Make use of powerful commands (define words, search wikipedia, send empty message)
 
@@ -26,18 +26,34 @@ A powerful mod for **Facebook Messenger** 💬, providing a comprehensive set of
 
 - ... Be Pro 😎
 
+More details in the [wiki](wiki/Features)
+
 ## Compatibility
 
-Android 7+
+Android Nougat 7+
 
 Root: optional
 
 Note: Messenger Pro is an **LSPosed module**, brought possible to non-rooted devices using LSPatch
 
+| Android Version | Root | No Root                        |
+|:---------------:|:---- | ------------------------------ |
+| 13              | ✔    | ❌ [issue](LSPosed/LSPatch#216) |
+| 12              | ✔    | ❌ [issue](LSPosed/LSPatch#216) |
+| 11              | ✔    | ✔                              |
+| 10              | ✔    | ?                              |
+| 9               | ?    |                                |
+| 8               | ?    | ?                              |
+| 7               | ?    | ?                              |
+
+If you own an untested device (?), please let us know of messenger pro compatibility
+
 ## Installation Instuctions
 
-In the wiki
+See the [wiki](wiki/Install)
 
+## Support the developer
 
+Your support will encourage me to continue refining and expanding Messenger Pro furthermore!
 
-
+[Patreon Page]([patreon.com/**AminGuermazi**](https://patreon.com/AminGuermazi))
