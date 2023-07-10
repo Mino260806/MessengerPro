@@ -8,9 +8,9 @@ A powerful mod for **Facebook Messenger** 💬, providing a comprehensive set of
 
 ## Features
 
-- Prevent message seen indicator (houray 🥳)
+- Prevent message <ins>seen indicator</ins> (houray 🥳)
 
-- Prevent typing indicator
+- Prevent <ins>typing indicator</ins>
 
 - Format your messages with bold, italic, underline, and more
 
@@ -22,7 +22,7 @@ A powerful mod for **Facebook Messenger** 💬, providing a comprehensive set of
 
 - Use default camera app instead of messenger integrated camera
 
-- Is a <u>Tasker Plugin</u> which adds useful events (message received, typing indicator received, ...) and exclusive actions (send message, react to message, ...)
+- Is a <ins>Tasker Plugin</ins> which adds useful events (message received, typing indicator received, ...) and exclusive actions (send message, react to message, ...)
 
 - ... Be Pro 😎
 
@@ -36,15 +36,15 @@ Root: optional
 
 Note: Messenger Pro is an **LSPosed module**, brought possible to non-rooted devices using LSPatch
 
-| Android Version | Root | No Root                        |
-|:---------------:|:---- | ------------------------------ |
+| Android Version | Root | No Root                                                        |
+|:---------------:|:---- | -------------------------------------------------------------- |
 | 13              | ✔    | ❌ [LSPatch#216](https://github.com/LSPosed/LSPatch/issues/216) |
 | 12              | ✔    | ❌ [LSPatch#216](https://github.com/LSPosed/LSPatch/issues/216) |
-| 11              | ✔    | ✔                              |
-| 10              | ✔    | ?                              |
-| 9               | ?    | ✔                              |
-| 8               | ?    | ?                              |
-| 7               | ?    | ?                              |
+| 11              | ✔    | ✔                                                              |
+| 10              | ✔    | ?                                                              |
+| 9               | ?    | ✔                                                              |
+| 8               | ?    | ?                                                              |
+| 7               | ?    | ?                                                              |
 
 If you own an untested device (?), please let us know of messenger pro compatibility
 
