@@ -9,8 +9,8 @@ android {
         applicationId "tn.amin.mpro2"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 4
-        versionName "1.0.3-dev"
+        versionCode 5
+        versionName "1.0.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
