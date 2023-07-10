@@ -80,6 +80,8 @@ public class AboutActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        // Causes crash on some device, no need for assets
+        if (true) return;
         if (!mIsRequestingStorage) {
             if (!hasAccessToOrcaStorage()) {
                 mIsRequestingStorage = true;
