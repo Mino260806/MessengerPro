@@ -36,6 +36,7 @@ import tn.amin.mpro2.features.FeatureType;
 import tn.amin.mpro2.features.action.SettingsFeature;
 import tn.amin.mpro2.preference.ModulePreferences;
 import tn.amin.mpro2.ui.ModuleResources;
+import tn.amin.mpro2.ui.SafeOverlayAttacher;
 import tn.amin.mpro2.ui.listener.DraggableOnTouchListener;
 import tn.amin.mpro2.ui.touch.SwipeDirection;
 import tn.amin.mpro2.util.Range;
@@ -362,13 +363,31 @@ public class MProToolbar extends LinearLayout implements
         toolbar.setVisibilityProvider(new MProToolbarVisibilityProvider(pref));
         toolbar.setSummonPropertiesProvider(new MProToolbarSummonPropertiesProvider(pref));
 
-        toolbar.attachToWindow(activity, initialX, initialY);
+        toolbar.attachToWindow(initialX, initialY);
         return toolbar;
     }
 
-    public void attachToWindow(Activity activity, int initialX, int initialY) {
-        WindowAttacher windowAttacher = new WindowAttacher(activity, initialX, initialY);
-        windowAttacher.attach();
+    public void attachToWindow(int initialX, int initialY) {
+        initLayoutParams(initialX, initialY);
+
+        SafeOverlayAttacher attacher = new SafeOverlayAttacher(this, mLayoutParams);
+        attacher.setOnOverlayAttachedListener(this::confirmInitialized);
+        attacher.attach();
+    }
+
+    private void initLayoutParams(int initialX, int initialY) {
+        mLayoutParams = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT);
+
+        mLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+        mLayoutParams.x = initialX;
+        mLayoutParams.y = initialY;
     }
 
     public void reloadAll() {
@@ -411,49 +430,5 @@ public class MProToolbar extends LinearLayout implements
                 mSummonPropertiesProvider.getSwipeDirection(),
                 mSummonPropertiesProvider.getFromEdge(),
                 mScreenWidth, mScreenHeight);
-    }
-
-    private class WindowAttacher implements Runnable {
-        private final Activity activity;
-        private final int initialY;
-
-        private final int initialX;
-
-        private final Handler mHandler = new Handler(Looper.getMainLooper());
-
-        public WindowAttacher(Activity activity, int initialX, int initialY) {
-            this.activity = activity;
-            this.initialX = initialX;
-            this.initialY = initialY;
-        }
-
-        public void attach() {
-            mHandler.postDelayed(this, 500);
-        }
-        @Override
-        public void run() {
-            mLayoutParams = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                            | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-                            | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                    PixelFormat.TRANSLUCENT);
-
-            mLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
-            mLayoutParams.x = initialX;
-            mLayoutParams.y = initialY;
-
-            try {
-                mWindowManager.addView(MProToolbar.this, mLayoutParams);
-                confirmInitialized();
-            }
-            catch (WindowManager.BadTokenException e) {
-                Logger.info("Toolbar adding failed, trying again in 1s...");
-                mHandler.postDelayed(this, 1000);
-            }
-        }
-
     }
 }

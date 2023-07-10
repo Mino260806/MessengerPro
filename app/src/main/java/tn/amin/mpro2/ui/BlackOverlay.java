@@ -14,29 +14,27 @@ public class BlackOverlay {
         blackOverlay.setBackgroundColor(Color.BLACK);
         blackOverlay.setAlpha(1f);
 
-        new Handler(Looper.getMainLooper()).post(() -> {
-            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
-                            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-                    PixelFormat.TRANSLUCENT
-            );
-
-            windowManager.addView(blackOverlay, params);
-        });
+        SafeOverlayAttacher attacher = new SafeOverlayAttacher(blackOverlay, getLayoutParams());
+        blackOverlay.setTag(attacher);
+        attacher.attach();
 
         return blackOverlay;
     }
 
     public static void remove(View blackOverlay) {
-        new Handler(Looper.getMainLooper()).post(() -> {
-            WindowManager windowManager = (WindowManager) blackOverlay.getContext().getSystemService(Context.WINDOW_SERVICE);
+        SafeOverlayAttacher attacher = (SafeOverlayAttacher) blackOverlay.getTag();
+        attacher.detach();
+    }
 
-            windowManager.removeView(blackOverlay);
-        });
+    public static WindowManager.LayoutParams getLayoutParams() {
+        return new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                PixelFormat.TRANSLUCENT
+        );
     }
 }

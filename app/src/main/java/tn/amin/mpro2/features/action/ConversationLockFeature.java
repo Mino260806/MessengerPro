@@ -65,6 +65,7 @@ public class ConversationLockFeature extends Feature
             }
         }, () -> {
             gateway.getActivity().finishAffinity();
+            System.exit(0);
         }, false);
 
         if (!canSkip) {
