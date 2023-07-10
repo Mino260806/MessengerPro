@@ -101,7 +101,7 @@
     <string name="take_me">Take me!</string>
     <string name="dont_show_again">Don\'t show</string>
     <string name="later">Later</string>
-    <string name="welcome_to_mpro_message">Welcome To Messenger Pro!\nSwipe from the right and explore the variety of features that the module has to offer.\nEnjoy 😎</string>
+    <string name="welcome_to_mpro_message">Welcome To Messenger Pro!\nPlease refer to our Usage Guide if you don\'t know how to start.\nEnjoy 😎</string>
     <string name="pref_toolbar_summon">Summon Toolbar</string>
     <string name="pref_toolbar_summon_fingers">Fingers Count</string>
     <string name="pref_toolbar_summon_direction">Swipe Direction</string>

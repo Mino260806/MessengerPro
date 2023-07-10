@@ -250,7 +250,11 @@ public class MProPatcher implements
 
     private void showWelcomeDialog() {
         showDialog(buildDialog(R.string.app_name, R.string.welcome_to_mpro_message)
-                .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {}));
+                .setPositiveButton(android.R.string.ok, (d, i) -> {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(ModuleInfo.LINK_GITHUB_WIKI_USAGE_GUIDE));
+                    getActivity().startActivity(browserIntent);
+                })
+                .setNegativeButton(android.R.string.cancel, (d, i) -> {}));
     }
 
     private void showWarningDialog(@StringRes int message) {
