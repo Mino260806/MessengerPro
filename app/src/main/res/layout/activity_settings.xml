@@ -10,7 +10,7 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_gravity="end|bottom"
         android:id="@+id/fab"
-        android:src="@drawable/ic_baseline_device_hub_24"
+        android:src="@drawable/ic_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp" />
