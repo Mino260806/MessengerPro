@@ -51,9 +51,13 @@ public class SafeOverlayAttacher implements Runnable {
     public void run() {
         try {
             if (shouldAttach) {
-                mWindowManager.addView(mView, mLayoutParams);
-                if (mListener != null)
-                    mListener.onOverlayAttached();
+                if (mView.getWindowToken() != null) {
+                    mWindowManager.addView(mView, mLayoutParams);
+                    if (mListener != null)
+                        mListener.onOverlayAttached();
+                } else {
+                    Logger.info("Toolbar already added, skipping");
+                }
             } else {
                 if (mView.getWindowToken() != null) {
                     mWindowManager.removeView(mView);
