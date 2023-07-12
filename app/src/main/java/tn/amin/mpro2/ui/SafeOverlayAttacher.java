@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
+import androidx.core.view.ViewCompat;
+
 import tn.amin.mpro2.debug.Logger;
 
 public class SafeOverlayAttacher implements Runnable {
@@ -49,24 +51,35 @@ public class SafeOverlayAttacher implements Runnable {
 
     @Override
     public void run() {
+        boolean success = false;
         try {
             if (shouldAttach) {
-                if (mView.getWindowToken() != null) {
-                    mWindowManager.addView(mView, mLayoutParams);
-                    if (mListener != null)
-                        mListener.onOverlayAttached();
-                } else {
-                    Logger.info("Toolbar already added, skipping");
+                if (ViewCompat.isAttachedToWindow(mView)) {
+                    Logger.info("Overlay already added, removing and adding again...");
+                    mWindowManager.removeView(mView);
                 }
+
+                Logger.info("Adding overlay to WindowManager");
+                mWindowManager.addView(mView, mLayoutParams);
+                if (mListener != null)
+                    mListener.onOverlayAttached();
             } else {
-                if (mView.getWindowToken() != null) {
+                if (ViewCompat.isAttachedToWindow(mView)) {
                     mWindowManager.removeView(mView);
                 }
             }
+            success = true;
         } catch (WindowManager.BadTokenException e) {
-            Logger.info("Overlay adding/removing failed, trying again in " + mDelay + "ms...");
+            Logger.info("Overlay adding/removing failed");
             Logger.verbose(Log.getStackTraceString(e));
-            mHandler.postDelayed(this, mDelay);
+        } catch (IllegalStateException e) {
+            Logger.info("Overlay already in WindowManager ?");
+            Logger.verbose(Log.getStackTraceString(e));
+            mWindowManager.removeView(mView);
+        } finally {
+            if (!success) {
+                mHandler.postDelayed(this, mDelay);
+            }
         }
     }
 
