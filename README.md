@@ -34,17 +34,17 @@ Android Nougat 7+
 
 Root: optional
 
-Note: Messenger Pro is an **LSPosed module**, brought possible to non-rooted devices using LSPatch
+Note: Messenger Pro is an **LSPosed module**, brought possible to non-rooted devices using LSPatch (+ MRVPatcher)
 
-| Android Version | Root | No Root                                                        |
-|:---------------:|:---- | -------------------------------------------------------------- |
-| 13              | ✔    | ❌ [LSPatch#216](https://github.com/LSPosed/LSPatch/issues/216) |
-| 12              | ✔    | ❌ [LSPatch#216](https://github.com/LSPosed/LSPatch/issues/216) |
-| 11              | ✔    | ✔                                                              |
-| 10              | ✔    | ?                                                              |
-| 9               | ?    | ✔                                                              |
-| 8               | ?    | ?                                                              |
-| 7               | ?    | ?                                                              |
+| Android Version | Root | No Root |
+|:---------------:|:---- | ------- |
+| 13              | ✔    | ?       |
+| 12              | ✔    | ✔       |
+| 11              | ✔    | ✔       |
+| 10              | ✔    | ?       |
+| 9               | ?    | ✔       |
+| 8               | ?    | ?       |
+| 7               | ?    | ?       |
 
 If you own an untested device (?), please let us know of messenger pro compatibility
 
@@ -61,3 +61,11 @@ Have any questions ? Ask me on [telegram](https://t.me/MProSupport)
 Your support will encourage me to continue refining and expanding Messenger Pro furthermore!
 
 [Patreon Page]([patreon.com/**AminGuermazi**](https://patreon.com/AminGuermazi))
+
+
+
+## Credits
+
+- [LSPosed Team](https://github.com/LSPosed/LSPosed) : for their amazing LSPosed framework along with LSPatch
+
+- [NeonOrbit](https://github.com/NeonOrbit) : for developing [Dexplore](https://github.com/NeonOrbit/Dexplore), [MRVPatcher](https://github.com/NeonOrbit/MRVPatchManager), and for his outstanding support
