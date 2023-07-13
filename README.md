@@ -52,6 +52,10 @@ If you own an untested device (?), please let us know of messenger pro compatibi
 
 See the [wiki](https://github.com/Mino260806/MessengerPro/wiki/Install)
 
+## Telegram Support
+
+Have any questions ? Ask me on [telegram](https://t.me/MProSupport)
+
 ## Support the developer
 
 Your support will encourage me to continue refining and expanding Messenger Pro furthermore!
