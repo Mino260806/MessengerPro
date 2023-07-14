@@ -3,6 +3,7 @@ package tn.amin.mpro2;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -253,8 +254,11 @@ public class MProPatcher implements
                 .setPositiveButton(android.R.string.ok, (d, i) -> {
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(ModuleInfo.LINK_GITHUB_WIKI_USAGE_GUIDE));
                     getActivity().startActivity(browserIntent);
+                    showProgressUntilSetupFinished();
                 })
-                .setNegativeButton(android.R.string.cancel, (d, i) -> {}));
+                .setNegativeButton(android.R.string.cancel, (d, i) -> {
+                    showProgressUntilSetupFinished();
+                }));
     }
 
     private void showWarningDialog(@StringRes int message) {
@@ -292,6 +296,15 @@ public class MProPatcher implements
                     .setNegativeButton(gateway.res.getString(R.string.dont_show_again), (dialogInterface, i) -> {
                         gateway.pref.setDoNotDisplayPatreon(true);
                     }));
+    }
+
+    private void showProgressUntilSetupFinished() {
+        if (!mSetupFinished) {
+            ProgressDialog dialog = ProgressDialog.show(getContext(),
+                    gateway.res.getString(R.string.deobfuscation_loading_title),
+                    gateway.res.getString(R.string.deobfuscation_loading_message));
+            doOnSetupFinished(dialog::dismiss);
+        }
     }
 
     /**
