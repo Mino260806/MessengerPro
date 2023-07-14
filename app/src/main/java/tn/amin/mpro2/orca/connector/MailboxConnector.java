@@ -8,6 +8,7 @@ import java.util.Set;
 
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.hook.all.MessageSentHook;
 import tn.amin.mpro2.orca.builder.AttachmentBuilder;
@@ -40,7 +41,7 @@ public class MailboxConnector {
     }
 
     public void sendText(final TextMessage textMessage, final long threadKey, final int delay) {
-        final Class<?> MailboxCoreJNI = XposedHelpers.findClass("com.facebook.core.mca.MailboxCoreJNI", classLoader);
+        final Class<?> MailboxCoreJNI = XposedHelpers.findClass(OrcaClassNames.MAILBOX_CORE_JNI, classLoader);
         final Set<Method> disptachList = XposedHilfer.findAllMethods(MailboxCoreJNI, MessageSentHook.DISPATCH_METHOD);
         if (disptachList.size() != 1)
             Logger.error(new RuntimeException("dispatchList size (" + disptachList.size() + ") != 1"));
@@ -66,7 +67,7 @@ public class MailboxConnector {
     }
 
     public void reactToMessage(final String reaction, final String messageId, final long threadKey, final int delay) {
-        final Class<?> MailboxCoreJNI = XposedHelpers.findClass("com.facebook.sdk.mca.MailboxSDKJNI", classLoader);
+        final Class<?> MailboxCoreJNI = XposedHelpers.findClass(OrcaClassNames.MAILBOX_SDK_JNI, classLoader);
         final Set<Method> disptachList = XposedHilfer.findAllMethods(MailboxCoreJNI, "dispatchVJOOOOOOOO");
         if (disptachList.size() != 1)
             Logger.error(new RuntimeException("dispatchList size (" + disptachList.size() + ") != 1"));
@@ -92,7 +93,7 @@ public class MailboxConnector {
     public void sendSticker(final long stickerId, final long threadKey, final int delay, final String replyId) {
         Logger.info("Sending sticker " + stickerId + "!");
 
-        final Class<?> MailboxCoreJNI = XposedHelpers.findClass("com.facebook.core.mca.MailboxCoreJNI", classLoader);
+        final Class<?> MailboxCoreJNI = XposedHelpers.findClass(OrcaClassNames.MAILBOX_CORE_JNI, classLoader);
         final Set<Method> disptachList = XposedHilfer.findAllMethods(MailboxCoreJNI, "dispatchVIIIJJOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         if (disptachList.size() != 1)
             Logger.error(new RuntimeException("dispatchList size (" + disptachList.size() + ") != 1"));
@@ -126,7 +127,7 @@ public class MailboxConnector {
     public void sendAttachment(MediaAttachment attachment, final long threadKey, final int delay, final String replyId) {
         // TODO find another method that supports replyId
 
-        final Class<?> MailboxSDKJNI = XposedHelpers.findClass("com.facebook.sdk.mca.MailboxSDKJNI", classLoader);
+        final Class<?> MailboxSDKJNI = XposedHelpers.findClass(OrcaClassNames.MAILBOX_SDK_JNI, classLoader);
         final Set<Method> disptachList = XposedHilfer.findAllMethods(MailboxSDKJNI, "dispatchVIJOOOOOOOOOOOOZ");
         if (disptachList.size() != 1)
             Logger.error(new RuntimeException("dispatchList size (" + disptachList.size() + ") != 1"));
@@ -158,7 +159,7 @@ public class MailboxConnector {
     }
 
     private void executeAsync(Runnable runnable) {
-        final Class<?> Execution = XposedHelpers.findClass("com.facebook.msys.mci.Execution", classLoader);
+        final Class<?> Execution = XposedHelpers.findClass(OrcaClassNames.MCI_EXECUTION, classLoader);
         final Method nativeScheduleTask = XposedHelpers.findMethodExact(Execution, "nativeScheduleTask", Runnable.class, int.class, int.class, double.class, String.class);
 
         try {
@@ -169,7 +170,7 @@ public class MailboxConnector {
     }
 
     private void preDispatch(Consumer<Object> dispatchExecutor, final int delay) {
-        final Class<?> NotificationScope = XposedHelpers.findClass("com.facebook.msys.util.NotificationScope", classLoader);
+        final Class<?> NotificationScope = XposedHelpers.findClass(OrcaClassNames.NOTIFICATION_SCOPE, classLoader);
 
         new Thread(() -> {
             try {

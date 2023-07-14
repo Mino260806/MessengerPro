@@ -12,6 +12,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import tn.amin.mpro2.R;
+import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.MProFeatureManager;
 import tn.amin.mpro2.features.util.message.formatting.MessageParser;
@@ -93,7 +94,7 @@ public class OrcaGateway {
      * Waits for Mailbox to be constructed and then stores it in a variable.
      */
     public void prepareToCaptureMailbox() {
-        final Class<?> Mailbox = XposedHelpers.findClass("com.facebook.msys.mca.Mailbox", classLoader);
+        final Class<?> Mailbox = XposedHelpers.findClass(OrcaClassNames.MAILBOX, classLoader);
 
         XposedBridge.hookAllConstructors(Mailbox, new XC_MethodHook() {
             @Override

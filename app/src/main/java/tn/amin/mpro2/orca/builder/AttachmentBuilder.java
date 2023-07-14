@@ -11,6 +11,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 
 import de.robv.android.xposed.XposedHelpers;
+import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.Logger;
 
 public class AttachmentBuilder {
@@ -32,7 +33,7 @@ public class AttachmentBuilder {
     public static final long FILETYPE_OTHER = 6L;
 
     public AttachmentBuilder(ClassLoader classLoader) {
-        Class<?> Attachment = XposedHelpers.findClass("com.facebook.msys.mci.Attachment", classLoader);
+        Class<?> Attachment = XposedHelpers.findClass(OrcaClassNames.ATTACHMENT, classLoader);
         mAttachmentConstructor = XposedHelpers.findConstructorExact(Attachment, java.lang.String.class, java.lang.String.class, java.lang.Long.class, java.lang.String.class, java.lang.Long.class, java.lang.String.class, java.lang.Long.class, boolean.class, boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Long.class, java.lang.Long.class, java.lang.Long.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, byte[].class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Long.class);
 
         mTime = System.currentTimeMillis() * 1000;
