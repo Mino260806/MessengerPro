@@ -25,7 +25,7 @@ import io.github.neonorbit.dexplore.result.ClassData;
 import io.github.neonorbit.dexplore.result.FieldData;
 import io.github.neonorbit.dexplore.result.MethodData;
 import io.github.neonorbit.dexplore.util.DexLog;
-import tn.amin.mpro2.constants.OrcaComponents;
+import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.file.StorageConstants;
 
@@ -93,7 +93,7 @@ public class OrcaUnobfuscator {
 
     public Method loadMessageMethod(String attributeName) {
         return loadMethod("Message/" + attributeName,
-                new ClassFilter.Builder().setClasses("com.facebook.messaging.model.messages.Message").build(),
+                new ClassFilter.Builder().setClasses(OrcaClassNames.MESSAGE).build(),
                 new MethodFilter.Builder()
                 .setReferenceTypes(ReferenceTypes.builder().addString().build())
                 .setReferenceFilter(pool -> pool.contains("text"))
@@ -102,7 +102,8 @@ public class OrcaUnobfuscator {
 
     public Field loadMessageFieldThreadKey() {
         return loadField(FIELD_MESSAGE_THREADKEY, () -> {
-            ClassData NewMessageNotification = mDexplore.findClass(DexFilter.MATCH_ALL, ClassFilter.ofClass("com.facebook.messaging.notify.type.NewMessageNotification"));
+            ClassData NewMessageNotification = mDexplore.findClass(
+                    DexFilter.MATCH_ALL, ClassFilter.ofClass(OrcaClassNames.NEW_MESSAGE_NOTIFICATION));
             if (NewMessageNotification == null) {
                 Logger.error("NewMessageNotification is null");
                 return null;
@@ -110,8 +111,8 @@ public class OrcaUnobfuscator {
 
             List<FieldRefData> refData = NewMessageNotification.getReferencePool().getFieldSection().stream()
                     .filter(fieldRefData ->
-                            fieldRefData.getDeclaringClass().equals("com.facebook.messaging.model.messages.Message") &&
-                            fieldRefData.getType().equals("com.facebook.messaging.model.threadkey.ThreadKey"))
+                            fieldRefData.getDeclaringClass().equals(OrcaClassNames.MESSAGE) &&
+                            fieldRefData.getType().equals(OrcaClassNames.THREAD_KEY))
                     .collect(Collectors.toList());
             if (refData.size() == 0) {
                 Logger.error("Could not find Message.threadKey");
@@ -126,7 +127,7 @@ public class OrcaUnobfuscator {
         return loadField(FIELD_MESSAGE_TEXT, () -> {
             MethodData writeToParcel = mDexplore.findMethod(
                     DexFilter.MATCH_ALL,
-                    ClassFilter.ofClass("com.facebook.messaging.model.messages.Message"),
+                    ClassFilter.ofClass(OrcaClassNames.MESSAGE),
                     MethodFilter.ofMethod("writeToParcel", Arrays.asList(Parcel.class.getName(), "int")));
 
             if (writeToParcel == null) {
@@ -144,7 +145,7 @@ public class OrcaUnobfuscator {
 
             MethodData getText = mDexplore.findMethod(
                     DexFilter.MATCH_ALL,
-                    ClassFilter.ofClass("com.facebook.messaging.model.messages.Message"),
+                    ClassFilter.ofClass(OrcaClassNames.MESSAGE),
                     MethodFilter.ofMethod(getTextMethod.getName()));
 
             if (getText == null) {
@@ -154,8 +155,8 @@ public class OrcaUnobfuscator {
 
             List<FieldRefData> refDataGetText = getText.getReferencePool().getFieldSection().stream()
                     .filter(fieldRefData -> {
-                            return fieldRefData.getDeclaringClass().equals("com.facebook.messaging.model.messages.Message") &&
-                                    fieldRefData.getType().equals("com.facebook.secure.secrettypes.SecretString") &&
+                            return fieldRefData.getDeclaringClass().equals(OrcaClassNames.MESSAGE) &&
+                                    fieldRefData.getType().equals(OrcaClassNames.SECRET_STRING) &&
                             refDataWriteToParcel.contains(fieldRefData);
                     })
                     .collect(Collectors.toList());
@@ -173,7 +174,7 @@ public class OrcaUnobfuscator {
         return loadField(FIELD_SECRET_STRING_STARS, () -> {
             MethodData SecretStringToString = mDexplore.findMethod(
                     DexFilter.MATCH_ALL,
-                    ClassFilter.ofClass(OrcaComponents.SECRET_STRING),
+                    ClassFilter.ofClass(OrcaClassNames.SECRET_STRING),
                     MethodFilter.ofMethod("toString"));
 
             if (SecretStringToString == null) {
@@ -183,7 +184,7 @@ public class OrcaUnobfuscator {
 
             List<FieldRefData> refData = SecretStringToString.getReferencePool().getFieldSection().stream()
                     .filter(fieldRefData ->
-                            fieldRefData.getDeclaringClass().equals(OrcaComponents.SECRET_STRING) &&
+                            fieldRefData.getDeclaringClass().equals(OrcaClassNames.SECRET_STRING) &&
                             fieldRefData.getType().equals(String.class.getName()))
                     .collect(Collectors.toList());
 
@@ -205,7 +206,7 @@ public class OrcaUnobfuscator {
 
             ClassData SecretString = mDexplore.findClass(
                     DexFilter.MATCH_ALL,
-                    ClassFilter.ofClass(OrcaComponents.SECRET_STRING));
+                    ClassFilter.ofClass(OrcaClassNames.SECRET_STRING));
 
             if (SecretString == null) {
                 Logger.error("Failed to find class SecretString");
@@ -213,7 +214,7 @@ public class OrcaUnobfuscator {
             }
 
             List<FieldRefData> refData = SecretString.getReferencePool().getFieldSection().stream()
-                    .filter(fieldRefData -> fieldRefData.getDeclaringClass().equals(OrcaComponents.SECRET_STRING) &&
+                    .filter(fieldRefData -> fieldRefData.getDeclaringClass().equals(OrcaClassNames.SECRET_STRING) &&
                         fieldRefData.getType().equals(String.class.getName()) &&
                         !fieldRefData.getName().equals(secretStringStars.getName()))
                     .collect(Collectors.toList());
@@ -263,8 +264,8 @@ public class OrcaUnobfuscator {
 
             List<FieldRefData> refData = MsysThreadsCache.getReferencePool().getFieldSection().stream()
                     .filter(fieldRefData ->
-                            fieldRefData.getDeclaringClass().equals("com.facebook.messaging.model.messages.Message") &&
-                                    fieldRefData.getType().equals("java.lang.String"))
+                            fieldRefData.getDeclaringClass().equals(OrcaClassNames.MESSAGE) &&
+                                    fieldRefData.getType().equals(String.class.getName()))
                     .collect(Collectors.toList());
 
             if (refData.size() == 0) {

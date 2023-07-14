@@ -5,6 +5,7 @@ import java.util.Set;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.hook.BaseHook;
 import tn.amin.mpro2.hook.HookId;
@@ -20,7 +21,7 @@ public class SeenIndicatorHook extends BaseHook {
 
     @Override
     protected Set<XC_MethodHook.Unhook> injectInternal(OrcaGateway gateway) {
-        final Class<?> MailboxCoreJNI = XposedHelpers.findClass("com.facebook.sdk.mca.MailboxSDKJNI", gateway.classLoader);
+        final Class<?> MailboxCoreJNI = XposedHelpers.findClass(OrcaClassNames.MAILBOX_SDK_JNI, gateway.classLoader);
         return XposedBridge.hookAllMethods(MailboxCoreJNI, "dispatchVJOOOO", wrap(new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -40,8 +41,8 @@ public class SeenIndicatorHook extends BaseHook {
                 }
 
                 // Fallback method
-                else if (param.args[2].getClass().getName().equals("com.facebook.msys.mca.Mailbox") &&
-                        param.args[3].getClass().getName().equals("java.lang.Long")) {
+                else if (param.args[2].getClass().getName().equals(OrcaClassNames.MAILBOX) &&
+                        param.args[3].getClass().getName().equals(Long.class.getName())) {
 
                     Logger.verbose("Inside seen indicator dispatch");
                     // Inside seen indicator dispatch
