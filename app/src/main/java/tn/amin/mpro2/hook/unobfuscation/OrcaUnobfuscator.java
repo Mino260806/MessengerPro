@@ -2,11 +2,13 @@ package tn.amin.mpro2.hook.unobfuscation;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Parcel;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
@@ -23,6 +25,7 @@ import io.github.neonorbit.dexplore.result.ClassData;
 import io.github.neonorbit.dexplore.result.FieldData;
 import io.github.neonorbit.dexplore.result.MethodData;
 import io.github.neonorbit.dexplore.util.DexLog;
+import tn.amin.mpro2.constants.OrcaComponents;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.file.StorageConstants;
 
@@ -44,6 +47,9 @@ public class OrcaUnobfuscator {
     public static final String METHOD_MESSAGE_GETTEXT = "Message/getText";
     public static final String FIELD_MESSAGE_THREADKEY = "Message-threadKey";
     public static final String FIELD_MESSAGE_ID = "Message-id";
+    public static final String FIELD_MESSAGE_TEXT = "Message-text";
+    public static final String FIELD_SECRET_STRING_CONTENT = "SecretString-content";
+    public static final String FIELD_SECRET_STRING_STARS = "SecretString-stars";
     public static final String API_NOTIFICATION = "API_NOTIFICATION";
     public static final String API_CONVERSATION_ENTER = "API_CONVERSATION_ENTER";
     public static final String API_CONVERSATION_LEAVE = "API_CONVERSATION_LEAVE";
@@ -109,6 +115,111 @@ public class OrcaUnobfuscator {
                     .collect(Collectors.toList());
             if (refData.size() == 0) {
                 Logger.error("Could not find Message.threadKey");
+                return null;
+            }
+
+            return refData.get(0);
+        });
+    }
+
+    private Field loadMessageFieldText() {
+        return loadField(FIELD_MESSAGE_TEXT, () -> {
+            MethodData writeToParcel = mDexplore.findMethod(
+                    DexFilter.MATCH_ALL,
+                    ClassFilter.ofClass("com.facebook.messaging.model.messages.Message"),
+                    MethodFilter.ofMethod("writeToParcel", Arrays.asList(Parcel.class.getName(), "int")));
+
+            if (writeToParcel == null) {
+                Logger.error("Could not get ReferencePool for method Message.writeToParcel");
+                return null;
+            }
+
+            List<FieldRefData> refDataWriteToParcel = writeToParcel.getReferencePool().getFieldSection();
+
+            Method getTextMethod = mUnobfuscatedMethods.get(METHOD_MESSAGE_GETTEXT);
+            if (getTextMethod == null) {
+                Logger.error("Method.getText cannot be null, skipping field text");
+                return null;
+            }
+
+            MethodData getText = mDexplore.findMethod(
+                    DexFilter.MATCH_ALL,
+                    ClassFilter.ofClass("com.facebook.messaging.model.messages.Message"),
+                    MethodFilter.ofMethod(getTextMethod.getName()));
+
+            if (getText == null) {
+                Logger.error("Could not get ReferencePool for method Message.getText");
+                return null;
+            }
+
+            List<FieldRefData> refDataGetText = getText.getReferencePool().getFieldSection().stream()
+                    .filter(fieldRefData -> {
+                            return fieldRefData.getDeclaringClass().equals("com.facebook.messaging.model.messages.Message") &&
+                                    fieldRefData.getType().equals("com.facebook.secure.secrettypes.SecretString") &&
+                            refDataWriteToParcel.contains(fieldRefData);
+                    })
+                    .collect(Collectors.toList());
+
+            if (refDataGetText.size() != 1) {
+                Logger.error("Expected to find 1 SecretString in Message.getText, got " + refDataGetText.size());
+                return null;
+            }
+
+            return refDataGetText.get(0);
+        });
+    }
+
+    private Field loadSecretStringFieldStars() {
+        return loadField(FIELD_SECRET_STRING_STARS, () -> {
+            MethodData SecretStringToString = mDexplore.findMethod(
+                    DexFilter.MATCH_ALL,
+                    ClassFilter.ofClass(OrcaComponents.SECRET_STRING),
+                    MethodFilter.ofMethod("toString"));
+
+            if (SecretStringToString == null) {
+                Logger.error("Failed to find method SecretString.toString");
+                return null;
+            }
+
+            List<FieldRefData> refData = SecretStringToString.getReferencePool().getFieldSection().stream()
+                    .filter(fieldRefData ->
+                            fieldRefData.getDeclaringClass().equals(OrcaComponents.SECRET_STRING) &&
+                            fieldRefData.getType().equals(String.class.getName()))
+                    .collect(Collectors.toList());
+
+            if (refData.size() != 1) {
+                Logger.error("Expected to find 1 String in SecretString.toString, got " + refData.size());
+                return null;
+            }
+
+            return refData.get(0);
+        });
+    }
+
+    private Field loadSecretStringFieldContent() {
+        return loadField(FIELD_SECRET_STRING_CONTENT, () -> {
+            Field secretStringStars = mUnobfuscatedFields.get(FIELD_SECRET_STRING_STARS);
+            if (secretStringStars == null) {
+                Logger.error(FIELD_SECRET_STRING_STARS + " is null, skipping " + FIELD_SECRET_STRING_CONTENT);
+            }
+
+            ClassData SecretString = mDexplore.findClass(
+                    DexFilter.MATCH_ALL,
+                    ClassFilter.ofClass(OrcaComponents.SECRET_STRING));
+
+            if (SecretString == null) {
+                Logger.error("Failed to find class SecretString");
+                return null;
+            }
+
+            List<FieldRefData> refData = SecretString.getReferencePool().getFieldSection().stream()
+                    .filter(fieldRefData -> fieldRefData.getDeclaringClass().equals(OrcaComponents.SECRET_STRING) &&
+                        fieldRefData.getType().equals(String.class.getName()) &&
+                        !fieldRefData.getName().equals(secretStringStars.getName()))
+                    .collect(Collectors.toList());
+
+            if (refData.size() == 0) {
+                Logger.error("Expected to find at least 1 String in SecretString, got " + refData.size());
                 return null;
             }
 
@@ -263,9 +374,21 @@ public class OrcaUnobfuscator {
     private void reloadAllInternal() {
         Logger.verbose("Loading class " + CLASS_TYPING_INDICATOR_DISPATCHER);
         mUnobfuscatedClasses.put(CLASS_TYPING_INDICATOR_DISPATCHER, loadTypingIndicatorDispatcher());
-//        mUnobfuscatedMethods.put(METHOD_MESSAGE_GETTEXT, loadMessageMethod("getText"));
-//        mUnobfuscatedFields.put(FIELD_MESSAGE_THREADKEY, loadMessageFieldThreadKey());
-//        mUnobfuscatedFields.put(FIELD_MESSAGE_ID, loadMessageFieldId());
+
+        Logger.verbose("Loading method " + METHOD_MESSAGE_GETTEXT);
+        mUnobfuscatedMethods.put(METHOD_MESSAGE_GETTEXT, loadMessageMethod("getText"));
+
+        Logger.verbose("Loading field " + FIELD_MESSAGE_THREADKEY);
+        mUnobfuscatedFields.put(FIELD_MESSAGE_THREADKEY, loadMessageFieldThreadKey());
+        Logger.verbose("Loading field " + FIELD_MESSAGE_ID);
+        mUnobfuscatedFields.put(FIELD_MESSAGE_ID, loadMessageFieldId());
+        Logger.verbose("Loading field " + FIELD_MESSAGE_TEXT);
+        mUnobfuscatedFields.put(FIELD_MESSAGE_TEXT, loadMessageFieldText());
+        Logger.verbose("Loading field " + FIELD_SECRET_STRING_STARS);
+        mUnobfuscatedFields.put(FIELD_SECRET_STRING_STARS, loadSecretStringFieldStars());
+        Logger.verbose("Loading field " + FIELD_SECRET_STRING_CONTENT);
+        mUnobfuscatedFields.put(FIELD_SECRET_STRING_CONTENT, loadSecretStringFieldContent());
+
 
         Logger.verbose("Loading api " + API_NOTIFICATION);
         mUnobfuscatedApis.put(API_NOTIFICATION, loadAPINotification());
