@@ -12,6 +12,11 @@
         android:defaultValue="null"
         app:useSimpleSummaryProvider="true" />
     <EditTextPreference
+        android:title="MessagesDecoder/decode"
+        android:key="MessagesDecoder/decode"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
         android:title="Message-text"
         android:key="Message-text"
         android:defaultValue="null"
@@ -34,6 +39,11 @@
     <EditTextPreference
         android:title="SecretString-stars"
         android:key="SecretString-stars"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="MessagesCollection-messages"
+        android:key="MessagesCollection-messages"
         android:defaultValue="null"
         app:useSimpleSummaryProvider="true" />
 </PreferenceScreen>

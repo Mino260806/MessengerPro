@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import de.robv.android.xposed.XposedHelpers;
 import io.github.neonorbit.dexplore.DexFactory;
 import io.github.neonorbit.dexplore.Dexplore;
 import io.github.neonorbit.dexplore.filter.ClassFilter;
@@ -28,6 +29,7 @@ import io.github.neonorbit.dexplore.util.DexLog;
 import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.file.StorageConstants;
+import tn.amin.mpro2.util.XposedHilfer;
 
 public class OrcaUnobfuscator {
     private Dexplore mDexplore;
@@ -45,11 +47,13 @@ public class OrcaUnobfuscator {
 
     public static final String CLASS_TYPING_INDICATOR_DISPATCHER = "TypingIndicatorDispatcher";
     public static final String METHOD_MESSAGE_GETTEXT = "Message/getText";
+    public static final String METHOD_MESSAGES_DECODER_DECODE = "MessagesDecoder/decode";
     public static final String FIELD_MESSAGE_THREADKEY = "Message-threadKey";
     public static final String FIELD_MESSAGE_ID = "Message-id";
     public static final String FIELD_MESSAGE_TEXT = "Message-text";
     public static final String FIELD_SECRET_STRING_CONTENT = "SecretString-content";
     public static final String FIELD_SECRET_STRING_STARS = "SecretString-stars";
+    public static final String FIELD_MESSAGES_COLLECTION_MESSAGES = "MessagesCollection-messages";
     public static final String API_NOTIFICATION = "API_NOTIFICATION";
     public static final String API_CONVERSATION_ENTER = "API_CONVERSATION_ENTER";
     public static final String API_CONVERSATION_LEAVE = "API_CONVERSATION_LEAVE";
@@ -91,13 +95,24 @@ public class OrcaUnobfuscator {
                 .build());
     }
 
+    private Method loadMessagesDecoderDecode() {
+        return loadMethod(METHOD_MESSAGES_DECODER_DECODE,
+                new ClassFilter.Builder().setClasses(OrcaClassNames.MESSAGES_DECODER).build(),
+                new MethodFilter.Builder()
+                        .setReferenceTypes(ReferenceTypes.builder().addString().build())
+                        .setReferenceFilter(pool -> pool.contains("messageStreamingState") ||
+                                pool.contains("Magic words offsets %s and length %s mismatch.") ||
+                                pool.contains("typing_indicator:"))
+                        .build());
+    }
+
     public Method loadMessageMethod(String attributeName) {
-        return loadMethod("Message/" + attributeName,
+        return loadMethod("Message/get" + Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1),
                 new ClassFilter.Builder().setClasses(OrcaClassNames.MESSAGE).build(),
                 new MethodFilter.Builder()
-                .setReferenceTypes(ReferenceTypes.builder().addString().build())
-                .setReferenceFilter(pool -> pool.contains("text"))
-                .build());
+                        .setReferenceTypes(ReferenceTypes.builder().addString().build())
+                        .setReferenceFilter(pool -> pool.contains(attributeName))
+                        .build());
     }
 
     public Field loadMessageFieldThreadKey() {
@@ -228,6 +243,31 @@ public class OrcaUnobfuscator {
         });
     }
 
+    private Field loadMessagesCollectionMessages() {
+        return loadField(FIELD_MESSAGES_COLLECTION_MESSAGES, () -> {
+            ClassData MessagesCollection = mDexplore.findClass(
+                    DexFilter.MATCH_ALL,
+                    ClassFilter.ofClass(OrcaClassNames.MESSAGES_COLLECTION));
+
+            if (MessagesCollection == null) {
+                Logger.error("Failed to find class MessagesCollection");
+                return null;
+            }
+
+            List<FieldRefData> refData = MessagesCollection.getReferencePool().getFieldSection().stream()
+                    .filter(fieldRefData -> fieldRefData.getDeclaringClass().equals(OrcaClassNames.MESSAGES_COLLECTION) &&
+                            fieldRefData.getType().contains("ImmutableList"))
+                    .collect(Collectors.toList());
+
+            if (refData.size() == 0) {
+                Logger.error("Expected to find at least 1 ImmutableList in MessagesCollection, got " + refData.size());
+                return null;
+            }
+
+            return refData.get(0);
+        });
+    }
+
     private int loadAPINotification() {
         if (!mPref.contains(API_NOTIFICATION))
             mPref.edit().putString(API_NOTIFICATION, "25").apply();
@@ -316,7 +356,9 @@ public class OrcaUnobfuscator {
             methodData = MethodData.deserialize(raw);
         }
 
-        return methodData.loadMethod(mClassLoader);
+        // TODO this is a workaround due to a bug
+        return XposedHilfer.findAllMethods(XposedHelpers.findClass(methodData.clazz, mClassLoader), methodData.method).iterator().next();
+        // return methodData.loadMethod(mClassLoader);
     }
 
     private Field loadField(String simpleName, Supplier<FieldRefData> supplier) {
@@ -377,7 +419,10 @@ public class OrcaUnobfuscator {
         mUnobfuscatedClasses.put(CLASS_TYPING_INDICATOR_DISPATCHER, loadTypingIndicatorDispatcher());
 
         Logger.verbose("Loading method " + METHOD_MESSAGE_GETTEXT);
-        mUnobfuscatedMethods.put(METHOD_MESSAGE_GETTEXT, loadMessageMethod("getText"));
+        mUnobfuscatedMethods.put(METHOD_MESSAGE_GETTEXT, loadMessageMethod("text"));
+        Logger.verbose("Loading method " + METHOD_MESSAGES_DECODER_DECODE);
+        mUnobfuscatedMethods.put(METHOD_MESSAGES_DECODER_DECODE, loadMessagesDecoderDecode());
+        Logger.verbose("Method: " + mUnobfuscatedMethods.get(METHOD_MESSAGES_DECODER_DECODE));
 
         Logger.verbose("Loading field " + FIELD_MESSAGE_THREADKEY);
         mUnobfuscatedFields.put(FIELD_MESSAGE_THREADKEY, loadMessageFieldThreadKey());
@@ -389,6 +434,8 @@ public class OrcaUnobfuscator {
         mUnobfuscatedFields.put(FIELD_SECRET_STRING_STARS, loadSecretStringFieldStars());
         Logger.verbose("Loading field " + FIELD_SECRET_STRING_CONTENT);
         mUnobfuscatedFields.put(FIELD_SECRET_STRING_CONTENT, loadSecretStringFieldContent());
+        Logger.verbose("Loading field " + FIELD_MESSAGES_COLLECTION_MESSAGES);
+        mUnobfuscatedFields.put(FIELD_MESSAGES_COLLECTION_MESSAGES, loadMessagesCollectionMessages());
 
 
         Logger.verbose("Loading api " + API_NOTIFICATION);
