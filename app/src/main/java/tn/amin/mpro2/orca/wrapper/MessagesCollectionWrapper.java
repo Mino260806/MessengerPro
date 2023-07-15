@@ -40,4 +40,16 @@ public class MessagesCollectionWrapper {
     public List<?> getList() {
         return (List<?>) WrapperHelper.fieldGet(mMessagesListField, mObject.get());
     }
+
+    public ThreadKeyWrapper getThreadKey() {
+        return mThreadKey;
+    }
+
+    public boolean includesFirstMessageInThread() {
+        return mIncludesFirstMessageInThread;
+    }
+
+    public boolean includesLastMessageInThread() {
+        return mIncludesLastMessageInThread;
+    }
 }
