@@ -29,20 +29,23 @@ public class MessagesDisplayHook extends BaseHook {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Object messagesCollection = param.getResult();
-                List<?> messageList = new MessagesCollectionWrapper(gateway, messagesCollection).getList();
+                MessagesCollectionWrapper messagesCollectionWrapper = new MessagesCollectionWrapper(gateway, messagesCollection);
+                List<?> messageList = messagesCollectionWrapper.getList();
                 for (int i=0; i<messageList.size(); i++) {
                     Object message = messageList.get(i);
+                    if (message == null) continue;
+
                     MessageWrapper messageWrapper = new MessageWrapper(gateway, message);
 
                     final int index = i;
                     notifyListeners((listener) -> ((MessageDisplayHookListener) listener).onMessageDisplay(
-                            messageWrapper, index, messageList.size()));
+                            messageWrapper, index, messageList.size(), messagesCollectionWrapper));
                 }
             }
         })));
     }
 
     public interface MessageDisplayHookListener {
-        void onMessageDisplay(MessageWrapper wrapper, int index, int count);
+        void onMessageDisplay(MessageWrapper message, int index, int count, MessagesCollectionWrapper messagesCollection);
     }
 }

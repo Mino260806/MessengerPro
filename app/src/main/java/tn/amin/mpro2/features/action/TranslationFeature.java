@@ -2,6 +2,7 @@ package tn.amin.mpro2.features.action;
 
 import java.util.Objects;
 
+import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.Feature;
 import tn.amin.mpro2.features.FeatureId;
 import tn.amin.mpro2.features.FeatureType;
@@ -12,6 +13,7 @@ import tn.amin.mpro2.hook.listener.HookListenerResult;
 import tn.amin.mpro2.orca.OrcaGateway;
 import tn.amin.mpro2.orca.datatype.TextMessage;
 import tn.amin.mpro2.orca.wrapper.MessageWrapper;
+import tn.amin.mpro2.orca.wrapper.MessagesCollectionWrapper;
 
 public class TranslationFeature extends Feature
         implements MessagesDisplayHook.MessageDisplayHookListener, MessageSentHook.MessageSentListener {
@@ -46,7 +48,7 @@ public class TranslationFeature extends Feature
     }
 
     @Override
-    public void onMessageDisplay(MessageWrapper message, int index, int count) {
+    public void onMessageDisplay(MessageWrapper message, int index, int count, MessagesCollectionWrapper messagesCollection) {
         if (!Objects.equals(message.getUserKey().getUserKeyLong(), gateway.authData.getFacebookUserKey())) {
             message.setText(message.getText() + "\nModified by MPro");
         }
