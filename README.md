@@ -38,7 +38,7 @@ Note: Messenger Pro is an **LSPosed module**, brought possible to non-rooted dev
 
 | Android Version | Root | No Root |
 |:---------------:|:---- | ------- |
-| 13              | ✔    | ?       |
+| 13              | ✔    | ✔       |
 | 12              | ✔    | ✔       |
 | 11              | ✔    | ✔       |
 | 10              | ✔    | ?       |
