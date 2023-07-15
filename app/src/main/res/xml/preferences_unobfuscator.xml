@@ -32,6 +32,11 @@
         android:defaultValue="null"
         app:useSimpleSummaryProvider="true" />
     <EditTextPreference
+        android:title="Message-participantInfo"
+        android:key="Message-participantInfo"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
         android:title="SecretString-content"
         android:key="SecretString-content"
         android:defaultValue="null"
@@ -44,6 +49,11 @@
     <EditTextPreference
         android:title="MessagesCollection-messages"
         android:key="MessagesCollection-messages"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="ParticipantInfo-userKey"
+        android:key="ParticipantInfo-userKey"
         android:defaultValue="null"
         app:useSimpleSummaryProvider="true" />
 </PreferenceScreen>

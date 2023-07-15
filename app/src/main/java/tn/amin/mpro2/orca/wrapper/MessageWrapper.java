@@ -20,6 +20,7 @@ public class MessageWrapper {
     private final Field mTextField;
     private final Field mThreadKeyField;
     private final Field mIdField;
+    private final Field mParticipantInfoField;
 
     public MessageWrapper(OrcaGateway gateway, Object message) {
         this.gateway = gateway;
@@ -29,6 +30,7 @@ public class MessageWrapper {
         mTextField = gateway.unobfuscator.getField(OrcaUnobfuscator.FIELD_MESSAGE_TEXT);
         mThreadKeyField = gateway.unobfuscator.getField(OrcaUnobfuscator.FIELD_MESSAGE_THREADKEY);
         mIdField = gateway.unobfuscator.getField(OrcaUnobfuscator.FIELD_MESSAGE_ID);
+        mParticipantInfoField = gateway.unobfuscator.getField(OrcaUnobfuscator.FIELD_MESSAGE_PARTICIPANT_INFO);
     }
 
     public String getId() {
@@ -46,9 +48,6 @@ public class MessageWrapper {
         Object secretString = WrapperHelper.methodGet(mGetTextMethod, mObject.get());
         if (secretString == null) return false;
 
-//        return fieldSet(mTextField, XposedHelpers.newInstance(
-//                XposedHelpers.findClass(OrcaComponents.SECRET_STRING, gateway.classLoader),
-//                text));
         return new SecretStringWrapper(gateway, secretString).setContent(text);
     }
 
@@ -56,6 +55,13 @@ public class MessageWrapper {
         Object threadKey = WrapperHelper.fieldGet(mThreadKeyField, mObject.get());
         if (threadKey == null) return null;
         return new ThreadKeyWrapper((Parcelable) threadKey);
+    }
+
+    public UserKeyWrapper getUserKey() {
+        Object participantInfo = WrapperHelper.fieldGet(mParticipantInfoField, mObject.get());
+        if (participantInfo == null) return null;
+
+        return new ParticipantInfoWrapper(gateway, participantInfo).getUserKey();
     }
 
     @NonNull
