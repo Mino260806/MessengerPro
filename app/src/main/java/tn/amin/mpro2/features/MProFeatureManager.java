@@ -4,6 +4,7 @@ import tn.amin.mpro2.features.action.AttachFileFeature;
 import tn.amin.mpro2.features.action.ConversationLockFeature;
 import tn.amin.mpro2.features.action.CopyThreadKeyFeature;
 import tn.amin.mpro2.features.action.SettingsFeature;
+import tn.amin.mpro2.features.action.TranslationFeature;
 import tn.amin.mpro2.features.internal.ThreadKeyDetectorFeature;
 import tn.amin.mpro2.features.state.CommandsFeature;
 import tn.amin.mpro2.features.state.DefaultCameraFeature;
@@ -29,6 +30,7 @@ public class MProFeatureManager extends FeatureManager {
         addFeature(new CopyThreadKeyFeature(gateway));
         addFeature(new ConversationLockFeature(gateway));
         addFeature(new SettingsFeature(gateway));
+        addFeature(new TranslationFeature(gateway));
 
         // Normal features
         addFeature(new CommandsFeature(gateway));

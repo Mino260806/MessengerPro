@@ -20,6 +20,7 @@ import tn.amin.mpro2.hook.ActivityHook;
 import tn.amin.mpro2.hook.MProHookManager;
 import tn.amin.mpro2.hook.unobfuscation.OrcaUnobfuscator;
 import tn.amin.mpro2.orca.connector.MailboxConnector;
+import tn.amin.mpro2.orca.wrapper.AuthDataWrapper;
 import tn.amin.mpro2.preference.ModulePreferences;
 import tn.amin.mpro2.state.ModuleState;
 import tn.amin.mpro2.ui.ModuleResources;
@@ -38,6 +39,7 @@ public class OrcaGateway {
      * Will enable execution of user actions (sending messages, reacting...)
      */
     public MailboxConnector mailboxConnector;
+    public AuthDataWrapper authData;
     public Long currentThreadKey;
     private final MessageParser mMessageParser;
 
@@ -101,6 +103,7 @@ public class OrcaGateway {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Logger.info("Captured mailbox !");
                 Object mailbox = param.thisObject;
+                authData = new AuthDataWrapper(param.args[1]);
                 mailboxConnector = new MailboxConnector(mailbox, classLoader);
                 for (Runnable callback : mailboxCallback) {
                     callback.run();

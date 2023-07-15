@@ -32,7 +32,7 @@ public class TypingIndicatorReceivedHook extends BaseHook {
             Parcelable threadKeyObject = intent.getParcelableExtra("extra_thread_key");
 
             UserKeyWrapper userKeyWrapper = new UserKeyWrapper(userKeyObject);
-            userKey = userKeyWrapper.getUserKey();
+            userKey = userKeyWrapper.getUserKeyLong();
 
             if (threadKeyObject != null) {
                 ThreadKeyWrapper threadKeyWrapper = new ThreadKeyWrapper(threadKeyObject);

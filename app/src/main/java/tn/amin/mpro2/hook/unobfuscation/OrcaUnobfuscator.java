@@ -51,9 +51,11 @@ public class OrcaUnobfuscator {
     public static final String FIELD_MESSAGE_THREADKEY = "Message-threadKey";
     public static final String FIELD_MESSAGE_ID = "Message-id";
     public static final String FIELD_MESSAGE_TEXT = "Message-text";
+    public static final String FIELD_MESSAGE_PARTICIPANT_INFO = "Message-participantInfo";
     public static final String FIELD_SECRET_STRING_CONTENT = "SecretString-content";
     public static final String FIELD_SECRET_STRING_STARS = "SecretString-stars";
     public static final String FIELD_MESSAGES_COLLECTION_MESSAGES = "MessagesCollection-messages";
+    public static final String FIELD_PARTICIPANT_INFO_USER_KEY = "ParticipantInfo-userKey";
     public static final String API_NOTIFICATION = "API_NOTIFICATION";
     public static final String API_CONVERSATION_ENTER = "API_CONVERSATION_ENTER";
     public static final String API_CONVERSATION_LEAVE = "API_CONVERSATION_LEAVE";
@@ -185,6 +187,30 @@ public class OrcaUnobfuscator {
         });
     }
 
+    private Field loadMessageParticipantInfo() {
+        return loadField(FIELD_MESSAGE_PARTICIPANT_INFO, () -> {
+            ClassData MessageRepliedTo = mDexplore.findClass(DexFilter.MATCH_ALL,
+                    ClassFilter.ofClass(OrcaClassNames.MESSAGE_REPLIED_TO));
+
+            if (MessageRepliedTo == null) {
+                Logger.error("Unable to load class MessageRepliedTo");
+                return null;
+            }
+
+            List<FieldRefData> refDataList = MessageRepliedTo.getReferencePool().getFieldSection().stream()
+                    .filter(fieldRefData -> fieldRefData.getDeclaringClass().equals(OrcaClassNames.MESSAGE) &&
+                            fieldRefData.getType().equals(OrcaClassNames.PARTICIPANT_INFO))
+                    .collect(Collectors.toList());
+
+            if (refDataList.size() == 0) {
+                Logger.error("Expected to find at least 1 ParticipantInfo in MessageRepliedTo, got " + refDataList.size());
+                return null;
+            }
+
+            return refDataList.get(0);
+        });
+    }
+
     private Field loadSecretStringFieldStars() {
         return loadField(FIELD_SECRET_STRING_STARS, () -> {
             MethodData SecretStringToString = mDexplore.findMethod(
@@ -261,6 +287,31 @@ public class OrcaUnobfuscator {
 
             if (refData.size() == 0) {
                 Logger.error("Expected to find at least 1 ImmutableList in MessagesCollection, got " + refData.size());
+                return null;
+            }
+
+            return refData.get(0);
+        });
+    }
+
+    private Field loadParticipantInfoUserKey() {
+        return loadField(FIELD_PARTICIPANT_INFO_USER_KEY, () -> {
+            ClassData ParticipantInfo = mDexplore.findClass(
+                    DexFilter.MATCH_ALL,
+                    ClassFilter.ofClass(OrcaClassNames.PARTICIPANT_INFO));
+
+            if (ParticipantInfo == null) {
+                Logger.error("Failed to find class ParticipantInfo");
+                return null;
+            }
+
+            List<FieldRefData> refData = ParticipantInfo.getReferencePool().getFieldSection().stream()
+                    .filter(fieldRefData -> fieldRefData.getDeclaringClass().equals(OrcaClassNames.PARTICIPANT_INFO) &&
+                            fieldRefData.getType().equals(OrcaClassNames.USER_KEY))
+                    .collect(Collectors.toList());
+
+            if (refData.size() == 0) {
+                Logger.error("Expected to find at least 1 UserKey in ParticipantInfo, got " + refData.size());
                 return null;
             }
 
@@ -356,9 +407,7 @@ public class OrcaUnobfuscator {
             methodData = MethodData.deserialize(raw);
         }
 
-        // TODO this is a workaround due to a bug
-        return XposedHilfer.findAllMethods(XposedHelpers.findClass(methodData.clazz, mClassLoader), methodData.method).iterator().next();
-        // return methodData.loadMethod(mClassLoader);
+         return methodData.loadMethod(mClassLoader);
     }
 
     private Field loadField(String simpleName, Supplier<FieldRefData> supplier) {
@@ -430,13 +479,16 @@ public class OrcaUnobfuscator {
         mUnobfuscatedFields.put(FIELD_MESSAGE_ID, loadMessageFieldId());
         Logger.verbose("Loading field " + FIELD_MESSAGE_TEXT);
         mUnobfuscatedFields.put(FIELD_MESSAGE_TEXT, loadMessageFieldText());
+        Logger.verbose("Loading field " + FIELD_MESSAGE_PARTICIPANT_INFO);
+        mUnobfuscatedFields.put(FIELD_MESSAGE_PARTICIPANT_INFO, loadMessageParticipantInfo());
         Logger.verbose("Loading field " + FIELD_SECRET_STRING_STARS);
         mUnobfuscatedFields.put(FIELD_SECRET_STRING_STARS, loadSecretStringFieldStars());
         Logger.verbose("Loading field " + FIELD_SECRET_STRING_CONTENT);
         mUnobfuscatedFields.put(FIELD_SECRET_STRING_CONTENT, loadSecretStringFieldContent());
         Logger.verbose("Loading field " + FIELD_MESSAGES_COLLECTION_MESSAGES);
         mUnobfuscatedFields.put(FIELD_MESSAGES_COLLECTION_MESSAGES, loadMessagesCollectionMessages());
-
+        Logger.verbose("Loading field " + FIELD_PARTICIPANT_INFO_USER_KEY);
+        mUnobfuscatedFields.put(FIELD_PARTICIPANT_INFO_USER_KEY, loadParticipantInfoUserKey());
 
         Logger.verbose("Loading api " + API_NOTIFICATION);
         mUnobfuscatedApis.put(API_NOTIFICATION, loadAPINotification());
