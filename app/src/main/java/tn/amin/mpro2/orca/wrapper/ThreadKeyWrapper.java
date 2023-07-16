@@ -3,28 +3,29 @@ package tn.amin.mpro2.orca.wrapper;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
+import tn.amin.mpro2.debug.Logger;
+
 public class ThreadKeyWrapper {
     private final String type;
-    private final Long key1;
-    private final Long key2;
-    private final Long key3;
-    private final Long key4;
-    private final Long key5;
+    private final Long facebookThreadKey;
+    private final String[] toStringSplit;
 
     public ThreadKeyWrapper(Parcelable threadKey) {
-        Parcel parcel = Parcel.obtain();
-
-        threadKey.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-
-        type = parcel.readString();
-        key1 = parcel.readLong();
-        key2 = parcel.readLong();
-        key3 = parcel.readLong();
-        key4 = parcel.readLong();
-        key5 = parcel.readLong();
-
-        parcel.recycle();
+        toStringSplit = threadKey.toString().split(":");
+        type = toStringSplit[0];
+        switch (type) {
+            case "GROUP":
+                facebookThreadKey = getGroupThreadKey();
+                break;
+            case "ONE_TO_ONE":
+                facebookThreadKey = getOneToOneThreadKey1();
+                break;
+            default:
+                facebookThreadKey = null;
+                break;
+        }
     }
 
     public String getType() {
@@ -32,14 +33,25 @@ public class ThreadKeyWrapper {
     }
 
     public Long getGroupThreadKey() {
-        return key1;
+        requireType("GROUP");
+        return Long.parseLong(toStringSplit[1]);
     }
 
     public Long getOneToOneThreadKey1() {
-        return key2;
+        requireType("ONE_TO_ONE");
+        return Long.parseLong(toStringSplit[1]);
     }
 
     public Long getOneToOneThreadKey2() {
-        return key3;
+        requireType("ONE_TO_ONE");
+        return Long.parseLong(toStringSplit[2]);
+    }
+
+    public Long getFacebookThreadKey() {
+        return facebookThreadKey;
+    }
+
+    private void requireType(String other) {
+        if (!type.equals(other)) throw new RuntimeException("ThreadKey must be of type " + other + " (actual " + type + ")");
     }
 }

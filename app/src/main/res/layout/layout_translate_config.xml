@@ -11,12 +11,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:switchPadding="5dp"
-        android:text="@string/received_messages" />
+        android:text="@string/received_messages"
+        android:textSize="20sp"
+        android:id="@+id/switch_received"/>
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:rowCount="2"
-        android:columnCount="2">
+        android:columnCount="2"
+        android:id="@+id/layout_config_received">
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -68,6 +71,14 @@
         </FrameLayout>
     </GridLayout>
 
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:switchPadding="5dp"
+        android:text="@string/keep_original_message"
+        android:id="@+id/switch_keep_original_received"
+        android:checked="true" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -77,12 +88,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:switchPadding="5dp"
-        android:text="@string/sent_messages" />
+        android:text="@string/sent_messages"
+        android:textSize="20sp"
+        android:id="@+id/switch_sent" />
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:rowCount="2"
-        android:columnCount="2">
+        android:columnCount="2"
+        android:id="@+id/layout_config_sent">
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -134,6 +148,14 @@
                 android:maxEms="5"/>
         </FrameLayout>
     </GridLayout>
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:switchPadding="5dp"
+        android:text="@string/keep_original_message"
+        android:id="@+id/switch_keep_original_sent"
+        android:checked="true"/>
 
     <Button
         android:layout_width="wrap_content"

@@ -33,10 +33,10 @@ public class TranslateConfigurationFrame extends FrameLayout {
 
         Button buttonSave = findViewById(R.id.button_save);
         LinearLayout linearLayout = (LinearLayout) getChildAt(0);
-        Switch receivedMessagesSwitch = (Switch) linearLayout.getChildAt(0);
-        GridLayout receivedMessagesGridLayout = (GridLayout) linearLayout.getChildAt(1);
-        Switch sentMessagesSwitch = (Switch) linearLayout.getChildAt(3);
-        GridLayout sentMessagesGridLayout = (GridLayout) linearLayout.getChildAt(4);
+        Switch receivedMessagesSwitch = findViewById(R.id.switch_received);
+        Switch sentMessagesSwitch = findViewById(R.id.switch_sent);
+        Switch keepOriginReceivedMessagesSwitch = findViewById(R.id.switch_keep_original_received);
+        Switch keepOriginSentMessagesSwitch = findViewById(R.id.switch_keep_original_sent);
 
         EditText sourceLanguageReceivedMessagesEdit = findViewById(R.id.edit_source_language_received);
         EditText targetLanguageReceivedMessagesEdit = findViewById(R.id.edit_target_language_received);
@@ -55,14 +55,18 @@ public class TranslateConfigurationFrame extends FrameLayout {
         targetLanguageReceivedMessagesText.setText(gateway.res.getString(R.string.target_language));
         sourceLanguageSentMessagesText.setText(gateway.res.getString(R.string.source_language));
         targetLanguageSentMessagesText.setText(gateway.res.getString(R.string.target_language));
+        keepOriginReceivedMessagesSwitch.setText(gateway.res.getString(R.string.keep_original_message));
+        keepOriginSentMessagesSwitch.setText(gateway.res.getString(R.string.keep_original_message));
 
         receivedMessagesSwitch.setOnCheckedChangeListener((s, checked) -> {
             sourceLanguageReceivedMessagesEdit.setEnabled(checked);
             targetLanguageReceivedMessagesEdit.setEnabled(checked);
+            keepOriginReceivedMessagesSwitch.setEnabled(checked);
         });
         sentMessagesSwitch.setOnCheckedChangeListener((s, checked) -> {
             sourceLanguageSentMessagesEdit.setEnabled(checked);
             targetLanguageSentMessagesEdit.setEnabled(checked);
+            keepOriginSentMessagesSwitch.setEnabled(checked);
         });
 
         buttonSave.setOnClickListener((b) -> {
@@ -106,8 +110,9 @@ public class TranslateConfigurationFrame extends FrameLayout {
                 String source = sourceLanguageReceivedMessagesEdit.getText().toString().trim();
                 if (StringUtils.isBlank(source)) source = "auto";
                 String target = targetLanguageReceivedMessagesEdit.getText().toString().trim();
+                boolean keepOriginal = keepOriginReceivedMessagesSwitch.isChecked();
 
-                gateway.pref.addTranslatedConversationReceived(threadKey, new TranslationInfo(source, target));
+                gateway.pref.addTranslatedConversationReceived(threadKey, new TranslationInfo(source, target, keepOriginal));
             } else {
                 gateway.pref.removeTranslatedConversationReceived(threadKey);
             }
@@ -116,8 +121,9 @@ public class TranslateConfigurationFrame extends FrameLayout {
                 String source = sourceLanguageSentMessagesEdit.getText().toString().trim();
                 if (StringUtils.isBlank(source)) source = "auto";
                 String target = targetLanguageSentMessagesEdit.getText().toString().trim();
+                boolean keepOriginal = keepOriginSentMessagesSwitch.isChecked();
 
-                gateway.pref.addTranslatedConversationSent(threadKey, new TranslationInfo(source, target));
+                gateway.pref.addTranslatedConversationSent(threadKey, new TranslationInfo(source, target, keepOriginal));
             } else {
                 gateway.pref.removeTranslatedConversationSent(threadKey);
             }
@@ -132,20 +138,24 @@ public class TranslateConfigurationFrame extends FrameLayout {
             receivedMessagesSwitch.setChecked(false);
             sourceLanguageReceivedMessagesEdit.setEnabled(false);
             targetLanguageReceivedMessagesEdit.setEnabled(false);
+            keepOriginReceivedMessagesSwitch.setEnabled(false);
         } else {
             receivedMessagesSwitch.setChecked(true);
             if (!translationInfoReceived.source.equals("auto")) sourceLanguageReceivedMessagesEdit.setText(translationInfoReceived.source);
             targetLanguageReceivedMessagesEdit.setText(translationInfoReceived.target);
+            keepOriginReceivedMessagesSwitch.setChecked(translationInfoReceived.keepOriginal);
         }
 
         if (translationInfoSent == null) {
             sentMessagesSwitch.setChecked(false);
             sourceLanguageSentMessagesEdit.setEnabled(false);
             targetLanguageSentMessagesEdit.setEnabled(false);
+            keepOriginSentMessagesSwitch.setEnabled(false);
         } else {
             sentMessagesSwitch.setChecked(true);
             if (!translationInfoSent.source.equals("auto")) sourceLanguageSentMessagesEdit.setText(translationInfoSent.source);
             targetLanguageSentMessagesEdit.setText(translationInfoSent.target);
+            keepOriginSentMessagesSwitch.setChecked(translationInfoSent.keepOriginal);
         }
     }
 
