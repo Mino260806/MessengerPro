@@ -19,6 +19,7 @@ import com.joaomgcd.taskerpluginlibrary.runner.TaskerPluginResultError
 import com.joaomgcd.taskerpluginlibrary.runner.TaskerPluginResultSucess
 import org.apache.commons.lang3.math.NumberUtils
 import tn.amin.mpro2.R
+import tn.amin.mpro2.debug.Logger
 import tn.amin.mpro2.orca.OrcaBridge
 
 class ActivityReactToMessageConfig : Activity(), TaskerPluginConfig<ReactToMessageInput> {
@@ -76,7 +77,7 @@ class ReactToMessageActionHelper(config: TaskerPluginConfig<ReactToMessageInput>
 
 class ReactToMessageActionRunner : TaskerPluginRunnerActionNoOutput<ReactToMessageInput>() {
     override fun run(context: Context, input: TaskerInput<ReactToMessageInput>): TaskerPluginResult<Unit> {
-        Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Reacting to message...", Toast.LENGTH_LONG).show() }
+//        Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Reacting to message...", Toast.LENGTH_LONG).show() }
 
         input.regular.reaction ?: return TaskerPluginResultError(NullPointerException())
         input.regular.messageId ?: return TaskerPluginResultError(NullPointerException())

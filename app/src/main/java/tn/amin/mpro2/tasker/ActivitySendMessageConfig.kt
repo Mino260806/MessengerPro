@@ -73,7 +73,7 @@ class BasicActionHelper(config: TaskerPluginConfig<SendMessageInput>) : TaskerPl
 
 class BasicActionRunner : TaskerPluginRunnerActionNoOutput<SendMessageInput>() {
     override fun run(context: Context, input: TaskerInput<SendMessageInput>): TaskerPluginResult<Unit> {
-        Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Sending message...", Toast.LENGTH_LONG).show() }
+//        Handler(Looper.getMainLooper()).post { Toast.makeText(context, "Sending message...", Toast.LENGTH_LONG).show() }
 
         input.regular.threadKey ?: return TaskerPluginResultError(NullPointerException())
         input.regular.message ?: return TaskerPluginResultError(NullPointerException())
