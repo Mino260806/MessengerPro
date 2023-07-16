@@ -53,7 +53,7 @@
         android:title="@string/pref_toolbar_conv_lock" />
 
     <SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:key="mpro_conversation_translate_toolbar"
         android:title="@string/pref_toolbar_conv_translate" />
 
