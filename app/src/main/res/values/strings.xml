@@ -75,7 +75,7 @@
     <string name="pref_apicodes">API codes</string>
     <string name="threadkey_copied">ThreadKey copied to clipboard</string>
     <string name="please_enable_lock">Please enable \"Lockable conversations\" feature in settings</string>
-    <string name="please_enable_translate">Please enable \"Translate Messages\" feature in settings</string>
+    <string name="please_enable_translate">Please enable \"Messages Translation\" feature in settings</string>
     <string name="threadkey_required">Please enter a conversation</string>
     <string name="support_patreon">Support me on Patreon</string>
     <string name="github_page">Github Page</string>
