@@ -75,6 +75,7 @@
     <string name="pref_apicodes">API codes</string>
     <string name="threadkey_copied">ThreadKey copied to clipboard</string>
     <string name="please_enable_lock">Please enable \"Lockable conversations\" feature in settings</string>
+    <string name="please_enable_translate">Please enable \"Translate Messages\" feature in settings</string>
     <string name="threadkey_required">Please enter a conversation</string>
     <string name="support_patreon">Support me on Patreon</string>
     <string name="github_page">Github Page</string>
@@ -124,4 +125,9 @@
     <string name="sent_messages">Sent Messages</string>
     <string name="received_messages">Received Messages</string>
     <string name="save">Save</string>
+    <string name="translate">Translate</string>
+    <string name="pref_toolbar_conv_translate">Translate Messages</string>
+    <string name="pref_enable_translation">Messages translation</string>
+    <string name="translation_error">Translation error</string>
+    <string name="keep_original_message">Keep original message</string>
 </resources>

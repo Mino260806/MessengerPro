@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import tn.amin.mpro2.R;
+import tn.amin.mpro2.constants.StringConstants;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.Feature;
 import tn.amin.mpro2.features.FeatureId;
@@ -39,7 +40,11 @@ public class TranslationFeature extends Feature
 
     private final Map<String, String> mMessageTranslations = new HashMap<>();
     private ProgressDialog mProgressDialog = null;
-    private boolean isProgressDialogShown = false;
+    private boolean mIsProgressDialogShown = false;
+    private int mProgressDialogOwner = -1;
+
+    private static final int PROGRESS_OWNER_MSG_SENT = 0;
+    private static final int PROGRESS_OWNER_MSG_RECEIVED = 1;
 
     public TranslationFeature(OrcaGateway gateway) {
         super(gateway);
@@ -91,10 +96,16 @@ public class TranslationFeature extends Feature
 
     @Override
     public void executeAction() {
+        if (!isEnabled()) {
+            Toast.makeText(gateway.getActivity(), gateway.res.getString(R.string.please_enable_translate), Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (!gateway.requireThreadKey()) return;
 
-        TranslateConfigurationFrame configurationFrame = new TranslateConfigurationFrame(gateway.getActivityWithModuleResources(), gateway, gateway.currentThreadKey);
+        TranslateConfigurationFrame configurationFrame = new TranslateConfigurationFrame(
+                gateway.getActivityWithModuleResources(), gateway, gateway.currentThreadKey);
         AlertDialog dialog = new AlertDialog.Builder(gateway.getActivity())
+                .setTitle(gateway.res.getString(R.string.translate))
                 .setView(configurationFrame)
                 .show();
         configurationFrame.setOnSaveListener(dialog::dismiss);
@@ -108,33 +119,56 @@ public class TranslationFeature extends Feature
 
     @Override
     public HookListenerResult<TextMessage> onMessageSent(TextMessage message, Long threadKey) {
-        return HookListenerResult.ignore();
+        // User must be inside a conversation
+        if (!gateway.requireThreadKey(false)) return HookListenerResult.ignore();
+
+        // The message to be sent must be present in current conversation
+        if (!Objects.equals(threadKey, gateway.currentThreadKey)) return HookListenerResult.ignore();
+
+        // User must have saved sent messages translation configuration
+        TranslationInfo translationInfo = gateway.pref.getTranslatedConversationSent(gateway.currentThreadKey);
+        if (translationInfo == null) return HookListenerResult.ignore();
+
+        updateProgressDialog("sent", PROGRESS_OWNER_MSG_SENT);
+
+        String translation = translate(message.content, translationInfo);
+        message.content = appendTranslation(message.content, translation, translationInfo.keepOriginal);
+
+        dismissProgressDialog(PROGRESS_OWNER_MSG_SENT);
+
+        // Will disable formatting and commands
+        return HookListenerResult.consume(message);
     }
 
     @Override
     public void onMessageDisplay(@Nullable MessageWrapper message, int index, int count, MessagesCollectionWrapper messagesCollection) {
+        // User must be inside a conversation
         if (!gateway.requireThreadKey(false)) return;
 
+        // The message to be displayed must be present in current conversation
+        if (message != null && !Objects.equals(message.getThreadKey().getFacebookThreadKey(), gateway.currentThreadKey)) return;
+
+        // User must have saved received messages translation configuration
         TranslationInfo translationInfo = gateway.pref.getTranslatedConversationReceived(gateway.currentThreadKey);
-        Logger.verbose("TranslationInfo : " + translationInfo);
         if (translationInfo == null) return;
 
         if (message != null &&
+                // message content must not be blank
                 message.getText() != null && !StringUtils.isBlank(message.getText()) &&
-                !message.getText().contains("\n----------\n") &&
+                // message must not come from the user of the device
                 !Objects.equals(message.getUserKey().getUserKeyLong(), gateway.authData.getFacebookUserKey())) {
             if (!mMessageTranslations.containsKey(message.getId())) {
                 Logger.verbose("[" + index + "] Translating message \"" + message.getText() + "\"");
-                updateProgressDialog(index);
+                updateProgressDialog("received [" + index + "]", PROGRESS_OWNER_MSG_RECEIVED);
                 mMessageTranslations.put(message.getId(), translate(message.getText(), translationInfo));
             }
 
-            message.setText(message.getText() + "\n----------\n" + mMessageTranslations.get(message.getId()));
+            message.setText(appendTranslation(message.getText(), mMessageTranslations.get(message.getId()), translationInfo.keepOriginal));
         }
 
         Logger.verbose("Message " + index + " out of " + count + " processed");
-        if (index == count - 1 && isProgressDialogShown) {
-            dismissProgressDialog();
+        if (index == count - 1) {
+            dismissProgressDialog(PROGRESS_OWNER_MSG_RECEIVED);
         }
     }
 
@@ -142,14 +176,32 @@ public class TranslationFeature extends Feature
         try {
             return MeiTranslate.translate(message, translationInfo.source, translationInfo.target);
         } catch (Throwable t) {
-            Logger.error(t);
-            return "translation error";
+            Logger.verbose("Could not translate message due to " + t.getClass().getName());
+            return null;
         }
     }
 
-    private void updateProgressDialog(int messageIndex) {
-        String message =  "[" + messageIndex + "] Translating messages...";
-        isProgressDialogShown = true;
+    private String appendTranslation(String original, String translation, boolean keepOriginal) {
+        if (keepOriginal) {
+            if (translation == null) {
+                translation = gateway.res.getString(R.string.translation_error);
+            }
+            return original + "\n----------\n" + translation;
+        } else {
+            if (translation == null) {
+                translation = gateway.res.getString(R.string.translation_error);
+                return original + "\n(" + translation + ")";
+            } else {
+                return translation;
+            }
+        }
+    }
+
+    private void updateProgressDialog(String messageDetails, int ownerId) {
+        mProgressDialogOwner = ownerId;
+
+        String message =  "Translating message " + messageDetails + " ...";
+        mIsProgressDialogShown = true;
         new Handler(Looper.getMainLooper()).post(() -> {
             if (mProgressDialog == null)
                 mProgressDialog = ProgressDialog.show(gateway.getActivity(), "Loading", message);
@@ -158,8 +210,10 @@ public class TranslationFeature extends Feature
         });
     }
 
-    private void dismissProgressDialog() {
-        isProgressDialogShown = false;
+    private void dismissProgressDialog(int ownerId) {
+        if (mProgressDialogOwner != ownerId) return;
+
+        mIsProgressDialogShown = false;
         new Handler(Looper.getMainLooper()).post(() -> {
             if (mProgressDialog != null)
                 mProgressDialog.dismiss();

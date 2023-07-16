@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import de.robv.android.xposed.XposedBridge;
 import tn.amin.mpro2.R;
+import tn.amin.mpro2.constants.StringConstants;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.util.message.command.api.ApiResult;
 import tn.amin.mpro2.features.util.message.command.api.DuckDuckGoAPI;
@@ -157,7 +158,7 @@ public class CommandsManager {
     private int comEmpty(int row, int column, CommandContext c) {
         MessageSender messageSender = ((CommandBundle) c.getSource()).messageSender;
 
-        final String delim = "\u0020\u200D\u0020";
+        final String delim = StringConstants.EMPTY;
         String rowMessage = delim + StringUtil.multiply(" ", column);
         if (column > 1) rowMessage += delim;
         rowMessage += '\n';
