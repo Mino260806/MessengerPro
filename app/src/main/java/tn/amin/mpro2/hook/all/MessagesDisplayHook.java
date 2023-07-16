@@ -1,5 +1,7 @@
 package tn.amin.mpro2.hook.all;
 
+import androidx.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -29,13 +31,18 @@ public class MessagesDisplayHook extends BaseHook {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Object messagesCollection = param.getResult();
+                if (messagesCollection == null) return;
+
                 MessagesCollectionWrapper messagesCollectionWrapper = new MessagesCollectionWrapper(gateway, messagesCollection);
                 List<?> messageList = messagesCollectionWrapper.getList();
                 for (int i=0; i<messageList.size(); i++) {
                     Object message = messageList.get(i);
-                    if (message == null) continue;
 
-                    MessageWrapper messageWrapper = new MessageWrapper(gateway, message);
+                    MessageWrapper messageWrapper;
+                    if (message != null)
+                        messageWrapper = new MessageWrapper(gateway, message);
+                    else
+                        messageWrapper = null;
 
                     final int index = i;
                     notifyListeners((listener) -> ((MessageDisplayHookListener) listener).onMessageDisplay(
@@ -46,6 +53,6 @@ public class MessagesDisplayHook extends BaseHook {
     }
 
     public interface MessageDisplayHookListener {
-        void onMessageDisplay(MessageWrapper message, int index, int count, MessagesCollectionWrapper messagesCollection);
+        void onMessageDisplay(@Nullable MessageWrapper message, int index, int count, MessagesCollectionWrapper messagesCollection);
     }
 }

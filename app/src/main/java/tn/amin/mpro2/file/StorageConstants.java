@@ -14,6 +14,7 @@ public class StorageConstants {
     public static final String prefName = "mpro_pref";
     public static final String unobfPrefName = "mpro_unobfuscator";
     public static final String statePrefName = "mpro_state";
+    public static final String translatePrefName = "mpro_translate";
 
     public static final String orcaExternalSuffix = "Android/data/com.facebook.orca";
 

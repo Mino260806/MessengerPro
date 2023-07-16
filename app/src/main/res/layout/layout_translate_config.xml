@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:switchPadding="5dp"
+        android:text="@string/received_messages" />
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/source_language"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:id="@+id/text_source_language_received"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_columnWeight="1" />
+        <FrameLayout
+            android:layout_height="wrap_content"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1">
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/edit_source_language_received"
+                android:minEms="2"
+                android:maxEms="5"
+                android:hint="auto" />
+        </FrameLayout>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/target_language"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:id="@+id/text_target_language_received"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:layout_columnWeight="1"/>
+        <FrameLayout
+            android:layout_height="wrap_content"
+            android:minEms="2"
+            android:maxEms="2"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1">
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/edit_target_language_received"
+                android:minEms="2"
+                android:maxEms="5"/>
+        </FrameLayout>
+    </GridLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:switchPadding="5dp"
+        android:text="@string/sent_messages" />
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/source_language"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:id="@+id/text_source_language_sent"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_columnWeight="1" />
+        <FrameLayout
+            android:layout_height="wrap_content"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1">
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/edit_source_language_sent"
+                android:minEms="2"
+                android:maxEms="5"
+                android:hint="auto"
+                tools:ignore="HardcodedText" />
+        </FrameLayout>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/target_language"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:id="@+id/text_target_language_sent"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:layout_columnWeight="1"/>
+        <FrameLayout
+            android:layout_height="wrap_content"
+            android:minEms="2"
+            android:maxEms="2"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1">
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/edit_target_language_sent"
+                android:minEms="2"
+                android:maxEms="5"/>
+        </FrameLayout>
+    </GridLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="@string/save"
+        android:id="@+id/button_save" />
+</LinearLayout>

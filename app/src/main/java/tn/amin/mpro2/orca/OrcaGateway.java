@@ -23,6 +23,7 @@ import tn.amin.mpro2.orca.connector.MailboxConnector;
 import tn.amin.mpro2.orca.wrapper.AuthDataWrapper;
 import tn.amin.mpro2.preference.ModulePreferences;
 import tn.amin.mpro2.state.ModuleState;
+import tn.amin.mpro2.ui.ModuleContextWrapper;
 import tn.amin.mpro2.ui.ModuleResources;
 
 /**
@@ -135,6 +136,10 @@ public class OrcaGateway {
         return mContext.get();
     }
 
+    public Context getActivityWithModuleResources() {
+        return new ModuleContextWrapper(mActivity.get(), res.unwrap());
+    }
+
     public void setActivity(Activity activity) {
         mActivity = new WeakReference<>(activity);
     }
@@ -148,8 +153,12 @@ public class OrcaGateway {
     }
 
     public boolean requireThreadKey() {
+        return requireThreadKey(true);
+    }
+
+    public boolean requireThreadKey(boolean tellUser) {
         if (currentThreadKey == null) {
-            if (getContext() != null) {
+            if (tellUser && getContext() != null) {
                 Toast.makeText(getContext(), res.getString(R.string.threadkey_required), Toast.LENGTH_SHORT).show();
             }
             return false;

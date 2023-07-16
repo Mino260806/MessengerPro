@@ -8,17 +8,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 import tn.amin.mpro2.debug.Logger;
+import tn.amin.mpro2.features.util.translate.TranslationInfo;
 import tn.amin.mpro2.file.StorageConstants;
 import tn.amin.mpro2.ui.touch.SwipeDirection;
 
 
 public class ModulePreferences {
     public final SharedPreferences sp;
+    public final SharedPreferences spTranslate;
 
     public ModulePreferences(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(StorageConstants.prefName, Context.MODE_PRIVATE);
 
-        sp = sharedPreferences;
+        sp = context.getSharedPreferences(StorageConstants.prefName, Context.MODE_PRIVATE);
+        spTranslate = context.getSharedPreferences(StorageConstants.translatePrefName, Context.MODE_PRIVATE);
         Logger.info("SharedPreferences setup !");
     }
 
@@ -93,6 +95,42 @@ public class ModulePreferences {
         sp.edit()
                 .putStringSet("mpro_locked_conversations", lockedConversations)
                 .apply();
+    }
+
+    public void addTranslatedConversationReceived(long threadKey, TranslationInfo translationInfo) {
+        spTranslate.edit()
+                .putString("r:" + threadKey, translationInfo.toString())
+                .apply();
+    }
+
+    public void removeTranslatedConversationReceived(long threadKey) {
+        spTranslate.edit()
+                .remove("r:" + threadKey)
+                .apply();
+    }
+
+    public void addTranslatedConversationSent(long threadKey, TranslationInfo translationInfo) {
+        spTranslate.edit()
+                .putString("s:" + threadKey, translationInfo.toString())
+                .apply();
+    }
+
+    public void removeTranslatedConversationSent(long threadKey) {
+        spTranslate.edit()
+                .remove("s:" + threadKey)
+                .apply();
+    }
+
+    public TranslationInfo getTranslatedConversationReceived(long threadKey) {
+        String raw = spTranslate.getString("r:" + threadKey, null);
+        if (raw == null) return null;
+        return TranslationInfo.fromString(raw);
+    }
+
+    public TranslationInfo getTranslatedConversationSent(long threadKey) {
+        String raw = spTranslate.getString("s:" + threadKey, null);
+        if (raw == null) return null;
+        return TranslationInfo.fromString(raw);
     }
 
     public boolean isToolbarButtonVisible(String key) {
