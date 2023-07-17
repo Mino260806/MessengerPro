@@ -33,6 +33,7 @@ public class HookManager {
     public void inject(OrcaGateway gateway, Predicate<BaseHook> filter) {
         for (BaseHook hook: mHooks.values()) {
             if (filter.test(hook)) {
+                hook.setToaster(gateway.getToaster());
                 hook.inject(gateway);
             }
         }
