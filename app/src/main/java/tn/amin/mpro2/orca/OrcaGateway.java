@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.widget.Toast;
 
+import androidx.annotation.StringRes;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
@@ -25,6 +27,7 @@ import tn.amin.mpro2.preference.ModulePreferences;
 import tn.amin.mpro2.state.ModuleState;
 import tn.amin.mpro2.ui.ModuleContextWrapper;
 import tn.amin.mpro2.ui.ModuleResources;
+import tn.amin.mpro2.ui.Toaster;
 
 /**
  * Holds all the data necessary to interface with Messenger package.
@@ -58,6 +61,7 @@ public class OrcaGateway {
     private WeakReference<Activity> mActivity;
     private WeakReference<MProHookManager> mHookManager = new WeakReference<>(null);
     private WeakReference<MProFeatureManager> mFeatureManager = new WeakReference<>(null);
+    private Toaster mToaster = null;
 
     public OrcaGateway(String sourceDir, ClassLoader classLoader, Resources moduleResources) {
         this.sourceDir = sourceDir;
@@ -78,6 +82,8 @@ public class OrcaGateway {
         res = new ModuleResources(context, mPendingResources);
         state = new ModuleState(context);
         mPendingResources = null;
+
+        mToaster = new Toaster(getContext(), res);
     }
 
     public void setPreferences(ModulePreferences preferences) {
@@ -126,6 +132,10 @@ public class OrcaGateway {
         } else {
             callback.run();
         }
+    }
+
+    public Toaster getToaster() {
+        return mToaster;
     }
 
     public void setContext(Context context) {

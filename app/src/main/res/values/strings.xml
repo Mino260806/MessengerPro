@@ -130,4 +130,5 @@
     <string name="pref_enable_translation">Messages translation</string>
     <string name="translation_error">Translation error</string>
     <string name="keep_original_message">Keep original message</string>
+    <string name="disabling_hook">Disabling hook %s due to error, please check logs for more details. All related features will stop working</string>
 </resources>
