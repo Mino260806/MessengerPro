@@ -2,6 +2,9 @@ package tn.amin.mpro2.features.state;
 
 import androidx.annotation.Nullable;
 
+import java.util.Collections;
+
+import tn.amin.mpro2.R;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.Feature;
 import tn.amin.mpro2.features.FeatureId;
@@ -53,10 +56,14 @@ public class DefaultCameraFeature extends Feature
         final long threadKey = gateway.currentThreadKey;
 
         Logger.info("Starting default camera...");
-        DefaultCameraMaster.launchCamera(gateway.activityHook, StorageConstants.modulePictures, (imageFile) -> {
+        boolean success = DefaultCameraMaster.launchCamera(gateway.activityHook, StorageConstants.modulePictures, (imageFile) -> {
             gateway.mailboxConnector.sendAttachment(new MediaAttachment(imageFile, "camera.jpg"), threadKey, 0);
         });
 
-        return HookListenerResult.consume(true);
+        if (success) return HookListenerResult.consume(true);
+        else {
+            gateway.getToaster().toast(R.string.camera_need_permission, true);
+            return HookListenerResult.ignore();
+        }
     }
 }

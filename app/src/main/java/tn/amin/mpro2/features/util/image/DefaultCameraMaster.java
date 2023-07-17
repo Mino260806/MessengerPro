@@ -21,9 +21,13 @@ public class DefaultCameraMaster {
 
             // Check if there is a camera app on the device
             if (cameraIntent.resolveActivity(activityHook.currentActivity.get().getPackageManager()) != null) {
-                activityHook.startIntent(cameraIntent, 2608, (intent) -> {
-                    onCapture.accept(imageFile);
-                });
+                try {
+                    activityHook.startIntent(cameraIntent, 2608, (intent) -> {
+                        onCapture.accept(imageFile);
+                    });
+                } catch (SecurityException e) {
+                    return false;
+                }
                 return true;
             }
         }
