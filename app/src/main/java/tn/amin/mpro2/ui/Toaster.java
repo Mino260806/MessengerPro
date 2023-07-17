@@ -18,4 +18,8 @@ public class Toaster {
         Toast.makeText(context, res.getString(message, args),
                 isLongDuration? Toast.LENGTH_LONG: Toast.LENGTH_SHORT).show();
     }
+
+    public void toast(@StringRes int message, boolean isLongDuration) {
+        toast(message, new Object[]{}, isLongDuration);
+    }
 }
