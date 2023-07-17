@@ -131,5 +131,5 @@
     <string name="translation_error">Translation error</string>
     <string name="keep_original_message">Keep original message</string>
     <string name="disabling_hook">Disabling hook %s due to error, please check logs for more details. All related features will stop working</string>
-    <string name="camera_need_permission">Unable to launch default camera, make sure you have granted camera permission</string>
+    <string name="camera_need_permission">Unable to launch default camera, please grant camera permission first from messenger camera</string>
 </resources>
