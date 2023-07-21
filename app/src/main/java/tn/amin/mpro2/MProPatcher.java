@@ -66,6 +66,7 @@ public class MProPatcher implements
     private BroadcastReceiverHook broadcastReceiverHook;
 
     private MProToolbar mToolbar;
+    private boolean mUiHooked = false;
 
     private Runnable mOnInternalSetupFinishedCallback = () -> {};
     private String mPendingError = null;
@@ -319,19 +320,25 @@ public class MProPatcher implements
         // Wait for preferences to be ready before implementing UI-related features
         doOnInternalSetupFinished(() -> {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                gateway.res.refreshTheme(activity);
+                if (!mUiHooked) {
+                    mUiHooked = true;
+                    gateway.res.refreshTheme(activity);
 
-                Logger.info("Injecting UI hooks...");
-                mHookManager.inject(gateway, BaseHook::requiresUI);
+                    Logger.info("Injecting UI hooks...");
+                    mHookManager.inject(gateway, BaseHook::requiresUI);
 
-                Logger.info("Injecting UI exploration hooks...");
-                OrcaExplorer.exploreUI(gateway, activity);
+                    Logger.info("Injecting UI exploration hooks...");
+                    OrcaExplorer.exploreUI(gateway, activity);
 
-                Logger.info("Summoning toolbar...");
+                    Logger.info("Summoning toolbar...");
+
+                } else {
+                    mToolbar.attacher.detach();
+                }
+
                 mToolbar = MProToolbar.summon(activity, mPreferences, gateway.res, mFeatureManager,
                         this, mPreferences.getToolbarX(), mPreferences.getToolbarY());
                 mToolbar.setVisibility(View.GONE);
-
                 notifySetupFinished();
             }, 500);
         });

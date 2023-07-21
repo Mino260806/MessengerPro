@@ -2,12 +2,17 @@ package tn.amin.mpro2.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.JsonReader;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import tn.amin.mpro2.debug.Logger;
+import tn.amin.mpro2.features.util.theme.StaticThemeColorSupplier;
+import tn.amin.mpro2.features.util.theme.ThemeInfo;
+import tn.amin.mpro2.features.util.theme.Themes;
 import tn.amin.mpro2.features.util.translate.TranslationInfo;
 import tn.amin.mpro2.file.StorageConstants;
 import tn.amin.mpro2.ui.touch.SwipeDirection;
@@ -131,6 +136,30 @@ public class ModulePreferences {
         String raw = spTranslate.getString("s:" + threadKey, null);
         if (raw == null) return null;
         return TranslationInfo.fromString(raw);
+    }
+
+    public int getColorTheme() {
+        int themeIndex = sp.getInt("mpro_ui_color_theme", 0);
+        ThemeInfo themeInfo = Themes.themes[themeIndex];
+        if (themeInfo.name.equals("Custom")) {
+            Set<String> rawSupplier = sp.getStringSet("mpro_ui_color_theme_custom", null);
+            if (rawSupplier == null) throw new RuntimeException("mpro_ui_color_theme_custom holds a null value");
+
+            themeInfo.colorSupplier = StaticThemeColorSupplier.deserialize(rawSupplier);
+        }
+
+        return themeIndex;
+    }
+
+    public void setColorTheme(int themeIndex) {
+        ThemeInfo themeInfo = Themes.themes[themeIndex];
+        SharedPreferences.Editor edit = sp.edit()
+                .putInt("mpro_ui_color_theme", themeIndex);
+        if (themeInfo.name.equals("Custom")) {
+            Set<String> rawSupplier = ((StaticThemeColorSupplier) themeInfo.colorSupplier).serialize();
+            edit.putStringSet("mpro_ui_color_theme_custom", rawSupplier);
+        }
+        edit.apply();
     }
 
     public boolean isToolbarButtonVisible(String key) {

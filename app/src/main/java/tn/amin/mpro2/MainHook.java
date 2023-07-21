@@ -7,6 +7,7 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import tn.amin.mpro2.constants.OrcaInfo;
+import tn.amin.mpro2.debug.OrcaExplorer;
 import tn.amin.mpro2.orca.OrcaGateway;
 
 public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
@@ -35,6 +36,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
         MProPatcher featuresBox = new MProPatcher(gateway);
         featuresBox.init();
+
+        OrcaExplorer.exploreEarly(lpparam.classLoader);
     }
 
     private Resources getResources() {
