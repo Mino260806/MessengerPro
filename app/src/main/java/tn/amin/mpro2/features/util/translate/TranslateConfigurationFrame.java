@@ -3,12 +3,9 @@ package tn.amin.mpro2.features.util.translate;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.ViewStub;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -19,8 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import tn.amin.mpro2.R;
 import tn.amin.mpro2.orca.OrcaGateway;
-import tn.amin.mpro2.ui.ModuleContextWrapper;
-import tn.amin.mpro2.util.StringUtil;
 
 public class TranslateConfigurationFrame extends FrameLayout {
     private OnSaveListener mListener = null;

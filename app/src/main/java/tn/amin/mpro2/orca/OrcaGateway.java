@@ -58,7 +58,7 @@ public class OrcaGateway {
     private final ArrayList<Runnable> mailboxCallback = new ArrayList<>();
 
     private WeakReference<Context> mContext = new WeakReference<>(null);
-    private WeakReference<Activity> mActivity;
+    private WeakReference<Activity> mActivity = new WeakReference<>(null);
     private WeakReference<MProHookManager> mHookManager = new WeakReference<>(null);
     private WeakReference<MProFeatureManager> mFeatureManager = new WeakReference<>(null);
     private Toaster mToaster = null;
@@ -150,8 +150,21 @@ public class OrcaGateway {
         return new ModuleContextWrapper(mActivity.get(), res.unwrap());
     }
 
+    ArrayList<Runnable> mActivityCallbacks = new ArrayList<>();
+    public void doOnActivity(Runnable runnable) {
+        if (getActivity() == null) {
+            mActivityCallbacks.add(runnable);
+        } else {
+            runnable.run();
+        }
+    }
+
     public void setActivity(Activity activity) {
         mActivity = new WeakReference<>(activity);
+        for (Runnable callback: mActivityCallbacks) {
+            callback.run();
+        }
+        mActivityCallbacks.clear();
     }
 
     public Activity getActivity() {
