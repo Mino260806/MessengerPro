@@ -226,6 +226,10 @@ public class CommandsManager {
 
     private int comAPI(String api, CommandContext c) {
         new Handler(Looper.getMainLooper()).post(() -> {
+            if (mProgressDialog != null) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+            }
             mProgressDialog = ProgressDialog.show(gateway.getActivity(), "Loading", "Querying response");
         });
 
@@ -264,7 +268,10 @@ public class CommandsManager {
             }
 
             new Handler(Looper.getMainLooper()).post(() -> {
-                if (mProgressDialog != null) mProgressDialog.dismiss();
+                if (mProgressDialog != null) {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
                 if (apiResult != null) {
                     apiResult.revealResult(messageSender);
                 }
