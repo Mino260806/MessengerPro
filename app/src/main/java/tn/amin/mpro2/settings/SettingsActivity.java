@@ -153,6 +153,10 @@ public class SettingsActivity extends AppCompatActivity {
                     displayFeaturesSettings();
                     break;
 
+                case AI_CONFIG:
+                    displayAiConfigSettings();
+                    break;
+
                 case TOOLBAR:
                     displayToolbarSettings();
                     break;
@@ -224,6 +228,12 @@ public class SettingsActivity extends AppCompatActivity {
 
                         return false;
                     });
+
+            linkPreferenceToFragment("mpro_commands_ai_config", SettingsType.AI_CONFIG, "fragAiConfig");
+        }
+
+        private void displayAiConfigSettings() {
+            addPreferencesFromResource(R.xml.preferences_aiconfig);
         }
 
         private void displayRootSettings() {

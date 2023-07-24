@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <EditTextPreference
+        android:defaultValue="gpt-4"
+        android:title="@string/pref_aiconfig_provider"
+        android:key="mpro_aiconfig_model"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:defaultValue="ChatgptAi"
+        android:title="@string/pref_aiconfig_provider"
+        android:key="mpro_aiconfig_provider"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:defaultValue=""
+        android:title="@string/pref_aiconfig_auth"
+        android:key="mpro_aiconfig_authdata"
+        app:useSimpleSummaryProvider="true" />
+</PreferenceScreen>

@@ -9,6 +9,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 
+import android.app.ProgressDialog;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -17,11 +18,14 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 
 import de.robv.android.xposed.XposedBridge;
 import tn.amin.mpro2.R;
+import tn.amin.mpro2.constants.ModuleInfo;
 import tn.amin.mpro2.constants.StringConstants;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.util.message.command.api.ApiResult;
@@ -29,6 +33,7 @@ import tn.amin.mpro2.features.util.message.command.api.DuckDuckGoAPI;
 import tn.amin.mpro2.features.util.message.command.api.FreeDictionaryAPI;
 import tn.amin.mpro2.features.util.message.command.api.RedditAPI;
 import tn.amin.mpro2.features.util.message.command.api.WikipediaAPI;
+import tn.amin.mpro2.features.util.message.command.provider.AIProviderInteracter;
 import tn.amin.mpro2.file.FileHelper;
 import tn.amin.mpro2.messaging.MessageSender;
 import tn.amin.mpro2.orca.OrcaGateway;
@@ -42,6 +47,7 @@ public class CommandsManager {
     private static final ArrayList<CommandFields> mCommands = new ArrayList<>();
 
     private ParseResults<Object> mCachedParseResults;
+    private ProgressDialog mProgressDialog = null;
 
     static {
         mCommands.add(new CommandFields("word", "stub"));
@@ -70,6 +76,8 @@ public class CommandsManager {
         mDispatcher.register(literal("empty").executes(c -> comEmpty(1, 1, c))
                 .then(argument("row", integer(1)).executes(c -> comEmpty(getInteger(c, "row"), 1, c))
                         .then(argument("column", integer(1)).executes(c -> comEmpty(getInteger(c, "row"), getInteger(c, "column"), c)))));
+        mDispatcher.register(literal("ai")
+                .then(argument("prompt", greedyString()).executes(c -> comAPI("ai", c))));
     }
 
     private void update(String message, CommandBundle source) {
@@ -94,6 +102,24 @@ public class CommandsManager {
             Logger.error(e);
             return false;
         }
+    }
+
+    private ApiResult comAI(String prompt) {
+        if (!gateway.isPackageInstalled(ModuleInfo.PACKAGE_AI_PLUGIN)) {
+            return new ApiResult.SendText(gateway.res.getString(R.string.need_install_aiplugin));
+        }
+
+        String completion = AIProviderInteracter.getCompletion(
+                gateway.getContext(),
+                gateway.pref.getAiConfigModel(),
+                gateway.pref.getAiConfigProvider(),
+                gateway.pref.getAiConfigAuthData(),
+                prompt
+        );
+        if (completion == null || StringUtils.isBlank(completion)) completion = gateway.res.getString(R.string.unexpected_error);
+
+        ApiResult result = new ApiResult.SendText(completion);
+        return result;
     }
 
     private ApiResult comReddit(String subreddit, String sort) {
@@ -170,6 +196,10 @@ public class CommandsManager {
     }
 
     private int comAPI(String api, CommandContext c) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            mProgressDialog = ProgressDialog.show(gateway.getActivity(), "Loading", "Querying response");
+        });
+
         CommandBundle bundle = (CommandBundle) c.getSource();
         MessageSender messageSender = bundle.messageSender;
 
@@ -193,13 +223,19 @@ public class CommandsManager {
                 case "search":
                     apiResult = comSearch(getString(c, "term"));
                     break;
+                case "ai":
+                    apiResult = comAI(getString(c, "prompt"));
+                    break;
                 default:
                     XposedBridge.log(new UnknownError());
                     apiResult = new ApiResult.SendText(gateway.res.getText(R.string.unexpected_error));
             }
 
             new Handler(Looper.getMainLooper()).post(() -> {
-                apiResult.revealResult(messageSender);
+                if (mProgressDialog != null) mProgressDialog.dismiss();
+                if (apiResult != null) {
+                    apiResult.revealResult(messageSender);
+                }
             });
         }).start();
         return 1;
