@@ -9,4 +9,6 @@ public class ModuleInfo {
     public static final int MIN_ORCA_VERSION = 313202933;
     public static final int MAX_ORCA_VERSION = 313203012;
     public static final String RECOMMENDED_ORCA_VERSION_STRING = "416.0.0.9.76";
+
+    public static final String PACKAGE_AI_PLUGIN = "tn.amin.mproai";
 }

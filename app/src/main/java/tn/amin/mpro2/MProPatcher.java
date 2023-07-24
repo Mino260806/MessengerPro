@@ -107,10 +107,7 @@ public class MProPatcher implements
      * Sets {@link MProPatcher#mPendingError} if not
      */
     private void ensureCompatibility() {
-        PackageManager pm = gateway.getContext().getPackageManager();
-        try {
-            pm.getPackageInfo(BuildConfig.APPLICATION_ID, 0);
-        } catch (PackageManager.NameNotFoundException e) {
+        if (!gateway.isPackageInstalled(BuildConfig.APPLICATION_ID)) {
             mPendingError = gateway.res.getString(R.string.need_install_module);
         }
 

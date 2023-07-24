@@ -138,6 +138,18 @@ public class ModulePreferences {
         return TranslationInfo.fromString(raw);
     }
 
+    public String getAiConfigModel() {
+        return sp.getString("mpro_aiconfig_model", "gpt-4");
+    }
+
+    public String getAiConfigProvider() {
+        return sp.getString("mpro_aiconfig_provider", "ChatgptAi");
+    }
+
+    public String getAiConfigAuthData() {
+        return sp.getString("mpro_aiconfig_authdata", "");
+    }
+
     public int getColorTheme() {
         int themeIndex = sp.getInt("mpro_ui_color_theme", 0);
         ThemeInfo themeInfo = Themes.themes[themeIndex];
