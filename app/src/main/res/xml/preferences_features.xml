@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         android:key="category_ui_key"
         android:title="@string/pref_category_ui"/>
@@ -47,6 +48,13 @@
         android:defaultValue="true"
         android:key="mpro_commands_send_input"
         android:title="@string/pref_send_command_input" />
+    <ListPreference
+        android:defaultValue="never"
+        android:key="mpro_commands_allow_other"
+        android:title="@string/pref_allow_other_command"
+        android:entries="@array/allow_other_command"
+        android:entryValues="@array/allow_other_command_values"
+        app:useSimpleSummaryProvider="true" />
     <Preference
         android:key="mpro_commands_ai_config"
         android:title="@string/pref_aiconfig" />

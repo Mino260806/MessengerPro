@@ -58,6 +58,8 @@ public class MailboxConnector {
             disptachParams[8] = Mention.joinThreadKeys(textMessage.mentions);
             disptachParams[9] = Mention.joinTypes(textMessage.mentions);
             disptachParams[10] = textMessage.replyMessageId;
+            if (textMessage.replyMessageId != null)
+                disptachParams[11] = 1;
             try {
                 XposedBridge.invokeOriginalMethod(disptach, null, disptachParams);
             } catch (Throwable t) {
@@ -103,7 +105,7 @@ public class MailboxConnector {
             long time = System.currentTimeMillis() * 1000;
             try {
                 XposedBridge.invokeOriginalMethod(disptach, null, new Object[] {
-                        11, 0, 0, 65540, threadKey, stickerId, mailbox.get(), null, null, null, null, null, null, "", null, null, "", null, null, null, null, "You sent a sticker.", null, null, null, null, null, null, replyId, null, null, null, time, null, null, null, null, null, notificationScope
+                        11, 0, 0, 65540, threadKey, stickerId, mailbox.get(), null, null, null, null, null, null, "", null, null, "", null, null, null, null, "You sent a sticker.", null, null, null, null, null, null, replyId, replyId != null? 1: 0, null, null, time, null, null, null, null, null, notificationScope
                 });
             } catch (Throwable t) {
                 Logger.error(t);
@@ -125,8 +127,6 @@ public class MailboxConnector {
     }
 
     public void sendAttachment(MediaAttachment attachment, final long threadKey, final int delay, final String replyId) {
-        // TODO find another method that supports replyId
-
         final Class<?> MailboxSDKJNI = XposedHelpers.findClass(OrcaClassNames.MAILBOX_SDK_JNI, classLoader);
         final Set<Method> disptachList = XposedHilfer.findAllMethods(MailboxSDKJNI, "dispatchVIJOOOOOOOOOOOOZ");
         if (disptachList.size() != 1)
@@ -149,7 +149,7 @@ public class MailboxConnector {
             try {
                 XposedBridge.invokeOriginalMethod(disptach, null, new Object[] {
 //                        53, threadKey, mailbox.get(), orcaAttachment, "", "You sent a file.", null, null, time, null, notificationScope
-                        58, 65540, threadKey, mailbox.get(), orcaAttachment, "You sent a file.", null, null, null, null, null, time, null, null,  notificationScope, true
+                        58, 65540, threadKey, mailbox.get(), orcaAttachment, "You sent a file.", replyId, replyId != null? 1: 0, null, null, null, time, null, null,  notificationScope, true
                 });
             } catch (Throwable t) {
                 Logger.error(t);

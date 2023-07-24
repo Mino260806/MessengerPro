@@ -37,6 +37,10 @@ public class ModulePreferences {
         return sp.getBoolean("mpro_commands_send_input", true);
     }
 
+    public String getCommandsAllowOther() {
+        return sp.getString("mpro_commands_allow_other", "never");
+    }
+
     public boolean isFormattingEnabled() {
         return sp.getBoolean("mpro_text_format", true);
     }

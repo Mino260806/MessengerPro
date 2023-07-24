@@ -2,11 +2,13 @@ package tn.amin.mpro2.features.state;
 
 import androidx.annotation.Nullable;
 
+import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.Feature;
 import tn.amin.mpro2.features.FeatureId;
 import tn.amin.mpro2.features.FeatureType;
 import tn.amin.mpro2.features.util.message.command.CommandsManager;
 import tn.amin.mpro2.hook.HookId;
+import tn.amin.mpro2.hook.all.MessageReceivedHook;
 import tn.amin.mpro2.hook.all.MessageSentHook;
 import tn.amin.mpro2.hook.listener.HookListenerResult;
 import tn.amin.mpro2.messaging.OrcaMessageSender;
@@ -14,7 +16,7 @@ import tn.amin.mpro2.orca.OrcaGateway;
 import tn.amin.mpro2.orca.datatype.TextMessage;
 
 public class CommandsFeature extends Feature
-        implements MessageSentHook.MessageSentListener {
+        implements MessageSentHook.MessageSentListener, MessageReceivedHook.MessageReceivedListener {
     private final CommandsManager mCommandsManager;
 
     public CommandsFeature(OrcaGateway gateway) {
@@ -35,7 +37,7 @@ public class CommandsFeature extends Feature
 
     @Override
     public HookId[] getHookIds() {
-        return new HookId[] { HookId.MESSAGE_SEND};
+        return new HookId[] { HookId.MESSAGE_SEND, HookId.MESSAGE_RECEIVE };
     }
 
     @Nullable
@@ -49,10 +51,6 @@ public class CommandsFeature extends Feature
         return true;
     }
 
-    public boolean isCommandsInputEnabled() {
-        return gateway.pref.sp.getBoolean("mpro_commands_send_input", true);
-    }
-
     @Override
     public HookListenerResult<TextMessage> onMessageSent(TextMessage message, Long threadKey) {
         String content = message.content;
@@ -61,13 +59,24 @@ public class CommandsFeature extends Feature
 
         boolean success = mCommandsManager.execute(content, new OrcaMessageSender(gateway.mailboxConnector, threadKey));
         if (success) {
-            if (isCommandsInputEnabled()) {
+            if (gateway.pref.isCommandsInputEnabled()) {
                 return HookListenerResult.consume(message);
             } else {
                 return HookListenerResult.consume(null);
             }
         } else {
             return HookListenerResult.ignore();
+        }
+    }
+
+    @Override
+    public void onMessageReceived(String content, String messageId, long senderUserKey, long convThreadKey) {
+        String allowOtherStatus = gateway.pref.getCommandsAllowOther();
+        if (!isEnabled() || !content.startsWith("/") || allowOtherStatus.equals("never")) return;
+
+        if (allowOtherStatus.equals("always") || (allowOtherStatus.equals("when_inside")
+                && gateway.requireThreadKey(false))) {
+            boolean success = mCommandsManager.execute(content, new OrcaMessageSender(gateway.mailboxConnector, convThreadKey, messageId));
         }
     }
 }
