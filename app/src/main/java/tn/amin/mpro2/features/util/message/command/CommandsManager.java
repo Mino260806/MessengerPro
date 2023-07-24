@@ -10,6 +10,7 @@ import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 
 import android.app.ProgressDialog;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -21,6 +22,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import de.robv.android.xposed.XposedBridge;
@@ -31,14 +34,18 @@ import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.util.message.command.api.ApiResult;
 import tn.amin.mpro2.features.util.message.command.api.DuckDuckGoAPI;
 import tn.amin.mpro2.features.util.message.command.api.FreeDictionaryAPI;
+import tn.amin.mpro2.features.util.message.command.api.LatexAPI;
 import tn.amin.mpro2.features.util.message.command.api.RedditAPI;
 import tn.amin.mpro2.features.util.message.command.api.WikipediaAPI;
 import tn.amin.mpro2.features.util.message.command.provider.AIProviderInteracter;
 import tn.amin.mpro2.file.FileHelper;
+import tn.amin.mpro2.file.StorageConstants;
 import tn.amin.mpro2.messaging.MessageSender;
 import tn.amin.mpro2.orca.OrcaGateway;
 import tn.amin.mpro2.orca.OrcaStickers;
+import tn.amin.mpro2.orca.builder.AttachmentBuilder;
 import tn.amin.mpro2.orca.datatype.MediaAttachment;
+import tn.amin.mpro2.util.BitmapUtil;
 import tn.amin.mpro2.util.StringUtil;
 
 public class CommandsManager {
@@ -48,6 +55,8 @@ public class CommandsManager {
 
     private ParseResults<Object> mCachedParseResults;
     private ProgressDialog mProgressDialog = null;
+
+    private boolean mJlatexMathInit = false;
 
     static {
         mCommands.add(new CommandFields("word", "stub"));
@@ -78,6 +87,8 @@ public class CommandsManager {
                         .then(argument("column", integer(1)).executes(c -> comEmpty(getInteger(c, "row"), getInteger(c, "column"), c)))));
         mDispatcher.register(literal("ai")
                 .then(argument("prompt", greedyString()).executes(c -> comAPI("ai", c))));
+        mDispatcher.register(literal("latex")
+                .then(argument("expression", greedyString()).executes(c -> comAPI("latex", c))));
     }
 
     private void update(String message, CommandBundle source) {
@@ -195,6 +206,24 @@ public class CommandsManager {
         return 1;
     }
 
+    private ApiResult comLatex(String expression) {
+        String url = LatexAPI.getLinkToLatexImage(expression);
+        Bitmap bmp = BitmapUtil.getBitmapFromUrl(url);
+
+        if (bmp == null)
+            return new ApiResult.SendText(gateway.res.getText(R.string.unexpected_error));
+
+        bmp = BitmapUtil.convertTransparentToWhiteBackground(bmp, 10);
+
+        File image = FileHelper.createTempFile(".jpg", StorageConstants.moduleInternalCache);
+        BitmapUtil.saveBitmapAsJPEG(bmp, image);
+
+        if (image == null)
+            return new ApiResult.SendText(gateway.res.getText(R.string.unexpected_error));
+
+        return new ApiResult.SendMedia(new MediaAttachment(image, "latex.jpg", AttachmentBuilder.FILETYPE_IMAGE));
+    }
+
     private int comAPI(String api, CommandContext c) {
         new Handler(Looper.getMainLooper()).post(() -> {
             mProgressDialog = ProgressDialog.show(gateway.getActivity(), "Loading", "Querying response");
@@ -225,6 +254,9 @@ public class CommandsManager {
                     break;
                 case "ai":
                     apiResult = comAI(getString(c, "prompt"));
+                    break;
+                case "latex":
+                    apiResult = comLatex(getString(c, "expression"));
                     break;
                 default:
                     XposedBridge.log(new UnknownError());
