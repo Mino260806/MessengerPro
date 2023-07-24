@@ -9,6 +9,7 @@ import android.webkit.MimeTypeMap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,33 @@ import tn.amin.mpro2.debug.Logger;
 
 public class FileHelper {
     public static File downloadFromUrl(String url) {
+        return downloadFromUrl(url, StorageConstants.moduleInternalCache);
+    }
+
+    public static File downloadFromUrl(String url, File directory) {
+        InputStream inputStream = getInputStreamFromUrl(url);
+
+        if (inputStream == null) return null;
+
+        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(url);
+        File downloadedFile = createTempFile(fileExtension, directory);
+        FileOutputStream outputStream = null;
+
+        try {
+            outputStream = new FileOutputStream(downloadedFile);
+            copyFile(inputStream, outputStream);
+            inputStream.close();
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
+            Logger.error(e);
+            return null;
+        }
+
+        return downloadedFile;
+    }
+
+    public static InputStream getInputStreamFromUrl(String url) {
         URLConnection urlConnection;
         try {
             urlConnection = new URL(url).openConnection();
@@ -30,22 +58,12 @@ public class FileHelper {
             int responseCode = httpsURLConnection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 int fileLength = httpsURLConnection.getContentLength();
-                String fileExtension = MimeTypeMap.getFileExtensionFromUrl(url);
 
-                InputStream inputStream = httpsURLConnection.getInputStream();
-                File downloadedFile = createTempFile(fileExtension);
-                FileOutputStream outputStream = new FileOutputStream(downloadedFile);
-
-                copyFile(inputStream, outputStream);
-
-                inputStream.close();
-                outputStream.flush();
-                outputStream.close();
-
-                return downloadedFile;
+                return httpsURLConnection.getInputStream();
             }
 
-            throw new IOException("responseCode: " + responseCode);
+            Logger.error(new IOException("responseCode: " + responseCode));
+            return null;
         } catch (IOException e) {
             Logger.error(e);
             return null;
