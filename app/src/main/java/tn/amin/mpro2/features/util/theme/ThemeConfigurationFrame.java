@@ -23,6 +23,7 @@ import java.util.Map;
 
 import tn.amin.mpro2.R;
 import tn.amin.mpro2.debug.Logger;
+import tn.amin.mpro2.features.util.theme.supplier.StaticThemeColorSupplier;
 import tn.amin.mpro2.orca.OrcaGateway;
 
 public class ThemeConfigurationFrame extends FrameLayout {
@@ -113,7 +114,7 @@ public class ThemeConfigurationFrame extends FrameLayout {
 
     private void setTheme(int themeIndex, boolean fromUser) {
         mThemeIndex = themeIndex;
-        mThemeInfo = Themes.themes[themeIndex];
+        mThemeInfo = Themes.themes.get(themeIndex);
         if (!fromUser)
             mSpinner.setSelection(themeIndex);
         for (Map.Entry<ColorType, EditText> colorEditEntry: mColorEdits.entrySet()) {

@@ -2,8 +2,6 @@ package tn.amin.mpro2.features.action;
 
 import android.app.AlertDialog;
 import android.graphics.Color;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -36,10 +34,7 @@ public class ColorThemingFeature extends Feature
     public ColorThemingFeature(OrcaGateway gateway) {
         super(gateway);
 
-        if (isEnabled()) {
-            gateway.doOnActivity(() -> new Handler(Looper.getMainLooper()).post(
-                    () -> gateway.getActivity().recreate()));
-        }
+        Themes.addMonetThemeIfSupported(gateway.getContext().getResources());
 
         setTheme(gateway.pref.getColorTheme());
     }
@@ -131,7 +126,7 @@ public class ColorThemingFeature extends Feature
     }
 
     public void setTheme(int themeIndex) {
-        mTheme = Themes.themes[themeIndex];
+        mTheme = Themes.themes.get(themeIndex);
         mThemeIndex = themeIndex;
         mThemeReplacer.setTheme(mTheme);
     }

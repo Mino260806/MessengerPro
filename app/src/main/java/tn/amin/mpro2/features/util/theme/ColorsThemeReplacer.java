@@ -7,6 +7,8 @@ import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import tn.amin.mpro2.features.util.theme.supplier.ThemeColorSupplier;
+
 public class ColorsThemeReplacer {
     private final Map<Integer, ColorType> mColorTypeMapLight = initColorTypeMapLight();
     private final Map<Integer, ColorType> mColorTypeMapDark = initColorTypeMapDark();

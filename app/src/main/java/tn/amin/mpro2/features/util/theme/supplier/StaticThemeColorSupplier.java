@@ -1,11 +1,11 @@
-package tn.amin.mpro2.features.util.theme;
-
-import android.graphics.Color;
+package tn.amin.mpro2.features.util.theme.supplier;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import tn.amin.mpro2.features.util.theme.ColorType;
 
 public class StaticThemeColorSupplier extends ThemeColorSupplier {
     private final HashMap<ColorType, Integer> mColorMap;

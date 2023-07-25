@@ -1,13 +1,20 @@
 package tn.amin.mpro2.features.util.theme;
 
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import tn.amin.mpro2.features.util.theme.supplier.DynamicThemeColorSupplier;
+import tn.amin.mpro2.features.util.theme.supplier.KeepThemeColorSupplier;
+import tn.amin.mpro2.features.util.theme.supplier.StaticThemeColorSupplier;
+
 public class Themes {
-    public static final ThemeInfo[] themes = new ThemeInfo[] {
+    public static final ArrayList<ThemeInfo> themes = new ArrayList<>(Arrays.asList(
             new ThemeInfo("None", new KeepThemeColorSupplier()),
 
             new ThemeInfo("Orange", new StaticThemeColorSupplier.Builder()
@@ -48,11 +55,17 @@ public class Themes {
                     .addColor(ColorType.SECONDARY_DARK, Color.parseColor("#00574e"))
                     .build()),
 
-            new ThemeInfo("Custom", null)
-    };
+            new ThemeInfo("Custom", null)));
+
+    public static void addMonetThemeIfSupported(Resources resources) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            themes.add(1, new ThemeInfo("Follow System",
+                    new DynamicThemeColorSupplier(resources)));
+        }
+    }
 
     public static List<String> getThemeNames() {
-        return Arrays.stream(themes)
+        return themes.stream()
                 .map(themeInfo -> themeInfo.name)
                 .collect(Collectors.toList());
     }
