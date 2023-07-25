@@ -6,7 +6,6 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,7 +31,7 @@ import tn.amin.mpro2.features.FeatureId;
 import tn.amin.mpro2.features.MProFeatureManager;
 import tn.amin.mpro2.file.StorageConstants;
 import tn.amin.mpro2.hook.ActivityHook;
-import tn.amin.mpro2.hook.BaseHook;
+import tn.amin.mpro2.hook.ApplicationHook;
 import tn.amin.mpro2.hook.BroadcastReceiverHook;
 import tn.amin.mpro2.hook.HookTime;
 import tn.amin.mpro2.hook.MProHookManager;
@@ -51,6 +50,7 @@ import tn.amin.mpro2.util.Range;
  * Implements all features of the module
  */
 public class MProPatcher implements
+        ApplicationHook.ApplicationEventListener,
         ActivityHook.ActivityEventListener,
         BroadcastReceiverHook.BroadcastReceiverEventListener,
         MProToolbar.Listener, LongPressDetector.LongPressListener {
@@ -63,6 +63,7 @@ public class MProPatcher implements
     private MProFeatureManager mFeatureManager;
     private MProHookManager mHookManager;
 
+    private ApplicationHook applicationHook;
     private ActivityHook activityHook;
     private BroadcastReceiverHook broadcastReceiverHook;
 
@@ -92,6 +93,8 @@ public class MProPatcher implements
      * </ul>
      */
     public void init() {
+        applicationHook = new ApplicationHook(OrcaInfo.ORCA_APPLICATION,
+                gateway.classLoader, this);
         activityHook = new ActivityHook(OrcaInfo.ORCA_MAIN_ACTIVITY,
                 gateway.classLoader, this);
         broadcastReceiverHook = new BroadcastReceiverHook(OrcaInfo.ORCA_SAMPLE_EXPORTED_RECEIVER,
@@ -99,8 +102,6 @@ public class MProPatcher implements
         gateway.activityHook = activityHook;
 
         mSettingsLongPressDetector.setLongPressListener(this);
-
-        tryToGetApplication();
     }
 
     /**
@@ -124,29 +125,29 @@ public class MProPatcher implements
     /**
      * Continuously tries to get ApplicationContext through reflection with 500ms delay
      */
-    private void tryToGetApplication() {
-        new Thread(() -> {
-            while (getApplication() == null) {
-                Application application = reflectApplication();
-                if (application != null) {
-                    setApplication(application);
-                    triggerContextSet(application);
-                } else {
-                    Logger.info("Application is null, trying again in 500ms...");
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ignored) {}
-                }
-            }
-        }).start();
-    }
+//    private void tryToGetApplication() {
+//        new Thread(() -> {
+//            while (getApplication() == null) {
+//                Application application = reflectApplication();
+//                if (application != null) {
+//                    setApplication(application);
+//                    triggerContextSet(application);
+//                } else {
+//                    Logger.info("Application is null, trying again in 500ms...");
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException ignored) {}
+//                }
+//            }
+//        }).start();
+//    }
 
     /**
      * Called when context is captured.
      * Initializes essential components and injects hooks
      */
-    private void onContextAcquired() {
-        Logger.info("Context acquired !");
+    private void setupNormal() {
+        Logger.info("Starting normal setup");
 
         Logger.info("Initializing module preferences...");
         mPreferences = new ModulePreferences(getContext());
@@ -183,27 +184,6 @@ public class MProPatcher implements
             mHookManager = new MProHookManager(gateway);
             mHookManager.initStateTracking(gateway.state.sp);
 
-            // Check if any of messenger / module version has changed.
-            // If so, reset everything and search again for methods
-            if (gateway.state.hasOrcaVersionChanged() || gateway.state.hasModuleVersionChanged()) {
-                Logger.info("Detected version change");
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    Toast.makeText(getContext(), "New messenger / MPro installation or update detected", Toast.LENGTH_LONG).show();
-                });
-
-                // States are only useful for debugging,
-                // they appear in Settings > Advanced > Hooks state
-                mHookManager.resetStates();
-
-                Logger.info("Unobfuscating components...");
-                gateway.initUnobfuscator(getContext(), true);
-            } else {
-                Logger.info("Messenger version is unchanged, skipping deobfuscation search");
-
-                Logger.info("Unobfuscating components...");
-                gateway.initUnobfuscator(getContext(), false);
-            }
-
             Logger.info("Injecting normal hooks...");
             mHookManager.inject(gateway, hook -> HookTime.NORMAL.equals(hook.getHookTime()));
             gateway.setHookManager(mHookManager);
@@ -229,6 +209,37 @@ public class MProPatcher implements
                 showErrorDialog(R.string.failed_load_module);
             }, 500));
         }
+
+        Logger.info("Normal setup finished");
+    }
+
+    public void setupHeavy() {
+        Logger.info("Starting heavy setup");
+
+        // Check if any of messenger / module version has changed.
+        // If so, reset everything and search again for methods
+        if (gateway.state.hasOrcaVersionChanged() || gateway.state.hasModuleVersionChanged()) {
+            Logger.info("Detected version change");
+            new Handler(Looper.getMainLooper()).post(() -> {
+                Toast.makeText(getContext(), "New messenger / MPro installation or update detected", Toast.LENGTH_LONG).show();
+            });
+
+            // States are only useful for debugging,
+            // they appear in Settings > Advanced > Hooks state
+            mHookManager.resetStates();
+
+            Logger.info("Unobfuscating components...");
+            gateway.initUnobfuscator(getContext(), true);
+        } else {
+            Logger.info("Messenger version is unchanged, skipping deobfuscation search");
+
+            Logger.info("Unobfuscating components...");
+            gateway.initUnobfuscator(getContext(), false);
+        }
+
+        mHookManager.inject(gateway, hook -> HookTime.AFTER_DEOBFUSCATION.equals(hook.getHookTime()));
+
+        Logger.info("Heavy setup finished");
     }
 
     private AlertDialog.Builder buildDialog(@StringRes int title, String message) {
@@ -309,6 +320,15 @@ public class MProPatcher implements
         }
     }
 
+    @Override
+    public void onApplicationCreate(Application application) {
+        setApplication(application);
+        triggerContextSet(application);
+
+        setupNormal();
+        new Thread(this::setupHeavy).start();
+    }
+
     /**
      * Called when Messenger app is launched
      * @param activity Messenger's MainActivity
@@ -316,7 +336,6 @@ public class MProPatcher implements
     @Override
     public void onActivityCreate(final Activity activity) {
         setActivity(activity);
-        triggerContextSet(activity);
 
         // Wait for preferences to be ready before implementing UI-related features
         doOnInternalSetupFinished(() -> {
@@ -375,7 +394,6 @@ public class MProPatcher implements
         Logger.info("Received broadcast");
 
         setReceiverContext(context);
-        triggerContextSet(context);
 
         OrcaBridge.handleIntent(intent, new OrcaBridge.ActionCallback() {
             @Override
@@ -518,7 +536,6 @@ public class MProPatcher implements
         if (mContext.get() == null) {
             mContext = new WeakReference<>(context);
             gateway.setContext(context);
-            new Thread(this::onContextAcquired).start();
         }
     }
 

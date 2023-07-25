@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorLong;
 
 import java.util.HashMap;
@@ -32,44 +33,15 @@ public class UIColorsHook extends BaseHook {
     @Override
     protected Set<XC_MethodHook.Unhook> injectInternal(OrcaGateway gateway) {
         Set<XC_MethodHook.Unhook> unhooks = new HashSet<>();
-//        unhooks.addAll(XposedBridge.hookAllMethods(Paint.class, "setColor", new XC_MethodHook() {
-//            @Override
-//            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                Long newColor = replaceColor(((Number) param.args[0]).longValue());
-//                if (newColor != null) {
-//                    if (param.args[0] instanceof Long) param.args[0] = newColor;
-//                    else param.args[0] = newColor.intValue();
-//                }
-//            }
-//        }));
 
-//        unhooks.addAll(XposedBridge.hookAllConstructors(PorterDuffColorFilter.class, new XC_MethodHook() {
-//            @Override
-//            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                Integer replacedColor = replaceColor((Integer) param.args[0]);
-//                if (replacedColor != null) param.args[0] = replacedColor;
-//            }
-//        }));
-
-//        unhooks.addAll(XposedBridge.hookAllMethods(Paint.class, "setColorFilter", new XC_MethodHook() {
-//            @Override
-//            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                ColorFilter newColorFilter = replaceColorFilter((ColorFilter) param.args[0]);
-//                if (newColorFilter != null)
-//                    param.args[0] = newColorFilter;
-//            }
-//        }));
-
-//        unhooks.addAll(XposedBridge.hookAllMethods(View.class, "setBackgroundColor", new XC_MethodHook() {
-//            @Override
-//            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                final long color = (int) param.args[0];
-//                notifyListenersWithResult((listener) -> ((OnUiColorsListener) listener).onColorPreDraw(color));
-//                if (getListenersReturnValue() != null && getListenersReturnValue().value != null) {
-//                    param.args[0] = ((Long) getListenersReturnValue().value).intValue();
-//                }
-//            }
-//        }));
+        unhooks.addAll(XposedBridge.hookAllMethods(Paint.class, "setColorFilter", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                ColorFilter newColorFilter = replaceColorFilter((ColorFilter) param.args[0]);
+                if (newColorFilter != null)
+                    param.args[0] = newColorFilter;
+            }
+        }));
 
         unhooks.addAll(XposedBridge.hookAllMethods(Paint.class, "getNativeInstance", new XC_MethodHook() {
             @Override
@@ -94,11 +66,11 @@ public class UIColorsHook extends BaseHook {
     }
 
     public interface OnUiColorsListener {
-        HookListenerResult<Integer> onColorPreDraw(@ColorLong int color);
-        void onNavBarColorSet(@ColorLong int color);
+        HookListenerResult<Integer> onColorPreDraw(@ColorInt int color);
+        void onNavBarColorSet(@ColorInt int color);
     }
 
-    HashMap<Long, PorterDuffColorFilter> filters = new HashMap<>();
+    HashMap<Integer, PorterDuffColorFilter> filters = new HashMap<>();
     public ColorFilter replaceColorFilter(ColorFilter colorFilter) {
         if (colorFilter instanceof PorterDuffColorFilter) {
             int color = (int) XposedHelpers.callMethod(colorFilter, "getColor");
@@ -107,12 +79,12 @@ public class UIColorsHook extends BaseHook {
             if (mode == PorterDuff.Mode.SRC_IN) {
                 notifyListenersWithResult((listener) -> ((OnUiColorsListener) listener).onColorPreDraw(color));
                 if (getListenersReturnValue() != null && getListenersReturnValue().value != null) {
-                    Long newColor = (Long) getListenersReturnValue().value;
+                    int newColor = (Integer) getListenersReturnValue().value;
                     PorterDuffColorFilter replacement;
                     if (filters.containsKey(newColor)) {
                         replacement = filters.get(newColor);
                     } else {
-                        replacement = new PorterDuffColorFilter(newColor.intValue(), PorterDuff.Mode.SRC_IN);
+                        replacement = new PorterDuffColorFilter(newColor, PorterDuff.Mode.SRC_IN);
                         filters.put(newColor, replacement);
                     }
                     return replacement;

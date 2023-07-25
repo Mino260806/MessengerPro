@@ -12,6 +12,7 @@ import de.robv.android.xposed.XposedHelpers;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.hook.BaseHook;
 import tn.amin.mpro2.hook.HookId;
+import tn.amin.mpro2.hook.HookTime;
 import tn.amin.mpro2.hook.unobfuscation.OrcaUnobfuscator;
 import tn.amin.mpro2.orca.OrcaGateway;
 import tn.amin.mpro2.orca.wrapper.MessageWrapper;
@@ -21,6 +22,11 @@ public class MessagesDisplayHook extends BaseHook {
     @Override
     public HookId getId() {
         return HookId.MESSAGES_DISPLAY;
+    }
+
+    @Override
+    public HookTime getHookTime() {
+        return HookTime.AFTER_DEOBFUSCATION;
     }
 
     @Override
