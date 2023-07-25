@@ -111,17 +111,17 @@ public class ColorThemingFeature extends Feature
     }
 
     @Override
-    public HookListenerResult<Long> onColorPreDraw(long color) {
+    public HookListenerResult<Integer> onColorPreDraw(int color) {
         if (!canApply) return HookListenerResult.ignore();
 
-        Long replacement = mThemeReplacer.replaceColor(color);
+        Integer replacement = mThemeReplacer.replaceColor(color);
         if (replacement == null) return HookListenerResult.ignore();
 
         return HookListenerResult.consume(replacement);
     }
 
     @Override
-    public void onNavBarColorSet(long color) {
+    public void onNavBarColorSet(int color) {
         boolean isLightMode = true;
         if (color == Color.BLACK) isLightMode = false;
         else if (color != Color.WHITE) Logger.warn("Unknown nav bar color, defaulting to light mode");
