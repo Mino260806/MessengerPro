@@ -14,7 +14,7 @@ public class Themes {
                     .addColor(ColorType.SURFACE_LIGHT, Color.parseColor("#fff7e1"))
                     .addColor(ColorType.PRIMARY_LIGHT, Color.parseColor("#ffae05"))
                     .addColor(ColorType.SECONDARY_LIGHT, Color.parseColor("#ff3305"))
-                    .addColor(ColorType.SURFACE_DARK, Color.parseColor("#121212"))
+                    .addColor(ColorType.SURFACE_DARK, Color.parseColor("#000000"))
                     .addColor(ColorType.PRIMARY_DARK, Color.parseColor("#fe6c08"))
                     .addColor(ColorType.SECONDARY_DARK, Color.parseColor("#cc0000"))
                     .build()),
@@ -23,7 +23,7 @@ public class Themes {
                     .addColor(ColorType.SURFACE_LIGHT, Color.parseColor("#f6e3ff"))
                     .addColor(ColorType.PRIMARY_LIGHT, Color.parseColor("#b805ff"))
                     .addColor(ColorType.SECONDARY_LIGHT, Color.parseColor("#fb00bd"))
-                    .addColor(ColorType.SURFACE_DARK, Color.parseColor("#121212"))
+                    .addColor(ColorType.SURFACE_DARK, Color.parseColor("#000000"))
                     .addColor(ColorType.PRIMARY_DARK, Color.parseColor("#7300f3"))
                     .addColor(ColorType.SECONDARY_DARK, Color.parseColor("#dd00ac"))
                     .build()),
@@ -34,7 +34,7 @@ public class Themes {
                     .addColor(ColorType.PRIMARY_LIGHT, Color.parseColor("#00bfa3"))
 //                    .addColor(ColorType.PRIMARY_VARIANT_LIGHT, Color.parseColor("#00b18f"))
                     .addColor(ColorType.SECONDARY_LIGHT, Color.parseColor("#fc3838"))
-                    .addColor(ColorType.SURFACE_DARK, Color.parseColor("#121212"))
+                    .addColor(ColorType.SURFACE_DARK, Color.parseColor("#000000"))
                     .addColor(ColorType.PRIMARY_DARK, Color.parseColor("#008360"))
                     .addColor(ColorType.SECONDARY_DARK, Color.parseColor("#bf001d"))
                     .build()),
@@ -43,7 +43,7 @@ public class Themes {
                     .addColor(ColorType.SURFACE_LIGHT, Color.parseColor("#ffeaed"))
                     .addColor(ColorType.PRIMARY_LIGHT, Color.parseColor("#fa3b1e"))
                     .addColor(ColorType.SECONDARY_LIGHT, Color.parseColor("#00a29e"))
-                    .addColor(ColorType.SURFACE_DARK, Color.parseColor("#121212"))
+                    .addColor(ColorType.SURFACE_DARK, Color.parseColor("#000000"))
                     .addColor(ColorType.PRIMARY_DARK, Color.parseColor("#bf0000"))
                     .addColor(ColorType.SECONDARY_DARK, Color.parseColor("#00574e"))
                     .build()),
