@@ -89,9 +89,9 @@ public class ThemeConfigurationFrame extends FrameLayout {
                 for (Map.Entry<ColorType, EditText> colorEditEntry: mColorEdits.entrySet()) {
                     String colorInput = colorEditEntry.getValue().getText().toString().trim();
                     if (StringUtils.isBlank(colorInput)) continue;
-                    long color;
+                    int color;
                     try {
-                        color = (long) Color.parseColor(colorInput);
+                        color = Color.parseColor(colorInput);
                     } catch (IllegalArgumentException e) {
                         Logger.error(e);
                         colorEditEntry.getValue().setError(gateway.res.getString(R.string.invalid_color));
@@ -123,13 +123,13 @@ public class ThemeConfigurationFrame extends FrameLayout {
                 continue;
             }
 
-            Long color = mThemeInfo.colorSupplier.getColor(colorEditEntry.getKey());
+            Integer color = mThemeInfo.colorSupplier.getColor(colorEditEntry.getKey());
             colorEditEntry.getValue().setText(colorToInput(color));
             colorEditEntry.getValue().setEnabled(mThemeInfo.name.equals("Custom"));
         }
     }
 
-    private String colorToInput(@Nullable Long color) {
+    private String colorToInput(@Nullable Integer color) {
         if (color != null) {
             return String.format("#%06X", (0xFFFFFF & color));
         } else {

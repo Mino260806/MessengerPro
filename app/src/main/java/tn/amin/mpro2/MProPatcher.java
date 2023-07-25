@@ -34,6 +34,7 @@ import tn.amin.mpro2.file.StorageConstants;
 import tn.amin.mpro2.hook.ActivityHook;
 import tn.amin.mpro2.hook.BaseHook;
 import tn.amin.mpro2.hook.BroadcastReceiverHook;
+import tn.amin.mpro2.hook.HookTime;
 import tn.amin.mpro2.hook.MProHookManager;
 import tn.amin.mpro2.orca.OrcaBridge;
 import tn.amin.mpro2.orca.OrcaGateway;
@@ -180,6 +181,7 @@ public class MProPatcher implements
         try {
             Logger.info("Injecting normal hooks...");
             mHookManager = new MProHookManager(gateway);
+            mHookManager.initStateTracking(gateway.state.sp);
 
             // Check if any of messenger / module version has changed.
             // If so, reset everything and search again for methods
@@ -201,7 +203,9 @@ public class MProPatcher implements
                 Logger.info("Unobfuscating components...");
                 gateway.initUnobfuscator(getContext(), false);
             }
-            mHookManager.inject(gateway, hook -> !hook.requiresUI());
+
+            Logger.info("Injecting normal hooks...");
+            mHookManager.inject(gateway, hook -> HookTime.NORMAL.equals(hook.getHookTime()));
             gateway.setHookManager(mHookManager);
 
             mFeatureManager = new MProFeatureManager(mHookManager);
@@ -322,7 +326,7 @@ public class MProPatcher implements
                     gateway.res.refreshTheme(activity);
 
                     Logger.info("Injecting UI hooks...");
-                    mHookManager.inject(gateway, BaseHook::requiresUI);
+                    mHookManager.inject(gateway, hook -> HookTime.UI.equals(hook.getHookTime()));
 
                     Logger.info("Injecting UI exploration hooks...");
                     OrcaExplorer.exploreUI(gateway, activity);

@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ColorsThemeReplacer {
-    private final Map<Long, ColorType> mColorTypeMapLight = initColorTypeMapLight();
-    private final Map<Long, ColorType> mColorTypeMapDark = initColorTypeMapDark();
+    private final Map<Integer, ColorType> mColorTypeMapLight = initColorTypeMapLight();
+    private final Map<Integer, ColorType> mColorTypeMapDark = initColorTypeMapDark();
     private ThemeColorSupplier mColorSupplier;
     private boolean mIsLightMode = true;
 
@@ -20,25 +20,25 @@ public class ColorsThemeReplacer {
         mColorSupplier = themeInfo.colorSupplier;
     }
 
-    private static Map<Long, ColorType> initColorTypeMapLight() {
-        HashMap<Long, ColorType> map = new HashMap<>();
-        map.put((long) Color.WHITE, ColorType.SURFACE_LIGHT);
-        map.put((long) Color.parseColor("#0A7CFF"), ColorType.PRIMARY_LIGHT);
-        map.put((long) Color.parseColor("#FF3A33"), ColorType.SECONDARY_LIGHT);
+    private static Map<Integer, ColorType> initColorTypeMapLight() {
+        HashMap<Integer, ColorType> map = new HashMap<>();
+        map.put(Color.WHITE, ColorType.SURFACE_LIGHT);
+        map.put(Color.parseColor("#0A7CFF"), ColorType.PRIMARY_LIGHT);
+        map.put(Color.parseColor("#FF3A33"), ColorType.SECONDARY_LIGHT);
         return map;
     }
 
-    private static Map<Long, ColorType> initColorTypeMapDark() {
-        HashMap<Long, ColorType> map = new HashMap<>();
-        map.put((long) Color.BLACK, ColorType.SURFACE_DARK);
-        map.put((long) Color.parseColor("#429AFF"), ColorType.PRIMARY_DARK);
-        map.put((long) Color.parseColor("#0A7CFF"), ColorType.PRIMARY_DARK);
-        map.put((long) Color.parseColor("#FF4942"), ColorType.SECONDARY_DARK);
+    private static Map<Integer, ColorType> initColorTypeMapDark() {
+        HashMap<Integer, ColorType> map = new HashMap<>();
+        map.put(Color.BLACK, ColorType.SURFACE_DARK);
+        map.put(Color.parseColor("#429AFF"), ColorType.PRIMARY_DARK);
+        map.put(Color.parseColor("#0A7CFF"), ColorType.PRIMARY_DARK);
+        map.put(Color.parseColor("#FF4942"), ColorType.SECONDARY_DARK);
         return map;
     }
 
-    public @Nullable Long replaceColor(Long color) {
-        Map<Long, ColorType> colorTypeMap = mIsLightMode? mColorTypeMapLight: mColorTypeMapDark;
+    public @Nullable Integer replaceColor(Integer color) {
+        Map<Integer, ColorType> colorTypeMap = mIsLightMode? mColorTypeMapLight: mColorTypeMapDark;
 
         if (colorTypeMap.containsKey(color)) {
             ColorType type = colorTypeMap.get(color);

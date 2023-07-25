@@ -14,8 +14,6 @@ import tn.amin.mpro2.orca.OrcaGateway;
 
 public class MProHookManager extends HookManager {
     public MProHookManager(OrcaGateway gateway) {
-        super(gateway.state.sp);
-
         initHooks();
     }
 

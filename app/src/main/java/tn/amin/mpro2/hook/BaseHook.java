@@ -1,7 +1,5 @@
 package tn.amin.mpro2.hook;
 
-import android.widget.Toast;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
@@ -13,13 +11,14 @@ import de.robv.android.xposed.XC_MethodHook;
 import tn.amin.mpro2.R;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.hook.listener.HookListenerResult;
+import tn.amin.mpro2.hook.state.DummyHookStateTracker;
 import tn.amin.mpro2.hook.state.HookState;
 import tn.amin.mpro2.hook.state.HookStateTracker;
 import tn.amin.mpro2.orca.OrcaGateway;
 import tn.amin.mpro2.ui.Toaster;
 
 public abstract class BaseHook {
-    private HookStateTracker mStateTracker = null;
+    private HookStateTracker mStateTracker = DummyHookStateTracker.INSTANCE;
     private final ArrayList<Object> mListeners = new ArrayList<>();
     private HookListenerResult<Object> mListenersReturnValue = null;
     private Set<XC_MethodHook.Unhook> mUnhooks = null;
@@ -95,8 +94,8 @@ public abstract class BaseHook {
         return mStateTracker;
     }
 
-    public boolean requiresUI() {
-        return false;
+    public HookTime getHookTime() {
+        return HookTime.NORMAL;
     }
 
     /**
