@@ -5,6 +5,7 @@ import java.util.Set;
 import de.robv.android.xposed.XC_MethodHook;
 import tn.amin.mpro2.hook.BaseHook;
 import tn.amin.mpro2.hook.HookId;
+import tn.amin.mpro2.hook.HookTime;
 import tn.amin.mpro2.hook.helper.OrcaHookHelper;
 import tn.amin.mpro2.hook.unobfuscation.OrcaUnobfuscator;
 import tn.amin.mpro2.orca.OrcaGateway;
@@ -13,6 +14,11 @@ public class MessageReceivedHook extends BaseHook {
     @Override
     public HookId getId() {
         return HookId.MESSAGE_RECEIVE;
+    }
+
+    @Override
+    public HookTime getHookTime() {
+        return HookTime.AFTER_DEOBFUSCATION;
     }
 
     @Override

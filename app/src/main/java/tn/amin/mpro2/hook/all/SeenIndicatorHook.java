@@ -9,6 +9,7 @@ import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.hook.BaseHook;
 import tn.amin.mpro2.hook.HookId;
+import tn.amin.mpro2.hook.HookTime;
 import tn.amin.mpro2.hook.listener.HookListenerResult;
 import tn.amin.mpro2.hook.unobfuscation.OrcaUnobfuscator;
 import tn.amin.mpro2.orca.OrcaGateway;
@@ -17,6 +18,11 @@ public class SeenIndicatorHook extends BaseHook {
     @Override
     public HookId getId() {
         return HookId.SEEN_INDICATOR_SEND;
+    }
+
+    @Override
+    public HookTime getHookTime() {
+        return HookTime.AFTER_DEOBFUSCATION;
     }
 
     @Override
