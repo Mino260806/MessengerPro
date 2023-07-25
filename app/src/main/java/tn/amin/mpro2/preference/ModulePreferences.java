@@ -2,15 +2,13 @@ package tn.amin.mpro2.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.JsonReader;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import tn.amin.mpro2.debug.Logger;
-import tn.amin.mpro2.features.util.theme.StaticThemeColorSupplier;
+import tn.amin.mpro2.features.util.theme.supplier.StaticThemeColorSupplier;
 import tn.amin.mpro2.features.util.theme.ThemeInfo;
 import tn.amin.mpro2.features.util.theme.Themes;
 import tn.amin.mpro2.features.util.translate.TranslationInfo;
@@ -156,7 +154,7 @@ public class ModulePreferences {
 
     public int getColorTheme() {
         int themeIndex = sp.getInt("mpro_ui_color_theme", 0);
-        ThemeInfo themeInfo = Themes.themes[themeIndex];
+        ThemeInfo themeInfo = Themes.themes.get(themeIndex);
         if (themeInfo.name.equals("Custom")) {
             Set<String> rawSupplier = sp.getStringSet("mpro_ui_color_theme_custom", null);
             if (rawSupplier == null) throw new RuntimeException("mpro_ui_color_theme_custom holds a null value");
@@ -168,7 +166,7 @@ public class ModulePreferences {
     }
 
     public void setColorTheme(int themeIndex) {
-        ThemeInfo themeInfo = Themes.themes[themeIndex];
+        ThemeInfo themeInfo = Themes.themes.get(themeIndex);
         SharedPreferences.Editor edit = sp.edit()
                 .putInt("mpro_ui_color_theme", themeIndex);
         if (themeInfo.name.equals("Custom")) {
