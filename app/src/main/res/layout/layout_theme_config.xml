@@ -11,10 +11,23 @@
         android:layout_height="wrap_content"
         android:id="@+id/theme_spinner" />
 
-    <GridLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/theme_layout" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seed Color" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/theme_seed_edit"
+            android:minEms="8"
+            android:hint="#abcdef" />
+    </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"

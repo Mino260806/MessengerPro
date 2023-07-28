@@ -8,6 +8,10 @@
         android:defaultValue="false"
         android:key="mpro_ui_color_theme_enable"
         android:title="@string/pref_color_theme" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_ui_color_theme_force"
+        android:title="@string/pref_color_theme_force" />
 
     <PreferenceCategory
         android:key="category_conversation_key"

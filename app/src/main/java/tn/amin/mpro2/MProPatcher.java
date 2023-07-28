@@ -123,26 +123,6 @@ public class MProPatcher implements
     }
 
     /**
-     * Continuously tries to get ApplicationContext through reflection with 500ms delay
-     */
-//    private void tryToGetApplication() {
-//        new Thread(() -> {
-//            while (getApplication() == null) {
-//                Application application = reflectApplication();
-//                if (application != null) {
-//                    setApplication(application);
-//                    triggerContextSet(application);
-//                } else {
-//                    Logger.info("Application is null, trying again in 500ms...");
-//                    try {
-//                        Thread.sleep(500);
-//                    } catch (InterruptedException ignored) {}
-//                }
-//            }
-//        }).start();
-//    }
-
-    /**
      * Called when context is captured.
      * Initializes essential components and injects hooks
      */
@@ -195,11 +175,6 @@ public class MProPatcher implements
             Logger.verbosePermissionSupplier = mPreferences::isVerboseLoggingEnabled;
             Logger.info("Injecting exploration hooks...");
             OrcaExplorer.explore(gateway, getContext());
-
-            notifyInternalSetupFinished();
-
-            Logger.info("Saving current versions...");
-            gateway.state.saveOrcaAndModuleVersion();
         } catch (Throwable t) {
             mPreferences = null;
 
@@ -240,6 +215,11 @@ public class MProPatcher implements
         mHookManager.inject(gateway, hook -> HookTime.AFTER_DEOBFUSCATION.equals(hook.getHookTime()));
 
         Logger.info("Heavy setup finished");
+
+        notifyInternalSetupFinished();
+
+        Logger.info("Saving current versions...");
+        gateway.state.saveOrcaAndModuleVersion();
     }
 
     private AlertDialog.Builder buildDialog(@StringRes int title, String message) {

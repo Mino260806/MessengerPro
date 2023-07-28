@@ -17,6 +17,11 @@
         android:defaultValue="null"
         app:useSimpleSummaryProvider="true" />
     <EditTextPreference
+        android:title="ThreadThemeInfoFactory/create"
+        android:key="ThreadThemeInfoFactory/create"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
         android:title="Message-text"
         android:key="Message-text"
         android:defaultValue="null"
