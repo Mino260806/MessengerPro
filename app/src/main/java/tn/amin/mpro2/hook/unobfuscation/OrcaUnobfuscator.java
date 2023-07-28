@@ -8,6 +8,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import io.github.neonorbit.dexplore.Dexplore;
 import io.github.neonorbit.dexplore.filter.ClassFilter;
 import io.github.neonorbit.dexplore.filter.DexFilter;
 import io.github.neonorbit.dexplore.filter.MethodFilter;
+import io.github.neonorbit.dexplore.filter.ReferenceFilter;
 import io.github.neonorbit.dexplore.filter.ReferenceTypes;
 import io.github.neonorbit.dexplore.reference.FieldRefData;
 import io.github.neonorbit.dexplore.result.ClassData;
@@ -48,6 +50,7 @@ public class OrcaUnobfuscator {
     public static final String CLASS_TYPING_INDICATOR_DISPATCHER = "TypingIndicatorDispatcher";
     public static final String METHOD_MESSAGE_GETTEXT = "Message/getText";
     public static final String METHOD_MESSAGES_DECODER_DECODE = "MessagesDecoder/decode";
+    public static final String METHOD_THREAD_THEME_INFO_FACTORY_CREATE = "ThreadThemeInfoFactory/create";
     public static final String FIELD_MESSAGE_THREADKEY = "Message-threadKey";
     public static final String FIELD_MESSAGE_ID = "Message-id";
     public static final String FIELD_MESSAGE_TEXT = "Message-text";
@@ -105,6 +108,19 @@ public class OrcaUnobfuscator {
                         .setReferenceFilter(pool -> pool.contains("messageStreamingState") ||
                                 pool.contains("Magic words offsets %s and length %s mismatch.") ||
                                 pool.contains("typing_indicator:"))
+                        .build());
+    }
+
+
+    private Method loadThreadThemeInfoCreate() {
+        return loadMethod(METHOD_THREAD_THEME_INFO_FACTORY_CREATE,
+                new ClassFilter.Builder()
+                        .setReferenceTypes(ReferenceTypes.builder().addString().build())
+                        .setReferenceFilter(pool -> pool.stringsContain("COLOR_GRADIENT"))
+                        .build(),
+                new MethodFilter.Builder()
+                        .setModifiers(Modifier.STATIC)
+                        .setReturnType(OrcaClassNames.THREAD_THEME_INFO)
                         .build());
     }
 
@@ -471,7 +487,9 @@ public class OrcaUnobfuscator {
         mUnobfuscatedMethods.put(METHOD_MESSAGE_GETTEXT, loadMessageMethod("text"));
         Logger.verbose("Loading method " + METHOD_MESSAGES_DECODER_DECODE);
         mUnobfuscatedMethods.put(METHOD_MESSAGES_DECODER_DECODE, loadMessagesDecoderDecode());
-        Logger.verbose("Method: " + mUnobfuscatedMethods.get(METHOD_MESSAGES_DECODER_DECODE));
+        Logger.verbose("Loading method " + METHOD_THREAD_THEME_INFO_FACTORY_CREATE);
+        mUnobfuscatedMethods.put(METHOD_THREAD_THEME_INFO_FACTORY_CREATE, loadThreadThemeInfoCreate());
+        Logger.verbose("Method: " + getMethod(METHOD_THREAD_THEME_INFO_FACTORY_CREATE));
 
         Logger.verbose("Loading field " + FIELD_MESSAGE_THREADKEY);
         mUnobfuscatedFields.put(FIELD_MESSAGE_THREADKEY, loadMessageFieldThreadKey());

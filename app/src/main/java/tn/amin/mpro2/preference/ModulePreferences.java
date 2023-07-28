@@ -2,12 +2,16 @@ package tn.amin.mpro2.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+
+import androidx.annotation.ColorInt;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import tn.amin.mpro2.debug.Logger;
+import tn.amin.mpro2.features.util.theme.supplier.CustomThemeColorSupplier;
 import tn.amin.mpro2.features.util.theme.supplier.StaticThemeColorSupplier;
 import tn.amin.mpro2.features.util.theme.ThemeInfo;
 import tn.amin.mpro2.features.util.theme.Themes;
@@ -155,11 +159,12 @@ public class ModulePreferences {
     public int getColorTheme() {
         int themeIndex = sp.getInt("mpro_ui_color_theme", 0);
         ThemeInfo themeInfo = Themes.themes.get(themeIndex);
-        if (themeInfo.name.equals("Custom")) {
-            Set<String> rawSupplier = sp.getStringSet("mpro_ui_color_theme_custom", null);
-            if (rawSupplier == null) throw new RuntimeException("mpro_ui_color_theme_custom holds a null value");
+        if (themeInfo.colorSupplier instanceof CustomThemeColorSupplier) {
+            if (sp.contains("mpro_ui_color_theme_custom")) {
+                @ColorInt int seedColor = sp.getInt("mpro_ui_color_theme_custom", Color.BLACK);
 
-            themeInfo.colorSupplier = StaticThemeColorSupplier.deserialize(rawSupplier);
+                ((CustomThemeColorSupplier) themeInfo.colorSupplier).setSeedColor(seedColor);
+            }
         }
 
         return themeIndex;
@@ -169,11 +174,17 @@ public class ModulePreferences {
         ThemeInfo themeInfo = Themes.themes.get(themeIndex);
         SharedPreferences.Editor edit = sp.edit()
                 .putInt("mpro_ui_color_theme", themeIndex);
-        if (themeInfo.name.equals("Custom")) {
-            Set<String> rawSupplier = ((StaticThemeColorSupplier) themeInfo.colorSupplier).serialize();
-            edit.putStringSet("mpro_ui_color_theme_custom", rawSupplier);
+        if (themeInfo.colorSupplier instanceof CustomThemeColorSupplier) {
+            if (themeInfo.colorSupplier.getSeedColor() != null) {
+                edit.putInt("mpro_ui_color_theme_custom", themeInfo.colorSupplier.getSeedColor());
+            }
         }
+
         edit.apply();
+    }
+
+    public boolean getColorThemeForce() {
+        return sp.getBoolean("mpro_ui_color_theme_force", true);
     }
 
     public boolean isToolbarButtonVisible(String key) {

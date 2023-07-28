@@ -11,4 +11,5 @@ public enum HookId {
     CAMERA_LAUNCH,
     MESSAGES_DISPLAY,
     UI_COLORS,
+    THREAD_ATTRS,
 }

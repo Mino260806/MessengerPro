@@ -7,6 +7,7 @@ import tn.amin.mpro2.hook.all.MessageReceivedHook;
 import tn.amin.mpro2.hook.all.MessageSentHook;
 import tn.amin.mpro2.hook.all.MessagesDisplayHook;
 import tn.amin.mpro2.hook.all.SeenIndicatorHook;
+import tn.amin.mpro2.hook.all.ThreadAttrsHook;
 import tn.amin.mpro2.hook.all.TypingIndicatorReceivedHook;
 import tn.amin.mpro2.hook.all.TypingIndicatorSentHook;
 import tn.amin.mpro2.hook.all.UIColorsHook;
@@ -28,5 +29,6 @@ public class MProHookManager extends HookManager {
         addHook(new CameraLaunchHook());
         addHook(new MessagesDisplayHook());
         addHook(new UIColorsHook());
+        addHook(new ThreadAttrsHook());
     }
 }

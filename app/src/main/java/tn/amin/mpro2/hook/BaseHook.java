@@ -1,5 +1,7 @@
 package tn.amin.mpro2.hook;
 
+import android.os.Handler;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
@@ -203,7 +205,10 @@ public abstract class BaseHook {
         Logger.info("Disabling hook " + getId().name() + " due to previous error");
         mStateTracker.updateState(HookState.NOT_WORKING);
 
-        if (mToaster != null)
-            mToaster.toast(R.string.disabling_hook, new Object[] { getId().name() }, true);
+        if (mToaster != null) {
+            try {
+                new Handler().post(() -> mToaster.toast(R.string.disabling_hook, new Object[] { getId().name() }, true));
+            } catch (Throwable ignored) {}
+        }
     }
 }

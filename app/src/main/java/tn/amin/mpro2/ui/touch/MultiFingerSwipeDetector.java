@@ -94,7 +94,7 @@ public class MultiFingerSwipeDetector {
         if (mFromEdge) {
             if (mSwipeDirection == SwipeDirection.LEFT && x < mScreenWidth - EDGE_THRESHOLD) return false;
             else if (mSwipeDirection == SwipeDirection.RIGHT && x > EDGE_THRESHOLD) return false;
-            else if (mSwipeDirection == SwipeDirection.UP && y < mScreenHeight) return false;
+            else if (mSwipeDirection == SwipeDirection.UP && y < mScreenHeight - EDGE_THRESHOLD) return false;
             else if (mSwipeDirection == SwipeDirection.DOWN && y > EDGE_THRESHOLD) return false;
         }
 

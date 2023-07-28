@@ -14,7 +14,10 @@ public class OrcaClassNames {
     public static final String NEW_MESSAGE_NOTIFICATION = "com.facebook.messaging.notify.type.NewMessageNotification";
     public static final String MESSAGES_DECODER = "com.facebook.messaging.msys.common.translator.AbstractMsysMessagesCollectionTranslator";
     public static final String MESSAGES_COLLECTION = "com.facebook.messaging.model.messages.MessagesCollection";
+    public static final String THREAD_THEME_INFO = "com.facebook.messaging.customthreads.model.ThreadThemeInfo";
 
     public static final String MAILBOX_SDK_JNI = "com.facebook.sdk.mca.MailboxSDKJNI";
     public static final String MAILBOX_CORE_JNI = "com.facebook.core.mca.MailboxCoreJNI";
+
+    public static final String CQL_RESULT_SET = "com.facebook.msys.mci.CQLResultSet";
 }
