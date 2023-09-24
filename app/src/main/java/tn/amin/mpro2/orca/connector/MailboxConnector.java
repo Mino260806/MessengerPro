@@ -17,14 +17,17 @@ import tn.amin.mpro2.orca.datatype.MediaAttachment;
 import tn.amin.mpro2.orca.datatype.MediaMessage;
 import tn.amin.mpro2.orca.datatype.Mention;
 import tn.amin.mpro2.orca.datatype.TextMessage;
+import tn.amin.mpro2.orca.wrapper.AuthDataWrapper;
 import tn.amin.mpro2.util.XposedHilfer;
 
 public class MailboxConnector {
     public final WeakReference<Object> mailbox;
+    private final AuthDataWrapper authData;
     private final ClassLoader classLoader;
 
-    public MailboxConnector(Object mailbox, ClassLoader classLoader) {
+    public MailboxConnector(Object mailbox, AuthDataWrapper authData, ClassLoader classLoader) {
         this.mailbox = new WeakReference<>(mailbox);
+        this.authData = authData;
         this.classLoader = classLoader;
     }
 
@@ -50,16 +53,16 @@ public class MailboxConnector {
         preDispatch(notificationScope -> {
             long time = System.currentTimeMillis() * 1000;
             Object[] disptachParams = new Object[] {
-                    8, 65540, threadKey, mailbox.get(), textMessage.content, null, null, null, null, null, null, null, 0, null, null, null, time, null, null, null, null, null, null, notificationScope
+                    8, 65540, threadKey, mailbox.get(), String.valueOf(authData.getFacebookUserKey()), textMessage.content, null, null, null, null, null, null, null, 0, null, null, null, time, null, null, null, null, null, null, notificationScope
             };
 
-            disptachParams[6] = Mention.joinRangeStarts(textMessage.mentions);
-            disptachParams[7] = Mention.joinRangeEnds(textMessage.mentions);
-            disptachParams[8] = Mention.joinThreadKeys(textMessage.mentions);
-            disptachParams[9] = Mention.joinTypes(textMessage.mentions);
-            disptachParams[10] = textMessage.replyMessageId;
+            disptachParams[7] = Mention.joinRangeStarts(textMessage.mentions);
+            disptachParams[8] = Mention.joinRangeEnds(textMessage.mentions);
+            disptachParams[9] = Mention.joinThreadKeys(textMessage.mentions);
+            disptachParams[10] = Mention.joinTypes(textMessage.mentions);
+            disptachParams[11] = textMessage.replyMessageId;
             if (textMessage.replyMessageId != null)
-                disptachParams[11] = 1;
+                disptachParams[12] = 1;
             try {
                 XposedBridge.invokeOriginalMethod(disptach, null, disptachParams);
             } catch (Throwable t) {
