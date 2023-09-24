@@ -136,7 +136,7 @@
     <string name="feature_color_theme">Customizes messenger color theme</string>
     <string name="theme">Theme</string>
     <string name="pref_category_ui">User Interface</string>
-    <string name="pref_color_theme">Custom color theme</string>
+    <string name="pref_color_theme">Custom color theme (experimental)</string>
     <string name="apply">Apply</string>
     <string name="invalid_color">Invalid Color</string>
     <string name="pref_aiconfig">Configure AI</string>
