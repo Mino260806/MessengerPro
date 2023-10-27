@@ -143,20 +143,20 @@ public class CommandsManager {
     private ApiResult comWordDefinition(String word, String type) {
         switch (type) {
             case "pronounce": {
-                String url = FreeDictionaryAPI.fetchPronunciation(word);
-                if (url.isEmpty()) {
-                    return new ApiResult.SendText(gateway.res.getText(R.string.no_pronunciation));
-                }
-
-                File pronunciation = FileHelper.downloadFromUrl(url);
-                if (pronunciation != null) {
-                    return new ApiResult.SendMedia(new MediaAttachment(pronunciation));
+                String result = FreeDictionaryAPI.fetchPronunciation(word);
+                if (result.startsWith("http")) {
+                    File pronunciation = FileHelper.downloadFromUrl(result);
+                    if (pronunciation != null) {
+                        return new ApiResult.SendMedia(new MediaAttachment(pronunciation));
+                    }
+                } else {
+                    return new ApiResult.SendText(result);
                 }
             }
             case "define": {
-                String defintions = FreeDictionaryAPI.fetchDefinitions(word);
-                if (defintions != null) {
-                    return new ApiResult.SendText(defintions);
+                String result = FreeDictionaryAPI.fetchDefinitions(word);
+                if (result != null) {
+                    return new ApiResult.SendText(result);
                 }
             }
         }
