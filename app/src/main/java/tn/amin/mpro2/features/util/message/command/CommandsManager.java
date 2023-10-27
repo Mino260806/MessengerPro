@@ -215,7 +215,7 @@ public class CommandsManager {
 
         bmp = BitmapUtil.convertTransparentToWhiteBackground(bmp, 10);
 
-        File image = FileHelper.createTempFile(".jpg", StorageConstants.moduleInternalCache);
+        File image = FileHelper.createTempFile("jpg", StorageConstants.moduleInternalCache);
         BitmapUtil.saveBitmapAsJPEG(bmp, image);
 
         if (image == null)
