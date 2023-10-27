@@ -36,6 +36,7 @@
     <string name="pref_disable_msg_seen">Prevent message seen indicator</string>
     <string name="pref_enable_conversation_lock">Lockable conversations</string>
     <string name="pref_default_camera">Use default camera app</string>
+    <string name="pref_disable_media_transcoder">Disable media transcoder</string>
     <string name="last_message">Message</string>
     <string name="last_message_threadkey">Thread Key</string>
     <string name="last_message_description">The message content</string>

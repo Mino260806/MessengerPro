@@ -6,7 +6,7 @@ public class ModuleInfo {
     public static final String LINK_TELEGRAM_SUPPORT = "https://t.me/MProSupport/";
     public static final String LINK_GITHUB_WIKI_USAGE_GUIDE = "https://github.com/Mino260806/MessengerPro/wiki/Usage-Guide/";
 
-    public static final int MIN_ORCA_VERSION = 313202933;
-    public static final int MAX_ORCA_VERSION = 313203012;
-    public static final String RECOMMENDED_ORCA_VERSION_STRING = "416.0.0.9.76";
+    public static final int MIN_ORCA_VERSION = 316208659;
+    public static final int MAX_ORCA_VERSION = 316408703;
+    public static final String RECOMMENDED_ORCA_VERSION_STRING = "432.0.0.39.118";
 }

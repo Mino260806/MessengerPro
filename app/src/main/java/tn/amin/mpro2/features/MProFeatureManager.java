@@ -8,6 +8,7 @@ import tn.amin.mpro2.features.internal.ThreadKeyDetectorFeature;
 import tn.amin.mpro2.features.state.CommandsFeature;
 import tn.amin.mpro2.features.state.DefaultCameraFeature;
 import tn.amin.mpro2.features.state.FormattingFeature;
+import tn.amin.mpro2.features.state.MediaTranscodeFeature;
 import tn.amin.mpro2.features.state.UnseenFeature;
 import tn.amin.mpro2.features.state.UntypingFeature;
 import tn.amin.mpro2.features.tasker.TaskerEventMessageFeature;
@@ -36,6 +37,7 @@ public class MProFeatureManager extends FeatureManager {
         addFeature(new UnseenFeature(gateway));
         addFeature(new UntypingFeature(gateway));
         addFeature(new DefaultCameraFeature(gateway));
+        addFeature(new MediaTranscodeFeature(gateway));
 
         // Tasker features
         addFeature(new TaskerEventMessageFeature(gateway));

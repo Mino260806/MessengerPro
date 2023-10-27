@@ -1,5 +1,6 @@
 package tn.amin.mpro2.hook.all;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -14,7 +15,7 @@ import tn.amin.mpro2.orca.datatype.Mention;
 import tn.amin.mpro2.orca.datatype.TextMessage;
 
 public class MessageSentHook extends BaseHook {
-    public static final String DISPATCH_METHOD = "dispatchVIJOOOOOOOOOOOOOOOOOOOOO";
+    public static final String DISPATCH_METHOD = "dispatchVIJOOOOOOOOOOOOOOOOOOOOOO";
 //    public static final String DISPATCH_METHOD = "dispatchVIJOOOOOOOOOOOOOOOOOOOO";
 
     public MessageSentHook() {
@@ -33,15 +34,20 @@ public class MessageSentHook extends BaseHook {
         return XposedBridge.hookAllMethods(MailboxCoreJNI, DISPATCH_METHOD, wrap(new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (param.args[4] instanceof String) {
-                    Long threadKey = (Long) param.args[2];
-                    String message = (String) param.args[4];
 
-                    String rangeStartsString = (String) param.args[6];
-                    String rangeEndsString = (String) param.args[7];
-                    String threadKeysString = (String) param.args[8];
-                    String typesString = (String) param.args[9];
-                    String replyMessageId = (String) param.args[10];
+                if (param.args[5] instanceof String) {
+
+//                    java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
+//                    logger.warning("sent ! " + Arrays.toString(param.args));
+
+                    Long threadKey = (Long) param.args[2];
+                    String message = (String) param.args[5];
+
+                    String rangeStartsString = (String) param.args[7];
+                    String rangeEndsString = (String) param.args[8];
+                    String threadKeysString = (String) param.args[9];
+                    String typesString = (String) param.args[10];
+                    String replyMessageId = (String) param.args[11];
                     TextMessage originalMessage = new TextMessage.Builder(message)
                             .setMentions(Mention.fromDispatchArgs(message, rangeStartsString, rangeEndsString, threadKeysString, typesString))
                             .setReplyMessageId(replyMessageId)
@@ -58,12 +64,12 @@ public class MessageSentHook extends BaseHook {
                     if (refinedMessage == null) return;
 
                     Logger.logObjectRecursive(refinedMessage);
-                    param.args[4] = refinedMessage.content;
-                    param.args[6] = Mention.joinRangeStarts(refinedMessage.mentions);
-                    param.args[7] = Mention.joinRangeEnds(refinedMessage.mentions);
-                    param.args[8] = Mention.joinThreadKeys(refinedMessage.mentions);
-                    param.args[9] = Mention.joinTypes(refinedMessage.mentions);
-                    param.args[10] = refinedMessage.replyMessageId;
+                    param.args[5] = refinedMessage.content;
+                    param.args[7] = Mention.joinRangeStarts(refinedMessage.mentions);
+                    param.args[8] = Mention.joinRangeEnds(refinedMessage.mentions);
+                    param.args[9] = Mention.joinThreadKeys(refinedMessage.mentions);
+                    param.args[10] = Mention.joinTypes(refinedMessage.mentions);
+                    param.args[11] = refinedMessage.replyMessageId;
                 }
             }
         }));

@@ -118,8 +118,8 @@ public class OrcaUnobfuscator {
 
     private int loadAPINotification() {
         if (!mPref.contains(API_NOTIFICATION))
-            mPref.edit().putString(API_NOTIFICATION, "25").apply();
-        return Integer.parseInt(mPref.getString(API_NOTIFICATION, "25"));
+            mPref.edit().putString(API_NOTIFICATION, "26").apply();
+        return Integer.parseInt(mPref.getString(API_NOTIFICATION, "26"));
     }
 
     private int loadAPIConversationEnter() {

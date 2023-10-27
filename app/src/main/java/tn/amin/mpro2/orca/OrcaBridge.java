@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Map;
 
 import tn.amin.mpro2.constants.OrcaInfo;
@@ -40,7 +41,7 @@ public class OrcaBridge {
         intent.putExtra(PARAM_MESSAGE, message);
         intent.putExtra(PARAM_THREAD_KEY, threadKey);
         if (replyMessageId != null)
-            intent.putExtra(PARAM_REPLY_MESSAGE_ID, threadKey);
+            intent.putExtra(PARAM_REPLY_MESSAGE_ID, replyMessageId);
         context.sendBroadcast(intent);
     }
 

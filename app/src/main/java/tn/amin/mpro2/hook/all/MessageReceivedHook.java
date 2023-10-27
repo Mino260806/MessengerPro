@@ -1,6 +1,8 @@
 package tn.amin.mpro2.hook.all;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import de.robv.android.xposed.XC_MethodHook;
 import tn.amin.mpro2.hook.BaseHook;
@@ -22,9 +24,9 @@ public class MessageReceivedHook extends BaseHook {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                         long convThreadKey = (Long) param.args[2];
-                        String messageId = (String) param.args[5];
-                        String message = (String) param.args[7];
-                        long senderUserKey = (Long) param.args[8];
+                        String messageId = (String) param.args[6];
+                        String message = (String) param.args[8];
+                        String senderUserKey = (String) param.args[3];
 
                         notifyListeners((listener) ->
                                 ((MessageReceivedListener) listener).onMessageReceived(message, messageId, senderUserKey, convThreadKey));
@@ -34,6 +36,6 @@ public class MessageReceivedHook extends BaseHook {
     }
 
     public interface MessageReceivedListener {
-        void onMessageReceived(String message, String messageId, long senderUserKey, long convThreadKey);
+        void onMessageReceived(String message, String messageId, String senderUserKey, long convThreadKey);
     }
 }

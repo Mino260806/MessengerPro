@@ -4,6 +4,7 @@ import androidx.core.util.Consumer;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Set;
 
 import de.robv.android.xposed.XposedBridge;
@@ -49,14 +50,14 @@ public class MailboxConnector {
         preDispatch(notificationScope -> {
             long time = System.currentTimeMillis() * 1000;
             Object[] disptachParams = new Object[] {
-                    8, 65540, threadKey, mailbox.get(), textMessage.content, null, null, null, null, null, null, null, 0, null, null, null, time, null, null, null, null, null, null, notificationScope
+                    9, 65540, threadKey, mailbox.get(), "", textMessage.content, null, null, null, null, null, null, 1, 0, null, null, null, time, null, null, null, null, null, null, notificationScope
             };
 
-            disptachParams[6] = Mention.joinRangeStarts(textMessage.mentions);
-            disptachParams[7] = Mention.joinRangeEnds(textMessage.mentions);
-            disptachParams[8] = Mention.joinThreadKeys(textMessage.mentions);
-            disptachParams[9] = Mention.joinTypes(textMessage.mentions);
-            disptachParams[10] = textMessage.replyMessageId;
+            disptachParams[7] = Mention.joinRangeStarts(textMessage.mentions);
+            disptachParams[8] = Mention.joinRangeEnds(textMessage.mentions);
+            disptachParams[9] = Mention.joinThreadKeys(textMessage.mentions);
+            disptachParams[10] = Mention.joinTypes(textMessage.mentions);
+            disptachParams[11] = textMessage.replyMessageId;
             try {
                 XposedBridge.invokeOriginalMethod(disptach, null, disptachParams);
             } catch (Throwable t) {
@@ -75,7 +76,7 @@ public class MailboxConnector {
         preDispatch(notificationScope -> {
             long time = System.currentTimeMillis();
             Object[] disptachParams = new Object[] {
-                    46, threadKey, mailbox.get(), reaction, messageId, time, null, null, null, notificationScope
+                    54, threadKey, mailbox.get(), reaction, messageId, time, null, null, null, notificationScope
             };
 
             try {
@@ -93,7 +94,7 @@ public class MailboxConnector {
         Logger.info("Sending sticker " + stickerId + "!");
 
         final Class<?> MailboxCoreJNI = XposedHelpers.findClass("com.facebook.core.mca.MailboxCoreJNI", classLoader);
-        final Set<Method> disptachList = XposedHilfer.findAllMethods(MailboxCoreJNI, "dispatchVIIIJJOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+        final Set<Method> disptachList = XposedHilfer.findAllMethods(MailboxCoreJNI, "dispatchVIIIJJOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         if (disptachList.size() != 1)
             Logger.error(new RuntimeException("dispatchList size (" + disptachList.size() + ") != 1"));
         final Method disptach = disptachList.iterator().next();
@@ -102,7 +103,7 @@ public class MailboxConnector {
             long time = System.currentTimeMillis() * 1000;
             try {
                 XposedBridge.invokeOriginalMethod(disptach, null, new Object[] {
-                        11, 0, 0, 65540, threadKey, stickerId, mailbox.get(), null, null, null, null, null, null, "", null, null, "", null, null, null, null, "You sent a sticker.", null, null, null, null, null, null, replyId, null, null, null, time, null, null, null, null, null, notificationScope
+                        12, 0, 0, 65540, threadKey, stickerId, mailbox.get(), null, null, null, null, null, null, null, "", null, null, "", null, null, null, null, "You sent a sticker.", null, null, null, null, null, null, replyId, null, null, null, time, null, null, null, null, null, notificationScope
                 });
             } catch (Throwable t) {
                 Logger.error(t);
@@ -148,7 +149,7 @@ public class MailboxConnector {
             try {
                 XposedBridge.invokeOriginalMethod(disptach, null, new Object[] {
 //                        53, threadKey, mailbox.get(), orcaAttachment, "", "You sent a file.", null, null, time, null, notificationScope
-                        58, 65540, threadKey, mailbox.get(), orcaAttachment, "You sent a file.", null, null, null, null, null, time, null, null,  notificationScope, true
+                        61, 65540, threadKey, mailbox.get(), orcaAttachment, "You sent a file.", null, null, null, null, null, time, null, null,  notificationScope, true
                 });
             } catch (Throwable t) {
                 Logger.error(t);
