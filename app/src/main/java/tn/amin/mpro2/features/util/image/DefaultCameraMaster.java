@@ -12,10 +12,9 @@ import tn.amin.mpro2.file.FileHelper;
 import tn.amin.mpro2.hook.ActivityHook;
 
 public class DefaultCameraMaster {
-    public static boolean launchCamera(ActivityHook activityHook, File directory, Consumer<File> onCapture) {
-        File imageFile = FileHelper.createTempFile("jpg", directory);
-        if (imageFile != null) {
-            Uri imageUri = Uri.fromFile(imageFile);
+    public static boolean launchCamera(ActivityHook activityHook, String imageFileName, Consumer<Uri> onCapture) {
+        Uri imageUri = FileHelper.insertImage(activityHook.currentActivity.get().getContentResolver(), imageFileName, "image/jpeg");
+        if (imageUri != null) {
             Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
 
@@ -23,7 +22,7 @@ public class DefaultCameraMaster {
             if (cameraIntent.resolveActivity(activityHook.currentActivity.get().getPackageManager()) != null) {
                 try {
                     activityHook.startIntent(cameraIntent, 2608, (intent) -> {
-                        onCapture.accept(imageFile);
+                        onCapture.accept(imageUri);
                     });
                 } catch (SecurityException e) {
                     return false;

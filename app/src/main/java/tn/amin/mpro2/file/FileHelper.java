@@ -174,7 +174,7 @@ public class FileHelper {
     }
     public static String generateUniqueFilename(String extension) {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        return "IMG_" + timeStamp + "." + extension;
+        return "TMP_" + timeStamp + "." + extension;
     }
 
 }
