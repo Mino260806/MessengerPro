@@ -2,23 +2,32 @@ package tn.amin.mpro2.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+
+import androidx.annotation.ColorInt;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import tn.amin.mpro2.debug.Logger;
+import tn.amin.mpro2.features.util.theme.supplier.CustomThemeColorSupplier;
+import tn.amin.mpro2.features.util.theme.supplier.StaticThemeColorSupplier;
+import tn.amin.mpro2.features.util.theme.ThemeInfo;
+import tn.amin.mpro2.features.util.theme.Themes;
+import tn.amin.mpro2.features.util.translate.TranslationInfo;
 import tn.amin.mpro2.file.StorageConstants;
 import tn.amin.mpro2.ui.touch.SwipeDirection;
 
 
 public class ModulePreferences {
     public final SharedPreferences sp;
+    public final SharedPreferences spTranslate;
 
     public ModulePreferences(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(StorageConstants.prefName, Context.MODE_PRIVATE);
 
-        sp = sharedPreferences;
+        sp = context.getSharedPreferences(StorageConstants.prefName, Context.MODE_PRIVATE);
+        spTranslate = context.getSharedPreferences(StorageConstants.translatePrefName, Context.MODE_PRIVATE);
         Logger.info("SharedPreferences setup !");
     }
 
@@ -28,6 +37,10 @@ public class ModulePreferences {
 
     public boolean isCommandsInputEnabled() {
         return sp.getBoolean("mpro_commands_send_input", true);
+    }
+
+    public String getCommandsAllowOther() {
+        return sp.getString("mpro_commands_allow_other", "never");
     }
 
     public boolean isFormattingEnabled() {
@@ -93,6 +106,85 @@ public class ModulePreferences {
         sp.edit()
                 .putStringSet("mpro_locked_conversations", lockedConversations)
                 .apply();
+    }
+
+    public void addTranslatedConversationReceived(long threadKey, TranslationInfo translationInfo) {
+        spTranslate.edit()
+                .putString("r:" + threadKey, translationInfo.toString())
+                .apply();
+    }
+
+    public void removeTranslatedConversationReceived(long threadKey) {
+        spTranslate.edit()
+                .remove("r:" + threadKey)
+                .apply();
+    }
+
+    public void addTranslatedConversationSent(long threadKey, TranslationInfo translationInfo) {
+        spTranslate.edit()
+                .putString("s:" + threadKey, translationInfo.toString())
+                .apply();
+    }
+
+    public void removeTranslatedConversationSent(long threadKey) {
+        spTranslate.edit()
+                .remove("s:" + threadKey)
+                .apply();
+    }
+
+    public TranslationInfo getTranslatedConversationReceived(long threadKey) {
+        String raw = spTranslate.getString("r:" + threadKey, null);
+        if (raw == null) return null;
+        return TranslationInfo.fromString(raw);
+    }
+
+    public TranslationInfo getTranslatedConversationSent(long threadKey) {
+        String raw = spTranslate.getString("s:" + threadKey, null);
+        if (raw == null) return null;
+        return TranslationInfo.fromString(raw);
+    }
+
+    public String getAiConfigModel() {
+        return sp.getString("mpro_aiconfig_model", "gpt-4");
+    }
+
+    public String getAiConfigProvider() {
+        return sp.getString("mpro_aiconfig_provider", "ChatgptAi");
+    }
+
+    public String getAiConfigAuthData() {
+        return sp.getString("mpro_aiconfig_authdata", "");
+    }
+
+    public int getColorTheme() {
+        int themeIndex = sp.getInt("mpro_ui_color_theme", 0);
+        ThemeInfo themeInfo = Themes.themes.get(themeIndex);
+        if (themeInfo.colorSupplier instanceof CustomThemeColorSupplier) {
+            if (sp.contains("mpro_ui_color_theme_custom")) {
+                @ColorInt int seedColor = sp.getInt("mpro_ui_color_theme_custom", Color.BLACK);
+
+                ((CustomThemeColorSupplier) themeInfo.colorSupplier).setSeedColor(seedColor);
+            }
+        }
+
+        return themeIndex;
+    }
+
+    public void setColorTheme(int themeIndex) {
+        ThemeInfo themeInfo = Themes.themes.get(themeIndex);
+        SharedPreferences.Editor edit = sp.edit()
+                .putInt("mpro_ui_color_theme", themeIndex);
+        if (themeInfo.colorSupplier instanceof CustomThemeColorSupplier) {
+            if (themeInfo.colorSupplier.getSeedColor() != null) {
+                edit.putInt("mpro_ui_color_theme_custom", themeInfo.colorSupplier.getSeedColor());
+            }
+        }
+
+        edit.apply();
+    }
+
+    public boolean getColorThemeForce() {
+        return sp.getBoolean("mpro_ui_color_theme_force", true);
     }
 
     public boolean isToolbarButtonVisible(String key) {

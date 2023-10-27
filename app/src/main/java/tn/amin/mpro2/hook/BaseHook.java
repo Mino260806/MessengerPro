@@ -1,5 +1,7 @@
 package tn.amin.mpro2.hook;
 
+import android.os.Handler;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
@@ -8,23 +10,31 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import de.robv.android.xposed.XC_MethodHook;
+import tn.amin.mpro2.R;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.hook.listener.HookListenerResult;
+import tn.amin.mpro2.hook.state.DummyHookStateTracker;
 import tn.amin.mpro2.hook.state.HookState;
 import tn.amin.mpro2.hook.state.HookStateTracker;
 import tn.amin.mpro2.orca.OrcaGateway;
+import tn.amin.mpro2.ui.Toaster;
 
 public abstract class BaseHook {
-    private HookStateTracker mStateTracker = null;
+    private HookStateTracker mStateTracker = DummyHookStateTracker.INSTANCE;
     private final ArrayList<Object> mListeners = new ArrayList<>();
     private HookListenerResult<Object> mListenersReturnValue = null;
     private Set<XC_MethodHook.Unhook> mUnhooks = null;
+    private Toaster mToaster = null;
 
     public BaseHook() {
     }
 
     abstract public HookId getId();
     abstract protected Set<XC_MethodHook.Unhook> injectInternal(OrcaGateway gateway);
+
+    public final void setToaster(Toaster toaster) {
+        mToaster = toaster;
+    }
 
     public final void inject(OrcaGateway gateway) {
         if (mStateTracker.shouldNotApply()) return;
@@ -40,8 +50,7 @@ public abstract class BaseHook {
             mUnhooks = injectInternal(gateway);
         } catch (Throwable t) {
             Logger.error(t);
-            Logger.info("Disabling hook " + getId().name() + " due to previous error");
-            mStateTracker.updateState(HookState.NOT_WORKING);
+            setStateNotWorking();
             return;
         }
 
@@ -87,8 +96,8 @@ public abstract class BaseHook {
         return mStateTracker;
     }
 
-    public boolean requiresUI() {
-        return false;
+    public HookTime getHookTime() {
+        return HookTime.NORMAL;
     }
 
     /**
@@ -143,7 +152,7 @@ public abstract class BaseHook {
             } catch (NoSuchMethodException ignored) {
             } catch (Throwable t) {
                 Logger.error(t);
-                mStateTracker.updateState(HookState.NOT_WORKING);
+                setStateNotWorking();
             }
         }
         @Override
@@ -161,7 +170,7 @@ public abstract class BaseHook {
             } catch (NoSuchMethodException ignored) {
             } catch (Throwable t) {
                 Logger.error(t);
-                mStateTracker.updateState(HookState.NOT_WORKING);
+                setStateNotWorking();
             }
         }
     }
@@ -185,10 +194,21 @@ public abstract class BaseHook {
                 return result;
             } catch (Throwable t) {
                 Logger.error(t);
-                mStateTracker.updateState(HookState.NOT_WORKING);
+                setStateNotWorking();
             }
 
             return false;
+        }
+    }
+
+    private void setStateNotWorking() {
+        Logger.info("Disabling hook " + getId().name() + " due to previous error");
+        mStateTracker.updateState(HookState.NOT_WORKING);
+
+        if (mToaster != null) {
+            try {
+                new Handler().post(() -> mToaster.toast(R.string.disabling_hook, new Object[] { getId().name() }, true));
+            } catch (Throwable ignored) {}
         }
     }
 }

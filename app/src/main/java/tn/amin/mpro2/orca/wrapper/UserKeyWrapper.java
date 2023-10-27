@@ -27,7 +27,7 @@ public class UserKeyWrapper {
         return id;
     }
 
-    public Long getUserKey() {
+    public Long getUserKeyLong() {
         if ("FACEBOOK".equals(type)) {
             return Long.parseLong(id);
         }

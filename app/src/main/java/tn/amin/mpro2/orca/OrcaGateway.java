@@ -2,8 +2,11 @@ package tn.amin.mpro2.orca;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.widget.Toast;
+
+import androidx.annotation.StringRes;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -11,7 +14,9 @@ import java.util.ArrayList;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import tn.amin.mpro2.BuildConfig;
 import tn.amin.mpro2.R;
+import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.MProFeatureManager;
 import tn.amin.mpro2.features.util.message.formatting.MessageParser;
@@ -19,9 +24,12 @@ import tn.amin.mpro2.hook.ActivityHook;
 import tn.amin.mpro2.hook.MProHookManager;
 import tn.amin.mpro2.hook.unobfuscation.OrcaUnobfuscator;
 import tn.amin.mpro2.orca.connector.MailboxConnector;
+import tn.amin.mpro2.orca.wrapper.AuthDataWrapper;
 import tn.amin.mpro2.preference.ModulePreferences;
 import tn.amin.mpro2.state.ModuleState;
+import tn.amin.mpro2.ui.ModuleContextWrapper;
 import tn.amin.mpro2.ui.ModuleResources;
+import tn.amin.mpro2.ui.Toaster;
 
 /**
  * Holds all the data necessary to interface with Messenger package.
@@ -37,6 +45,7 @@ public class OrcaGateway {
      * Will enable execution of user actions (sending messages, reacting...)
      */
     public MailboxConnector mailboxConnector;
+    public AuthDataWrapper authData;
     public Long currentThreadKey;
     private final MessageParser mMessageParser;
 
@@ -51,9 +60,10 @@ public class OrcaGateway {
     private final ArrayList<Runnable> mailboxCallback = new ArrayList<>();
 
     private WeakReference<Context> mContext = new WeakReference<>(null);
-    private WeakReference<Activity> mActivity;
+    private WeakReference<Activity> mActivity = new WeakReference<>(null);
     private WeakReference<MProHookManager> mHookManager = new WeakReference<>(null);
     private WeakReference<MProFeatureManager> mFeatureManager = new WeakReference<>(null);
+    private Toaster mToaster = null;
 
     public OrcaGateway(String sourceDir, ClassLoader classLoader, Resources moduleResources) {
         this.sourceDir = sourceDir;
@@ -74,6 +84,8 @@ public class OrcaGateway {
         res = new ModuleResources(context, mPendingResources);
         state = new ModuleState(context);
         mPendingResources = null;
+
+        mToaster = new Toaster(getContext(), res);
     }
 
     public void setPreferences(ModulePreferences preferences) {
@@ -93,13 +105,14 @@ public class OrcaGateway {
      * Waits for Mailbox to be constructed and then stores it in a variable.
      */
     public void prepareToCaptureMailbox() {
-        final Class<?> Mailbox = XposedHelpers.findClass("com.facebook.msys.mca.Mailbox", classLoader);
+        final Class<?> Mailbox = XposedHelpers.findClass(OrcaClassNames.MAILBOX, classLoader);
 
         XposedBridge.hookAllConstructors(Mailbox, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Logger.info("Captured mailbox !");
                 Object mailbox = param.thisObject;
+                authData = new AuthDataWrapper(param.args[1]);
                 mailboxConnector = new MailboxConnector(mailbox, classLoader);
                 for (Runnable callback : mailboxCallback) {
                     callback.run();
@@ -123,6 +136,21 @@ public class OrcaGateway {
         }
     }
 
+    public boolean isPackageInstalled(String packageName) {
+        PackageManager pm = getContext().getPackageManager();
+        try {
+            pm.getPackageInfo(packageName, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public Toaster getToaster() {
+        return mToaster;
+    }
+
     public void setContext(Context context) {
         mContext = new WeakReference<>(context);
     }
@@ -131,8 +159,25 @@ public class OrcaGateway {
         return mContext.get();
     }
 
+    public Context getActivityWithModuleResources() {
+        return new ModuleContextWrapper(mActivity.get(), res.unwrap());
+    }
+
+    ArrayList<Runnable> mActivityCallbacks = new ArrayList<>();
+    public void doOnActivity(Runnable runnable) {
+        if (getActivity() == null) {
+            mActivityCallbacks.add(runnable);
+        } else {
+            runnable.run();
+        }
+    }
+
     public void setActivity(Activity activity) {
         mActivity = new WeakReference<>(activity);
+        for (Runnable callback: mActivityCallbacks) {
+            callback.run();
+        }
+        mActivityCallbacks.clear();
     }
 
     public Activity getActivity() {
@@ -144,8 +189,12 @@ public class OrcaGateway {
     }
 
     public boolean requireThreadKey() {
+        return requireThreadKey(true);
+    }
+
+    public boolean requireThreadKey(boolean tellUser) {
         if (currentThreadKey == null) {
-            if (getContext() != null) {
+            if (tellUser && getContext() != null) {
                 Toast.makeText(getContext(), res.getString(R.string.threadkey_required), Toast.LENGTH_SHORT).show();
             }
             return false;

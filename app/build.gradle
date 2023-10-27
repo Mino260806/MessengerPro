@@ -61,7 +61,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'commons-io:commons-io:2.11.0'
 
-    implementation 'io.github.neonorbit:dexplore:1.4.3'
+    implementation 'io.github.neonorbit:dexplore:1.4.5'
     compileOnly 'de.robv.android.xposed:api:82'
 //    compileOnly 'de.robv.android.xposed:api:82:sources'
 }

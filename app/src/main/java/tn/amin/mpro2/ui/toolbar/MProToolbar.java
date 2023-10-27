@@ -76,6 +76,8 @@ public class MProToolbar extends LinearLayout implements
 
     private ModuleResources resources;
 
+    public SafeOverlayAttacher attacher;
+
 
     public MProToolbar(Context context) {
         super(context);
@@ -370,7 +372,7 @@ public class MProToolbar extends LinearLayout implements
     public void attachToWindow(int initialX, int initialY) {
         initLayoutParams(initialX, initialY);
 
-        SafeOverlayAttacher attacher = new SafeOverlayAttacher(this, mLayoutParams);
+        attacher = new SafeOverlayAttacher(this, mLayoutParams);
         attacher.setOnOverlayAttachedListener(this::confirmInitialized);
         attacher.attach();
     }

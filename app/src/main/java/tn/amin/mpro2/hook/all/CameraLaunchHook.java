@@ -5,6 +5,7 @@ import java.util.Set;
 import de.robv.android.xposed.XC_MethodHook;
 import tn.amin.mpro2.hook.BaseHook;
 import tn.amin.mpro2.hook.HookId;
+import tn.amin.mpro2.hook.HookTime;
 import tn.amin.mpro2.hook.helper.FragmentHookHelper;
 import tn.amin.mpro2.hook.listener.HookListenerResult;
 import tn.amin.mpro2.orca.OrcaGateway;
@@ -18,8 +19,8 @@ public class CameraLaunchHook extends BaseHook {
     }
 
     @Override
-    public boolean requiresUI() {
-        return true;
+    public HookTime getHookTime() {
+        return HookTime.UI;
     }
 
     @Override

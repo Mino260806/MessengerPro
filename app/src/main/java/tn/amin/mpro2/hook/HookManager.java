@@ -12,17 +12,13 @@ import tn.amin.mpro2.hook.state.HookStateTracker;
 import tn.amin.mpro2.orca.OrcaGateway;
 
 public class HookManager {
-    private final SharedPreferences mHookStatePref;
-
-    public HookManager(SharedPreferences hookStatePref) {
-        mHookStatePref = hookStatePref;
+    public HookManager() {
     }
 
     private final Map<BaseHook, HookStateTracker> mHookStateTrackers = new LinkedHashMap<>();
     private final Map<HookId, BaseHook> mHooks = new HashMap<>();
 
     public void addHook(BaseHook hook) {
-        hook.setStateTracker(addStateTracker(hook));
         mHooks.put(hook.getId(), hook);
     }
 
@@ -33,15 +29,22 @@ public class HookManager {
     public void inject(OrcaGateway gateway, Predicate<BaseHook> filter) {
         for (BaseHook hook: mHooks.values()) {
             if (filter.test(hook)) {
+                hook.setToaster(gateway.getToaster());
                 hook.inject(gateway);
             }
         }
     }
 
-    private HookStateTracker addStateTracker(BaseHook hook) {
-        HookStateTracker tracker = new PreferencesHookStateTracker(mHookStatePref, hook.getId().name());
+    private HookStateTracker addStateTracker(BaseHook hook, SharedPreferences hookStatePref) {
+        HookStateTracker tracker = new PreferencesHookStateTracker(hookStatePref, hook.getId().name());
         mHookStateTrackers.put(hook, tracker);
         return tracker;
+    }
+
+    public void initStateTracking(SharedPreferences hookStatePref) {
+        for (BaseHook hook: mHooks.values()) {
+            hook.setStateTracker(addStateTracker(hook, hookStatePref));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -50,10 +53,6 @@ public class HookManager {
         if (hook == null) throw new RuntimeException("Non-existent hook " + hookId.name());
 
         hook.addListener(hookListener);
-    }
-
-    public SharedPreferences getStatePref() {
-        return mHookStatePref;
     }
 
     public void reloadPending(OrcaGateway gateway) {

@@ -12,6 +12,21 @@
         android:defaultValue="null"
         app:useSimpleSummaryProvider="true" />
     <EditTextPreference
+        android:title="MessagesDecoder/decode"
+        android:key="MessagesDecoder/decode"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="ThreadThemeInfoFactory/create"
+        android:key="ThreadThemeInfoFactory/create"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="Message-text"
+        android:key="Message-text"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
         android:title="Message-threadKey"
         android:key="Message-threadKey"
         android:defaultValue="null"
@@ -19,6 +34,31 @@
     <EditTextPreference
         android:title="Message-id"
         android:key="Message-id"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="Message-participantInfo"
+        android:key="Message-participantInfo"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="SecretString-content"
+        android:key="SecretString-content"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="SecretString-stars"
+        android:key="SecretString-stars"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="MessagesCollection-messages"
+        android:key="MessagesCollection-messages"
+        android:defaultValue="null"
+        app:useSimpleSummaryProvider="true" />
+    <EditTextPreference
+        android:title="ParticipantInfo-userKey"
+        android:key="ParticipantInfo-userKey"
         android:defaultValue="null"
         app:useSimpleSummaryProvider="true" />
 </PreferenceScreen>
