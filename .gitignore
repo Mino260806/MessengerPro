@@ -12,4 +12,5 @@
 /captures
 .externalNativeBuild
 .cxx
-app/release/app-release.apk
+app/release/
+app/debug/
