@@ -62,6 +62,7 @@ public class ConversationLock {
                 public void onAuthenticationSucceeded(
                         @NonNull BiometricPrompt.AuthenticationResult result) {
                     super.onAuthenticationSucceeded(result);
+                    cancellationSignal.cancel();
                     Toast.makeText(context,
                             "Authentication succeeded!", Toast.LENGTH_SHORT).show();
                     lastAuthTime = System.currentTimeMillis();
@@ -72,6 +73,7 @@ public class ConversationLock {
                 @Override
                 public void onAuthenticationFailed() {
                     super.onAuthenticationFailed();
+                    cancellationSignal.cancel();
                     Toast.makeText(context, "Authentication failed",
                             Toast.LENGTH_SHORT)
                             .show();
