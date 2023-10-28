@@ -14,62 +14,59 @@
         android:text="@string/received_messages"
         android:textSize="20sp"
         android:id="@+id/switch_received"/>
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:rowCount="2"
-        android:columnCount="2"
-        android:id="@+id/layout_config_received">
+
+    <RelativeLayout
+        android:id="@+id/layout_config_received"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
         <TextView
-            android:layout_width="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:id="@+id/text_source_language_received"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
             android:text="@string/source_language"
             android:textAlignment="center"
-            android:gravity="center"
-            android:id="@+id/text_source_language_received"
-            android:layout_row="0"
-            android:layout_column="0"
-            android:layout_columnWeight="1" />
-        <FrameLayout
-            android:layout_height="wrap_content"
-            android:layout_row="1"
-            android:layout_column="0"
-            android:layout_columnWeight="1">
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/edit_source_language_received"
-                android:minEms="2"
-                android:maxEms="5"
-                android:hint="auto" />
-        </FrameLayout>
+            android:layout_width="wrap_content"/>
+
+        <Spinner
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/text_source_language_received"
+            android:id="@+id/spinner_source_language_received"
+            android:layout_alignParentStart="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/target_language"
-            android:textAlignment="center"
-            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_alignParentEnd="true"
             android:id="@+id/text_target_language_received"
-            android:layout_row="0"
-            android:layout_column="1"
-            android:layout_columnWeight="1"/>
-        <FrameLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minEms="2"
-            android:maxEms="2"
-            android:layout_row="1"
-            android:layout_column="1"
-            android:layout_columnWeight="1">
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/edit_target_language_received"
-                android:minEms="2"
-                android:maxEms="5"/>
-        </FrameLayout>
-    </GridLayout>
+            android:layout_columnWeight="1"
+            android:gravity="center"
+            android:text="@string/target_language"
+            android:textAlignment="center" />
+        <Spinner
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/text_target_language_received"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/spinner_target_language_received"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </RelativeLayout>
 
     <Switch
         android:layout_width="wrap_content"
@@ -91,63 +88,70 @@
         android:text="@string/sent_messages"
         android:textSize="20sp"
         android:id="@+id/switch_sent" />
-    <GridLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:rowCount="2"
-        android:columnCount="2"
         android:id="@+id/layout_config_sent">
         <TextView
-            android:layout_width="0dp"
+            android:layout_alignParentStart="true"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/source_language"
             android:textAlignment="center"
             android:gravity="center"
-            android:id="@+id/text_source_language_sent"
-            android:layout_row="0"
-            android:layout_column="0"
-            android:layout_columnWeight="1" />
-        <FrameLayout
-            android:layout_height="wrap_content"
-            android:layout_row="1"
-            android:layout_column="0"
-            android:layout_columnWeight="1">
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/edit_source_language_sent"
-                android:minEms="2"
-                android:maxEms="5"
-                android:hint="auto"
-                tools:ignore="HardcodedText" />
-        </FrameLayout>
+            android:id="@+id/text_source_language_sent"/>
+        <Spinner
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/text_source_language_sent"
+            android:id="@+id/spinner_source_language_sent"
+            android:layout_alignParentStart="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+<!--            <EditText-->
+<!--                android:layout_below="@+id/text_source_language_sent"-->
+<!--                android:layout_alignParentStart="true"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:id="@+id/edit_source_language_sent"-->
+<!--                android:minEms="2"-->
+<!--                android:maxEms="5"-->
+<!--                android:inputType="textVisiblePassword"-->
+<!--                android:digits="abcdefghijklmnopqrstuvwxyz-"-->
+<!--                android:hint="auto"-->
+<!--                tools:ignore="HardcodedText" />-->
         <TextView
-            android:layout_width="0dp"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/target_language"
             android:textAlignment="center"
             android:gravity="center"
-            android:id="@+id/text_target_language_sent"
-            android:layout_row="0"
-            android:layout_column="1"
-            android:layout_columnWeight="1"/>
-        <FrameLayout
-            android:layout_height="wrap_content"
-            android:minEms="2"
-            android:maxEms="2"
-            android:layout_row="1"
-            android:layout_column="1"
-            android:layout_columnWeight="1">
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/edit_target_language_sent"
-                android:minEms="2"
-                android:maxEms="5"/>
-        </FrameLayout>
-    </GridLayout>
+            android:id="@+id/text_target_language_sent"/>
+        <Spinner
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/text_target_language_sent"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/spinner_target_language_sent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+<!--            <EditText-->
+<!--                android:layout_below="@+id/text_target_language_sent"-->
+<!--                android:layout_alignParentEnd="true"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:id="@+id/edit_target_language_sent"-->
+<!--                android:inputType="textVisiblePassword"-->
+<!--                android:digits="abcdefghijklmnopqrstuvwxyz-"-->
+<!--                android:minEms="2"-->
+<!--                android:maxEms="5"/>-->
+
+
+    </RelativeLayout>
 
     <Switch
         android:layout_width="wrap_content"

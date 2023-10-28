@@ -122,8 +122,8 @@
     <string name="deobfuscation_loading_title">Loading Messenger Pro</string>
     <string name="deobfuscation_loading_message">Deobfuscating components</string>
     <string name="feature_conv_translate">Translates sent/received messages in a conversation</string>
-    <string name="source_language">Source\nLanguage</string>
-    <string name="target_language">Target\nLanguage</string>
+    <string name="source_language">Source Language</string>
+    <string name="target_language">Target Language</string>
     <string name="sent_messages">Sent Messages</string>
     <string name="received_messages">Received Messages</string>
     <string name="save">Save</string>
