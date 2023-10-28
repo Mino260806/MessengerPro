@@ -28,17 +28,16 @@ public abstract class AbstractAPI {
         HttpsURLConnection httpsURLConnection = (HttpsURLConnection) urlConnection;
         mOnHttpsURLConnectionCreated.onCreated(httpsURLConnection);
         int responseCode = httpsURLConnection.getResponseCode();
-        InputStream is = responseCode == 200 ? httpsURLConnection.getInputStream() : httpsURLConnection.getErrorStream();
-        try {
+        try (InputStream is = responseCode == 200 ? httpsURLConnection.getInputStream() : httpsURLConnection.getErrorStream()) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             String responseString = readAll(rd);
             HttpResponse response = new HttpResponse();
             response.responseCode = responseCode;
             response.responseString = responseString;
-            return response;
-        } finally {
             is.close();
+            return response;
         }
+
     }
 
     private static String readAll(Reader rd) throws IOException {

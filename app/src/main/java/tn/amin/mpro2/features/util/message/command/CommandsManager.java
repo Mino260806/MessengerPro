@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import de.robv.android.xposed.XposedBridge;
@@ -36,6 +37,7 @@ import tn.amin.mpro2.features.util.message.command.api.DuckDuckGoAPI;
 import tn.amin.mpro2.features.util.message.command.api.FreeDictionaryAPI;
 import tn.amin.mpro2.features.util.message.command.api.LatexAPI;
 import tn.amin.mpro2.features.util.message.command.api.RedditAPI;
+import tn.amin.mpro2.features.util.message.command.api.UrbanAPI;
 import tn.amin.mpro2.features.util.message.command.api.WikipediaAPI;
 import tn.amin.mpro2.features.util.message.command.provider.AIProviderInteracter;
 import tn.amin.mpro2.file.FileHelper;
@@ -71,7 +73,8 @@ public class CommandsManager {
 
         mDispatcher.register(literal("word")
                 .then(literal("pronounce").then(argument("word", greedyString()).executes(c -> comAPI("word pronounce", c))))
-                .then(literal("define").then(argument("word", greedyString()).executes(c -> comAPI("word define", c)))));
+                .then(literal("define").then(argument("word", greedyString()).executes(c -> comAPI("word define", c))))
+                .then(literal("urban").then(argument("word", greedyString()).executes(c -> comAPI("word urban", c)))));
         mDispatcher.register(literal("reddit")
                 .then(argument("subreddit", string()).executes(c -> comAPI("reddit", c))
                         .then(argument("sort", word()).executes(c -> comAPI("reddit", c)))));
@@ -129,8 +132,7 @@ public class CommandsManager {
         );
         if (completion == null || StringUtils.isBlank(completion)) completion = gateway.res.getString(R.string.unexpected_error);
 
-        ApiResult result = new ApiResult.SendText(completion);
-        return result;
+        return new ApiResult.SendText(completion);
     }
 
     private ApiResult comReddit(String subreddit, String sort) {
@@ -140,7 +142,7 @@ public class CommandsManager {
         return new ApiResult.SendText(postDescription);
     }
 
-    private ApiResult comWordDefinition(String word, String type) {
+    private ApiResult comWordDefinition(String word, String type)  {
         switch (type) {
             case "pronounce": {
                 String result = FreeDictionaryAPI.fetchPronunciation(word);
@@ -154,10 +156,22 @@ public class CommandsManager {
                 }
             }
             case "define": {
+                java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
+                logger.warning("trying to get definition " + word);
                 String result = FreeDictionaryAPI.fetchDefinitions(word);
                 if (result != null) {
                     return new ApiResult.SendText(result);
                 }
+            }
+            case "urban": {
+                    java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
+                    logger.warning("trying to get urban " + word);
+                String result = UrbanAPI.fetchDefinition(word);
+
+                if (!result.equals("")) {
+                    return new ApiResult.SendText(result);
+                }
+
             }
         }
         XposedBridge.log(new UnknownError());
@@ -179,15 +193,9 @@ public class CommandsManager {
         MessageSender messageSender = ((CommandBundle)c.getSource()).messageSender;
 
         switch (likeSize) {
-            case 1:
-                messageSender.sendSticker(OrcaStickers.LIKE_SMALL);
-                break;
-            case 2:
-                messageSender.sendSticker(OrcaStickers.LIKE_MEDIUM);
-                break;
-            case 3:
-                messageSender.sendSticker(OrcaStickers.LIKE_BIG);
-                break;
+            case 1 -> messageSender.sendSticker(OrcaStickers.LIKE_SMALL);
+            case 2 -> messageSender.sendSticker(OrcaStickers.LIKE_MEDIUM);
+            case 3 -> messageSender.sendSticker(OrcaStickers.LIKE_BIG);
         }
         return 1;
     }
@@ -238,33 +246,29 @@ public class CommandsManager {
 
         new Thread(() -> {
             final ApiResult apiResult;
+            java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
             switch (api) {
-                case "reddit":
+                case "reddit" -> {
                     String sort;
-
                     apiResult = comReddit(getString(c, "subreddit"), getStringOrNull(c, "sort"));
-                    break;
-                case "word define":
+                }
+                case "word define" -> {
                     apiResult = comWordDefinition(getString(c, "word"), "define");
-                    break;
-                case "word pronounce":
-                    apiResult = comWordDefinition(getString(c, "word"), "pronounce");
-                    break;
-                case "wikipedia":
-                    apiResult = comWikipedia(getString(c, "term"), getStringOrNull(c, "language"));
-                    break;
-                case "search":
-                    apiResult = comSearch(getString(c, "term"));
-                    break;
-                case "ai":
-                    apiResult = comAI(getString(c, "prompt"));
-                    break;
-                case "latex":
-                    apiResult = comLatex(getString(c, "expression"));
-                    break;
-                default:
+                }
+                case "word pronounce" ->
+                        apiResult = comWordDefinition(getString(c, "word"), "pronounce");
+                case "word urban" -> {
+                    apiResult = comWordDefinition(getString(c, "word"), "urban");
+                }
+                case "wikipedia" ->
+                        apiResult = comWikipedia(getString(c, "term"), getStringOrNull(c, "language"));
+                case "search" -> apiResult = comSearch(getString(c, "term"));
+                case "ai" -> apiResult = comAI(getString(c, "prompt"));
+                case "latex" -> apiResult = comLatex(getString(c, "expression"));
+                default -> {
                     XposedBridge.log(new UnknownError());
                     apiResult = new ApiResult.SendText(gateway.res.getText(R.string.unexpected_error));
+                }
             }
 
             new Handler(Looper.getMainLooper()).post(() -> {
@@ -272,9 +276,7 @@ public class CommandsManager {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
                 }
-                if (apiResult != null) {
-                    apiResult.revealResult(messageSender);
-                }
+                apiResult.revealResult(messageSender);
             });
         }).start();
         return 1;

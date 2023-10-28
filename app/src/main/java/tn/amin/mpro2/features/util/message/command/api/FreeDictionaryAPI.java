@@ -22,8 +22,7 @@ public class FreeDictionaryAPI extends AbstractAPI {
     public static String fetchPronunciation(String word) {
         try {
             Object jsonRaw = new JSONTokener(fetchData(word).responseString).nextValue();
-            if (jsonRaw instanceof JSONArray) {
-                JSONArray json = (JSONArray) jsonRaw;
+            if (jsonRaw instanceof JSONArray json) {
                 for (int i = 0; i < json.length(); i++) {
                     try {
                         JSONArray jsonPhonetics = json
@@ -45,9 +44,8 @@ public class FreeDictionaryAPI extends AbstractAPI {
                 }
             } else {
                 JSONObject json = (JSONObject) jsonRaw;
-                String message = json
+                return json
                         .getString("message");
-                return message;
             }
         } catch (Exception e) {
             XposedBridge.log(e);
