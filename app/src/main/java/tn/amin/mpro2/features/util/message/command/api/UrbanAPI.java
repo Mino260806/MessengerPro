@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import tn.amin.mpro2.features.util.message.formatting.MessageUnicodeConverter;
@@ -22,16 +23,24 @@ public class UrbanAPI {
             StringBuilder result = new StringBuilder().append("");
             URL url = new URL("https://www.urbandictionary.com/define.php?term=" + word);
             HttpURLConnection httpURLConnection = null;
-
+            java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UrbanAPI.class.getName());
             httpURLConnection = (HttpURLConnection) url.openConnection();
-
             httpURLConnection.setRequestMethod("GET");
-            InputStream inputStream = httpURLConnection.getInputStream();
+            int responseCode = httpURLConnection.getResponseCode();
+            InputStream inputStream;
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                inputStream = httpURLConnection.getInputStream();
+            } else {
+                inputStream = httpURLConnection.getErrorStream();
+            }
             Scanner scanner = new Scanner(inputStream);
             scanner.useDelimiter("\\A");
+
             String html = scanner.hasNext() ? scanner.next() : "";
+
             Document document = Jsoup.parse(html);
             Element parent = document.selectFirst(".p-5.md\\:p-8");
+
             if (parent != null) {
                 Elements children = parent.children();
                 if (children.size() >= 4) {
@@ -46,10 +55,19 @@ public class UrbanAPI {
                             .append(MessageUnicodeConverter.italic("- " + exampleStr)).append("\n\n")
                             .append(MessageUnicodeConverter.bold(contributor.text()));
                 }
+            } else {
+                Element errorElem = document.selectFirst(".suggestions");
+                Elements children = errorElem.children();
+                if (children.size() >= 2) {
+                    Element shrug = children.get(0);
+                    Element errorMsg = children.get(1);
+                    result.append(MessageUnicodeConverter.bold(shrug.text())).append("\n\n")
+                            .append(errorMsg.text());
+                }
             }
             return result.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            return "Unexpected error!";
         }
     }
     public static String extractTextWithNewlines(Element element) {
