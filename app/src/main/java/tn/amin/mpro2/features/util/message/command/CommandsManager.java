@@ -156,16 +156,12 @@ public class CommandsManager {
                 }
             }
             case "define": {
-                java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
-                logger.warning("trying to get definition " + word);
                 String result = FreeDictionaryAPI.fetchDefinitions(word);
                 if (result != null) {
                     return new ApiResult.SendText(result);
                 }
             }
             case "urban": {
-                    java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
-                    logger.warning("trying to get urban " + word);
                 String result = UrbanAPI.fetchDefinition(word);
 
                 if (!result.equals("")) {
@@ -246,7 +242,6 @@ public class CommandsManager {
 
         new Thread(() -> {
             final ApiResult apiResult;
-            java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
             switch (api) {
                 case "reddit" -> {
                     String sort;
