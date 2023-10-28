@@ -108,19 +108,7 @@
             android:layout_alignParentStart="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-<!--            <EditText-->
-<!--                android:layout_below="@+id/text_source_language_sent"-->
-<!--                android:layout_alignParentStart="true"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:id="@+id/edit_source_language_sent"-->
-<!--                android:minEms="2"-->
-<!--                android:maxEms="5"-->
-<!--                android:inputType="textVisiblePassword"-->
-<!--                android:digits="abcdefghijklmnopqrstuvwxyz-"-->
-<!--                android:hint="auto"-->
-<!--                tools:ignore="HardcodedText" />-->
+
         <TextView
             android:layout_alignParentEnd="true"
             android:layout_width="wrap_content"
@@ -137,19 +125,6 @@
             android:id="@+id/spinner_target_language_sent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-
-<!--            <EditText-->
-<!--                android:layout_below="@+id/text_target_language_sent"-->
-<!--                android:layout_alignParentEnd="true"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:id="@+id/edit_target_language_sent"-->
-<!--                android:inputType="textVisiblePassword"-->
-<!--                android:digits="abcdefghijklmnopqrstuvwxyz-"-->
-<!--                android:minEms="2"-->
-<!--                android:maxEms="5"/>-->
-
 
     </RelativeLayout>
 

@@ -10,5 +10,5 @@
         <item name="colorDarkOverlay">#66000000</item>
     </style>
 
-    <style name="AppTheme" parent="Base.AppTheme" />
+    <style name="AppTheme" parent="Theme.Material3.DayNight" />
 </resources>

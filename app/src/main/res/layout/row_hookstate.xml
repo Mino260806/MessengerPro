@@ -38,7 +38,7 @@
         android:layout_height="32dp"
         style="@style/ButtonReset"
         android:src="@drawable/baseline_refresh_24"
-        app:tint="@android:color/tab_indicator_text"
+        app:tint="?attr/colorOnSurface"
         android:gravity="center_vertical|center_horizontal"
         android:background="?selectableItemBackgroundBorderless"
         app:layout_constraintRight_toRightOf="parent"

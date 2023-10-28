@@ -1,6 +1,5 @@
 <resources>
-
-    <style name="AppTheme" parent="Base.AppTheme">
+    <style name="AppTheme" parent="Theme.Material3.DayNight">
         <!-- Transparent system bars for edge-to-edge. -->
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
