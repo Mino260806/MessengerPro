@@ -51,22 +51,22 @@ public class TranslateConfigurationFrame extends FrameLayout {
         Animation shake = AnimationUtils.loadAnimation(this.getContext(), R.anim.shake_animation);
         //Filling up the Source/Received spinner
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item, TranslationSupportedLanguages.languages);
-        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter1.setDropDownViewResource(R.layout.spinner_item);
         sourceLanguageReceivedMessagesSpinner.setAdapter(adapter1);
 
         //Filling up the Target/Received spinner
         ArrayAdapter<String> adapter2 = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item, TranslationSupportedLanguages.languages);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter2.setDropDownViewResource(R.layout.spinner_item);
         targetLanguageReceivedMessagesSpinner.setAdapter(adapter2);
 
         //Filling up the Source/Sent spinner
         ArrayAdapter<String> adapter3 = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item, TranslationSupportedLanguages.languages);
-        adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter3.setDropDownViewResource(R.layout.spinner_item);
         sourceLanguageSentMessagesSpinner.setAdapter(adapter3);
 
         //Filling up the Target/Sent spinner
         ArrayAdapter<String> adapter4 = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item, TranslationSupportedLanguages.languages);
-        adapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter4.setDropDownViewResource(R.layout.spinner_item);
         targetLanguageSentMessagesSpinner.setAdapter(adapter4);
 
 

@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import tn.amin.mpro2.R;
-import tn.amin.mpro2.constants.StringConstants;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.Feature;
 import tn.amin.mpro2.features.FeatureId;
@@ -100,7 +99,7 @@ public class TranslationFeature extends Feature
             Toast.makeText(gateway.getActivity(), gateway.res.getString(R.string.please_enable_translate), Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!gateway.requireThreadKey()) return;
+        if (gateway.requireThreadKey()) return;
 
         TranslateConfigurationFrame configurationFrame = new TranslateConfigurationFrame(
                 gateway.getActivityWithModuleResources(), gateway, gateway.currentThreadKey);
