@@ -12,6 +12,10 @@
         android:defaultValue="true"
         android:key="mpro_ui_color_theme_force"
         android:title="@string/pref_color_theme_force" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_adblocker"
+        android:title="@string/pref_adblocker" />
 
     <PreferenceCategory
         android:key="category_conversation_key"

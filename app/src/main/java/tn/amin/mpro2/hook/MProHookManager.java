@@ -1,5 +1,6 @@
 package tn.amin.mpro2.hook;
 
+import tn.amin.mpro2.hook.all.AdBlockHook;
 import tn.amin.mpro2.hook.all.CameraLaunchHook;
 import tn.amin.mpro2.hook.all.ConversationEnterHook;
 import tn.amin.mpro2.hook.all.ConversationLeaveHook;
@@ -32,5 +33,6 @@ public class MProHookManager extends HookManager {
         addHook(new MessagesDisplayHook());
         addHook(new UIColorsHook());
         addHook(new ThreadAttrsHook());
+        addHook(new AdBlockHook());
     }
 }
