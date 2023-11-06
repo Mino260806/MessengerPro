@@ -4,6 +4,7 @@ import android.os.Handler;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -47,7 +48,7 @@ public abstract class BaseHook {
         }
 
         try {
-            mUnhooks = injectInternal(gateway);
+            mUnhooks = new HashSet<>(injectInternal(gateway));
         } catch (Throwable t) {
             Logger.error(t);
             setStateNotWorking();
