@@ -99,7 +99,7 @@ public class TranslationFeature extends Feature
             Toast.makeText(gateway.getActivity(), gateway.res.getString(R.string.please_enable_translate), Toast.LENGTH_SHORT).show();
             return;
         }
-        if (gateway.requireThreadKey()) return;
+        if (!gateway.requireThreadKey()) return;
 
         TranslateConfigurationFrame configurationFrame = new TranslateConfigurationFrame(
                 gateway.getActivityWithModuleResources(), gateway, gateway.currentThreadKey);

@@ -139,7 +139,6 @@ public class OrcaExplorer {
         hookAllDispatch("Cowatch", classLoader);
         hookAllDispatch("Copresence", classLoader);
         hookAllDispatch("BroadcastFlow", classLoader);
-        hookAllDispatch("BroadcastFlow", classLoader);
         // hookMethodAndLogParams("com.facebook.messenger.notification.engine.MSGOpenPathRenderedNotification",
         // "getIsUnsent", classLoader);
         // hookAllDispatch("Community", classLoader);
