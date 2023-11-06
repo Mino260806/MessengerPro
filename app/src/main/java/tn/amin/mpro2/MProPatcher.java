@@ -148,9 +148,12 @@ public class MProPatcher implements
         }
 
         else if (mPendingWarning != null) {
-            doOnActivitySet(() -> new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                showWarningDialog(mPendingWarning);
-            }, 500));
+//            doOnActivitySet(() -> new Handler(Looper.getMainLooper()).postDelayed(() -> {
+//                showWarningDialog(mPendingWarning);
+//            }, 500));
+            doOnActivitySet(() -> new Handler(Looper.getMainLooper()).post(() -> {
+                Toast.makeText(getContext(), mPendingWarning, Toast.LENGTH_LONG).show();
+            }));
         }
 
         else if (gateway.state.isFirstTime()) {
@@ -330,6 +333,7 @@ public class MProPatcher implements
                     Logger.info("Injecting UI exploration hooks...");
                     OrcaExplorer.exploreUI(gateway, activity);
 
+                    Logger.info("mPreferences = " + (mPreferences!=null));
                     Logger.info("Summoning toolbar...");
 
                 } else {
