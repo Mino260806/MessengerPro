@@ -113,7 +113,7 @@ public class OrcaGateway {
                 Logger.info("Captured mailbox !");
                 Object mailbox = param.thisObject;
                 authData = new AuthDataWrapper(param.args[1]);
-                mailboxConnector = new MailboxConnector(mailbox, classLoader);
+                mailboxConnector = new MailboxConnector(mailbox, authData, classLoader);
                 for (Runnable callback : mailboxCallback) {
                     callback.run();
                 }
