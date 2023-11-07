@@ -1,127 +1,44 @@
 package tn.amin.mpro2.debug;
 
 import android.app.Activity;
-import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.database.Cursor;
+import android.graphics.BlendModeColorFilter;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.net.Uri;
+import android.os.Build;
 import android.view.View;
-import android.view.Window;
-import android.widget.TextView;
+import android.widget.ImageView;
 
-import androidx.loader.content.CursorLoader;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 
+import java.io.File;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Random;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import tn.amin.mpro2.BuildConfig;
+import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.methodhook.MethodHookLogParams;
-import tn.amin.mpro2.hook.all.UIColorsHook;
 import tn.amin.mpro2.orca.OrcaGateway;
+import tn.amin.mpro2.orca.delegate.CQLResultSetDelegateFactory;
 
 public class OrcaExplorer {
     public static void exploreEarly(ClassLoader classLoader) {
-        //// XC_MethodHook getColorMH = new XC_MethodHook() {
-        //// @Override
-        //// protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-        //// Logger.verbose("getColor(): " + param.getResult());
-        //// param.setResult(Color.RED);
-        //// }
-        //// };
-        ////
-        //// XposedBridge.hookAllMethods(Resources.class, "getColor", getColorMH);
-        //// XposedBridge.hookAllMethods(ContextWrapper.class, "getColor", getColorMH);
-        ////
-        //// XposedBridge.hookAllMethods(View.class, "setBackgroundColor", new
-        //// XC_MethodHook() {
-        //// @Override
-        //// protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-        //// Logger.verbose("View.setBackgroundColor called ! " + param.args[0]);
-        //// param.args[0] = Color.YELLOW;
-        //// }
-        //// });
-        //
-        // XposedBridge.hookAllMethods(View.class, "performClick", new XC_MethodHook() {
-        // @Override
-        // protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-        // Logger.verbose("View " + param.thisObject.getClass().getName() + " was
-        //// clicked");
-        // }
-        // });
-        //
-        //
-        // XposedBridge.hookAllMethods(Paint.class, "setColor", new XC_MethodHook() {
-        // @Override
-        // protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-        // param.args[0] = replaceColor((Integer) param.args[0]);
-        // }
-        // });
-        //
-        //// XposedBridge.hookAllMethods(Paint.class, "setColorFilter", new
-        //// XC_MethodHook() {
-        //// @Override
-        //// protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-        //// if (param.args[0] == null) return;
-        //// if (param.args[0] instanceof PorterDuffColorFilter) {
-        //// PorterDuffColorFilter colorFilter = (PorterDuffColorFilter) param.args[0];
-        //// }
-        //// }
-        //// });
-        //
-        // XposedBridge.hookAllConstructors(PorterDuffColorFilter.class, new
-        //// XC_MethodHook() {
-        // @Override
-        // protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-        // param.args[0] = replaceColor((Integer) param.args[0]);
-        // }
-        // });
-        //
-        //// XposedBridge.hookAllMethods(BitmapDrawable.class, "draw", new
-        //// XC_MethodHook() {
-        //// @Override
-        //// protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-        //// param.setResult(null);
-        //// }
-        //// });
-        //
-        // XposedBridge.hookAllMethods(BitmapDrawable.class, "setBitmap", new
-        //// XC_MethodHook() {
-        // @Override
-        // protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-        // Logger.verbose("setting Bitmap!");
-        // }
-        // });
-    }
 
-    // private static int replaceColor(int original) {
-    // boolean replaced = true;
-    // if (original == Color.WHITE) {
-    // return Color.parseColor("#efe5fd");
-    // } else if (original == Color.parseColor("#0A7CFF")) {
-    // return Color.parseColor("#9965f4");
-    // } else if (original == Color.parseColor("#E6DCF3")){
-    // return Color.parseColor("#000000"); // 7E3FF2");
-    // } else {
-    // replaced = false;
-    // }
-    // return original;
-    //// Logger.verbose("Paint.setColor called (replaced: " + replaced + ") ! " +
-    // original);
-    // }
+    }
 
     public static void explore(final OrcaGateway gateway, Context context) {
         ClassLoader classLoader = gateway.classLoader;
@@ -139,6 +56,7 @@ public class OrcaExplorer {
         hookAllDispatch("Cowatch", classLoader);
         hookAllDispatch("Copresence", classLoader);
         hookAllDispatch("BroadcastFlow", classLoader);
+
         // hookMethodAndLogParams("com.facebook.messenger.notification.engine.MSGOpenPathRenderedNotification",
         // "getIsUnsent", classLoader);
         // hookAllDispatch("Community", classLoader);
@@ -148,6 +66,15 @@ public class OrcaExplorer {
         // hookMethodAndLogParams("com.facebook.msys.mci.Attachment",
         // "getAttachmentType", classLoader);
 
+//        hookMethodAndLogParams("com.facebook.core.mca.MailboxCoreJNI", "dispatchVIIIJJOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", classLoader);
+//        hookMethodAndLogParams("com.facebook.core.mca.MailboxCoreJNI", "dispatchVIJOOOOOOOOOOOOOOOOOOOO", classLoader);
+//        hookMethodAndLogST("com.facebook.msys.mci.Execution", "nativeScheduleTask", classLoader);
+//        hookMethodAndLogST("com.facebook.msys.mci.NotificationCenter", "dispatchNotificationToCallbacks", classLoader);
+//        hookMethodAndLogST("android.app.NotificationManager", "notify", classLoader);
+//        hookConstructorAndLogST("com.facebook.messaging.notify.type.NewMessageNotification", classLoader);
+//        hookConstructorAndLogParams("com.facebook.secure.secrettypes.SecretString", classLoader);
+//        hookConstructorAndLogST("com.facebook.messenger.notification.engine.MSGOpenPathRenderedNotification", classLoader);
+//        hookConstructorAndLogParams("com.facebook.msys.mci.Attachment", classLoader);
     }
 
     public static void exploreUI(OrcaGateway gateway, Activity activity) {
@@ -207,5 +134,16 @@ public class OrcaExplorer {
             }
         }
 
+    }
+
+    private static String getCallingMethod(int index) {
+        Throwable t = new Throwable();
+        return t.getStackTrace()[index].getClassName() + "." +
+        t.getStackTrace()[index].getMethodName() + " (" +
+        t.getStackTrace()[index].getLineNumber() + ")";
+    }
+
+    private static String formatColor(@ColorInt int color) {
+        return String.format("#%06X", (0xFFFFFF & color));
     }
 }

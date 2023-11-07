@@ -18,14 +18,17 @@ import tn.amin.mpro2.orca.datatype.MediaAttachment;
 import tn.amin.mpro2.orca.datatype.MediaMessage;
 import tn.amin.mpro2.orca.datatype.Mention;
 import tn.amin.mpro2.orca.datatype.TextMessage;
+import tn.amin.mpro2.orca.wrapper.AuthDataWrapper;
 import tn.amin.mpro2.util.XposedHilfer;
 
 public class MailboxConnector {
     public final WeakReference<Object> mailbox;
+    private final AuthDataWrapper authData;
     private final ClassLoader classLoader;
 
-    public MailboxConnector(Object mailbox, ClassLoader classLoader) {
+    public MailboxConnector(Object mailbox, AuthDataWrapper authData, ClassLoader classLoader) {
         this.mailbox = new WeakReference<>(mailbox);
+        this.authData = authData;
         this.classLoader = classLoader;
     }
 

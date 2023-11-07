@@ -94,7 +94,7 @@ public class MessageUnicodeConverter
 	static {
 		mSpecialSymbols.put("*", new CharUnicodeConverter(new ShiftConversionMethod( 0x1D5EE)));
 		mSpecialSymbols.put("!", new CharUnicodeConverter(new ShiftConversionMethod( 0x1D622)));
-		mSpecialSymbols.put("-", new CharUnicodeConverter(new AddConversionMethod( 0x336)));
+		mSpecialSymbols.put("~", new CharUnicodeConverter(new AddConversionMethod( 0x336)));
 		mSpecialSymbols.put("_", new CharUnicodeConverter(new AddConversionMethod( 0x35F)).withFilter(c -> {
 			// Non alphanumeric characters do not use the same "y" level for underline
 			// so the underlining line becomes misaligned and ugly. We are obliged to disable
@@ -119,7 +119,7 @@ public class MessageUnicodeConverter
 	public static String bold(String s) { return MessageUnicodeConverter.convert(s, "*"); }
 	public static String italic(String s) { return MessageUnicodeConverter.convert(s, "!"); }
 	public static String underline(String s) { return MessageUnicodeConverter.convert(s, "_"); }
-	public static String crossOut(String s) { return MessageUnicodeConverter.convert(s, "-"); }
+	public static String crossOut(String s) { return MessageUnicodeConverter.convert(s, "~"); }
 
 	private static boolean isAscii(char c) {
 		return (StandardCharsets.US_ASCII.newEncoder().canEncode(c)) &&

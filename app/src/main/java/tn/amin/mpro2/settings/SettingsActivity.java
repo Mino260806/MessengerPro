@@ -229,6 +229,16 @@ public class SettingsActivity extends AppCompatActivity {
                         return false;
                     });
 
+            SwitchPreference customThemePreference = Objects.requireNonNull(findPreference("mpro_ui_color_theme_enable"));
+            customThemePreference.setOnPreferenceChangeListener((preference, newValue) -> {
+                        if (!(Boolean) newValue) {
+                            getActiveSharedPreferences().edit()
+                                    .putInt("mpro_ui_color_theme", 0)
+                                    .apply();
+                        }
+                        return true;
+                    });
+
             linkPreferenceToFragment("mpro_commands_ai_config", SettingsType.AI_CONFIG, "fragAiConfig");
         }
 

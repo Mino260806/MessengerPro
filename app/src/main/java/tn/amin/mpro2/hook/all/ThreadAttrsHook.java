@@ -56,7 +56,7 @@ public class ThreadAttrsHook extends BaseHook
 
     @Override
     protected Set<XC_MethodHook.Unhook> injectInternal(OrcaGateway gateway) {
-        return Collections.singleton(XposedBridge.hookMethod(gateway.unobfuscator.getMethod(OrcaUnobfuscator.METHOD_THREAD_THEME_INFO_FACTORY_CREATE), new XC_MethodHook() {
+        return Collections.singleton(XposedBridge.hookMethod(gateway.unobfuscator.getMethod(OrcaUnobfuscator.METHOD_THREAD_THEME_INFO_FACTORY_CREATE), wrap(new XC_MethodHook() {
             Object originalResultSet = null;
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -73,7 +73,7 @@ public class ThreadAttrsHook extends BaseHook
                 XposedHelpers.setObjectField(param.args[1], "mResultSet",
                         originalResultSet);
             }
-        }));
+        })));
     }
 
     @Override
