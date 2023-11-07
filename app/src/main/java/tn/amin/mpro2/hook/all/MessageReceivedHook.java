@@ -1,8 +1,8 @@
 package tn.amin.mpro2.hook.all;
-
+import java.util.Arrays;
 import org.apache.commons.lang3.math.NumberUtils;
-
 import java.util.Set;
+import java.util.logging.Logger;
 
 import de.robv.android.xposed.XC_MethodHook;
 import tn.amin.mpro2.debug.Logger;
@@ -49,6 +49,6 @@ public class MessageReceivedHook extends BaseHook {
     }
 
     public interface MessageReceivedListener {
-        void onMessageReceived(String message, String messageId, long senderUserKey, long convThreadKey);
+        void onMessageReceived(String message, String messageId, String senderUserKey, long convThreadKey);
     }
 }

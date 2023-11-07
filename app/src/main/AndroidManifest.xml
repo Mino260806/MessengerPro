@@ -20,6 +20,7 @@
         <activity
             android:name=".AboutActivity"
             android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,12 +31,14 @@
         <activity
             android:name=".settings.SettingsActivity"
             android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_settings"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".tasker.ActivitySendMessageConfig"
             android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@mipmap/ic_launcher"
             android:label="Send a message on Messenger"
             android:theme="@style/Theme.AppCompat.DayNight">
@@ -46,6 +49,7 @@
         <activity
             android:name=".tasker.ActivityReactToMessageConfig"
             android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@mipmap/ic_launcher"
             android:label="React to a message on Messenger"
             android:theme="@style/Theme.AppCompat.DayNight">
@@ -56,6 +60,7 @@
         <activity
             android:name=".tasker.ActivityOnMessageConfig"
             android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@mipmap/ic_launcher"
             android:label="On message received"
             android:theme="@style/Theme.AppCompat.DayNight">
@@ -66,6 +71,7 @@
         <activity
             android:name=".tasker.ActivityOnUserTypingConfig"
             android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@mipmap/ic_launcher"
             android:label="On user typing"
             android:theme="@style/Theme.AppCompat.DayNight">

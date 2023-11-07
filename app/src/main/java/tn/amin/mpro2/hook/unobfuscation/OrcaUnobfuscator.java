@@ -15,13 +15,11 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import de.robv.android.xposed.XposedHelpers;
 import io.github.neonorbit.dexplore.DexFactory;
 import io.github.neonorbit.dexplore.Dexplore;
 import io.github.neonorbit.dexplore.filter.ClassFilter;
 import io.github.neonorbit.dexplore.filter.DexFilter;
 import io.github.neonorbit.dexplore.filter.MethodFilter;
-import io.github.neonorbit.dexplore.filter.ReferenceFilter;
 import io.github.neonorbit.dexplore.filter.ReferenceTypes;
 import io.github.neonorbit.dexplore.reference.FieldRefData;
 import io.github.neonorbit.dexplore.result.ClassData;
@@ -31,7 +29,6 @@ import io.github.neonorbit.dexplore.util.DexLog;
 import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.file.StorageConstants;
-import tn.amin.mpro2.util.XposedHilfer;
 
 public class OrcaUnobfuscator {
     private Dexplore mDexplore;
@@ -63,6 +60,7 @@ public class OrcaUnobfuscator {
     public static final String API_CONVERSATION_ENTER = "API_CONVERSATION_ENTER";
     public static final String API_CONVERSATION_LEAVE = "API_CONVERSATION_LEAVE";
     public static final String API_MESSAGE_SEEN = "API_MESSAGE_SEEN";
+    public static final String METHOD_ADS_SUPPLIER = "Ads/supplier";
 
     public OrcaUnobfuscator(Context context, String path, ClassLoader classLoader, boolean searchAgain) {
         mClassLoader = classLoader;
@@ -96,7 +94,7 @@ public class OrcaUnobfuscator {
                 .setReferenceTypes(ReferenceTypes.builder().addString().addMethodWithDetails().build())
                 .setReferenceFilter(pool ->
                         pool.stringsContain("/t_st") &&
-                        pool.methodSignaturesContain("java.lang.System.arraycopy(java.lang.Object,int,java.lang.Object,int,int):void"))
+                                pool.methodSignaturesContain("java.lang.System.arraycopy(java.lang.Object,int,java.lang.Object,int,int):void"))
                 .build());
     }
 
@@ -108,6 +106,21 @@ public class OrcaUnobfuscator {
                         .setReferenceFilter(pool -> pool.contains("messageStreamingState") ||
                                 pool.contains("Magic words offsets %s and length %s mismatch.") ||
                                 pool.contains("typing_indicator:"))
+                        .build());
+    }
+
+    private Method LoadAdsSupplierMethod() {
+        return loadMethod(METHOD_ADS_SUPPLIER,
+                new ClassFilter.Builder()
+                        .setClasses("com.facebook.messaging.business.inboxads.plugins.inboxads.itemsupplier.InboxAdsItemSupplierImplementation")
+                        .build(),
+                new MethodFilter.Builder()
+                        .setReferenceTypes(ReferenceTypes.builder().addString().build())
+                        .setReferenceFilter(pool ->
+                                pool.contains("ads_load_begin") ||
+                                        pool.contains("inbox_ads_fetch_start"))
+                        .setReturnType("void")
+                        .setModifiers(Modifier.PUBLIC | Modifier.STATIC)
                         .build());
     }
 
@@ -145,7 +158,7 @@ public class OrcaUnobfuscator {
             List<FieldRefData> refData = NewMessageNotification.getReferencePool().getFieldSection().stream()
                     .filter(fieldRefData ->
                             fieldRefData.getDeclaringClass().equals(OrcaClassNames.MESSAGE) &&
-                            fieldRefData.getType().equals(OrcaClassNames.THREAD_KEY))
+                                    fieldRefData.getType().equals(OrcaClassNames.THREAD_KEY))
                     .collect(Collectors.toList());
             if (refData.size() == 0) {
                 Logger.error("Could not find Message.threadKey");
@@ -188,9 +201,9 @@ public class OrcaUnobfuscator {
 
             List<FieldRefData> refDataGetText = getText.getReferencePool().getFieldSection().stream()
                     .filter(fieldRefData -> {
-                            return fieldRefData.getDeclaringClass().equals(OrcaClassNames.MESSAGE) &&
-                                    fieldRefData.getType().equals(OrcaClassNames.SECRET_STRING) &&
-                            refDataWriteToParcel.contains(fieldRefData);
+                        return fieldRefData.getDeclaringClass().equals(OrcaClassNames.MESSAGE) &&
+                                fieldRefData.getType().equals(OrcaClassNames.SECRET_STRING) &&
+                                refDataWriteToParcel.contains(fieldRefData);
                     })
                     .collect(Collectors.toList());
 
@@ -242,7 +255,7 @@ public class OrcaUnobfuscator {
             List<FieldRefData> refData = SecretStringToString.getReferencePool().getFieldSection().stream()
                     .filter(fieldRefData ->
                             fieldRefData.getDeclaringClass().equals(OrcaClassNames.SECRET_STRING) &&
-                            fieldRefData.getType().equals(String.class.getName()))
+                                    fieldRefData.getType().equals(String.class.getName()))
                     .collect(Collectors.toList());
 
             if (refData.size() != 1) {
@@ -272,8 +285,8 @@ public class OrcaUnobfuscator {
 
             List<FieldRefData> refData = SecretString.getReferencePool().getFieldSection().stream()
                     .filter(fieldRefData -> fieldRefData.getDeclaringClass().equals(OrcaClassNames.SECRET_STRING) &&
-                        fieldRefData.getType().equals(String.class.getName()) &&
-                        !fieldRefData.getName().equals(secretStringStars.getName()))
+                            fieldRefData.getType().equals(String.class.getName()) &&
+                            !fieldRefData.getName().equals(secretStringStars.getName()))
                     .collect(Collectors.toList());
 
             if (refData.size() == 0) {
@@ -337,8 +350,8 @@ public class OrcaUnobfuscator {
 
     private int loadAPINotification() {
         if (!mPref.contains(API_NOTIFICATION))
-            mPref.edit().putString(API_NOTIFICATION, "25").apply();
-        return Integer.parseInt(mPref.getString(API_NOTIFICATION, "25"));
+            mPref.edit().putString(API_NOTIFICATION, "26").apply();
+        return Integer.parseInt(mPref.getString(API_NOTIFICATION, "26"));
     }
 
     private int loadAPIConversationEnter() {
@@ -423,7 +436,7 @@ public class OrcaUnobfuscator {
             methodData = MethodData.deserialize(raw);
         }
 
-         return methodData.loadMethod(mClassLoader);
+        return methodData.loadMethod(mClassLoader);
     }
 
     private Field loadField(String simpleName, Supplier<FieldRefData> supplier) {
@@ -490,6 +503,9 @@ public class OrcaUnobfuscator {
         Logger.verbose("Loading method " + METHOD_THREAD_THEME_INFO_FACTORY_CREATE);
         mUnobfuscatedMethods.put(METHOD_THREAD_THEME_INFO_FACTORY_CREATE, loadThreadThemeInfoCreate());
         Logger.verbose("Method: " + getMethod(METHOD_THREAD_THEME_INFO_FACTORY_CREATE));
+        Logger.verbose("Loading method " + METHOD_ADS_SUPPLIER);
+        mUnobfuscatedMethods.put(METHOD_ADS_SUPPLIER, LoadAdsSupplierMethod());
+
 
         Logger.verbose("Loading field " + FIELD_MESSAGE_THREADKEY);
         mUnobfuscatedFields.put(FIELD_MESSAGE_THREADKEY, loadMessageFieldThreadKey());

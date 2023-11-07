@@ -2,8 +2,11 @@ package tn.amin.mpro2.file;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 
@@ -17,6 +20,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -126,4 +132,49 @@ public class FileHelper {
 
         return result.toString("UTF-8");
     }
+    public static Uri insertImage(ContentResolver contentResolver, String name, String type) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, name);
+        contentValues.put(MediaStore.Images.Media.MIME_TYPE, type);
+        return contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+    }
+
+    public File convertStreamToFile(InputStream stream) throws IOException {
+        File tempFile = null;
+        OutputStream outStream = null;
+
+        try {
+            tempFile = this.createTempFile("jpg");
+
+            outStream = new FileOutputStream(tempFile);
+            byte[] buffer = new byte[4096]; // 4K buffer
+            int bytesRead;
+
+            while ((bytesRead = stream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
+        } finally {
+            // Ensure streams are closed, even if there's an exception
+            try {
+                if (outStream != null) {
+                    outStream.close();
+                }
+            } catch (IOException e) {
+                Logger.error("Failed to close output stream");
+            }
+
+            try {
+                stream.close();
+            } catch (IOException e) {
+                Logger.error("Failed to close input stream");
+            }
+        }
+
+        return tempFile;
+    }
+    public static String generateUniqueFilename(String extension) {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        return "TMP_" + timeStamp + "." + extension;
+    }
+
 }

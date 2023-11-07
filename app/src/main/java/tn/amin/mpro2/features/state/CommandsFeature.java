@@ -69,8 +69,9 @@ public class CommandsFeature extends Feature
         }
     }
 
+
     @Override
-    public void onMessageReceived(String content, String messageId, long senderUserKey, long convThreadKey) {
+    public void onMessageReceived(String content, String messageId, String senderUserKey, long convThreadKey) {
         String allowOtherStatus = gateway.pref.getCommandsAllowOther();
         if (!isEnabled() || !content.startsWith("/") || allowOtherStatus.equals("never")) return;
 

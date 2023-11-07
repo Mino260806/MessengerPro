@@ -36,6 +36,7 @@
     <string name="pref_disable_msg_seen">Prevent message seen indicator</string>
     <string name="pref_enable_conversation_lock">Lockable conversations</string>
     <string name="pref_default_camera">Use default camera app</string>
+    <string name="pref_disable_media_transcoder">Disable media transcoder</string>
     <string name="last_message">Message</string>
     <string name="last_message_threadkey">Thread Key</string>
     <string name="last_message_description">The message content</string>
@@ -95,8 +96,8 @@
     <string name="failed_load_module">Failed to load Messenger Pro. Please check module logs in LSPosed for more details.</string>
     <string name="pref_hookstate">Hooks state</string>
     <string name="reset">Reset</string>
-    <string name="too_old_version">Your messenger version is too old. Please update it to messenger V%s, or expect some features to break</string>
-    <string name="too_new_version">Your messenger version is too new. Please downgrade it to messenger V%s, or expect some features to break</string>
+    <string name="too_old_version">Please update it to messenger V%s, or expect some features to break because your messenger version is too old.</string>
+    <string name="too_new_version">Please downgrade it to messenger V%s, or expect some features to break because your messenger version is too new.</string>
     <string name="warning_dialog_title">Messenger Pro Warning</string>
     <string name="error_dialog_title">Messenger Pro Error</string>
     <string name="patreon_popup_message">Hey there! If you find value in using Messenger Pro, please consider supporting me on Patreon. Your support helps me continue improving and adding new features to the app. Thank you!</string>
@@ -121,8 +122,8 @@
     <string name="deobfuscation_loading_title">Loading Messenger Pro</string>
     <string name="deobfuscation_loading_message">Deobfuscating components</string>
     <string name="feature_conv_translate">Translates sent/received messages in a conversation</string>
-    <string name="source_language">Source\nLanguage</string>
-    <string name="target_language">Target\nLanguage</string>
+    <string name="source_language">Source Language</string>
+    <string name="target_language">Target Language</string>
     <string name="sent_messages">Sent Messages</string>
     <string name="received_messages">Received Messages</string>
     <string name="save">Save</string>
@@ -137,9 +138,10 @@
     <string name="theme">Theme</string>
     <string name="pref_category_ui">User Interface</string>
     <string name="pref_color_theme">Custom color theme (experimental)</string>
+    <string name="pref_adblocker">Block ads</string>
     <string name="apply">Apply</string>
     <string name="invalid_color">Invalid Color</string>
-    <string name="pref_aiconfig">Configure AI</string>
+    <string name="pref_aiconfig">Configure AI (not working)</string>
     <string name="pref_aiconfig_provider">Model</string>
     <string name="pref_aiconfig_auth">Authentication Data</string>
     <string name="need_install_aiplugin">AI Plugin is not installed</string>

@@ -6,15 +6,12 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.widget.Toast;
 
-import androidx.annotation.StringRes;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import tn.amin.mpro2.BuildConfig;
 import tn.amin.mpro2.R;
 import tn.amin.mpro2.constants.OrcaClassNames;
 import tn.amin.mpro2.debug.Logger;

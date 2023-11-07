@@ -2,12 +2,16 @@ package tn.amin.mpro2.hook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import tn.amin.mpro2.hook.all.MessageReceivedHook;
 
 public class BroadcastReceiverHook {
     public BroadcastReceiverHook(String broadcastReceiverName, ClassLoader classLoader,
@@ -20,12 +24,15 @@ public class BroadcastReceiverHook {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 //                Logger.info("onReceive ! " + param.thisObject.getClass().getName());
+
                 if (TargetReceiver.isInstance(param.thisObject)) {
                     Context context = (Context) param.args[0];
                     Intent intent = (Intent) param.args[1];
 
                     if (intent.hasExtra(actionParamName)) {
                         String action = intent.getStringExtra(actionParamName);
+
+
                         listener.onReceiveBroadcast(context, intent, action);
 
                         param.setResult(null);

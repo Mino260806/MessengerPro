@@ -2,15 +2,17 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion "31.0.0"
+
+
 
     defaultConfig {
+        compileSdk 33
         applicationId "tn.amin.mpro2"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 33
-        versionCode 8
-        versionName "1.0.6-dev"
+        versionCode 11
+        versionName "1.0.11"
+
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -22,9 +24,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
+
     namespace 'tn.amin.mpro2'
     buildFeatures {
         viewBinding true
@@ -44,6 +47,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.navigation:navigation-fragment:2.5.2'
     implementation 'androidx.navigation:navigation-ui:2.5.2'
+    implementation 'org.jsoup:jsoup:1.16.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

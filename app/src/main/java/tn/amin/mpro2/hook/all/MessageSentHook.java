@@ -1,5 +1,6 @@
 package tn.amin.mpro2.hook.all;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -34,7 +35,12 @@ public class MessageSentHook extends BaseHook {
         return XposedBridge.hookAllMethods(MailboxCoreJNI, DISPATCH_METHOD, wrap(new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (param.args[4] instanceof String) {
+
+                if (param.args[5] instanceof String) {
+
+//                    java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
+//                    logger.warning("sent ! " + Arrays.toString(param.args));
+
                     Long threadKey = (Long) param.args[2];
                     String message = (String) param.args[5];
 

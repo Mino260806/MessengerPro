@@ -31,7 +31,7 @@ public class TaskerEventMessageFeature extends Feature
     }
 
     @Override
-    public void onMessageReceived(String message, String messageId, long senderUserKey, long convThreadKey) {
+    public void onMessageReceived(String message, String messageId, String senderUserKey, long convThreadKey) {
         // TODO this doesn't work in muted conversations
         ActivityOnMessageConfig.triggerMessageReceived(gateway.getContext(), message, messageId, senderUserKey, convThreadKey);
     }

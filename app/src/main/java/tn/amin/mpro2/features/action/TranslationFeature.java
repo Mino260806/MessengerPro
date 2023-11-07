@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import tn.amin.mpro2.R;
-import tn.amin.mpro2.constants.StringConstants;
 import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.features.Feature;
 import tn.amin.mpro2.features.FeatureId;

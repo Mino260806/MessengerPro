@@ -1,10 +1,12 @@
 package tn.amin.mpro2.hook;
 
+import tn.amin.mpro2.hook.all.AdBlockHook;
 import tn.amin.mpro2.hook.all.CameraLaunchHook;
 import tn.amin.mpro2.hook.all.ConversationEnterHook;
 import tn.amin.mpro2.hook.all.ConversationLeaveHook;
 import tn.amin.mpro2.hook.all.MessageReceivedHook;
 import tn.amin.mpro2.hook.all.MessageSentHook;
+import tn.amin.mpro2.hook.all.MediaTranscoderHook;
 import tn.amin.mpro2.hook.all.MessagesDisplayHook;
 import tn.amin.mpro2.hook.all.SeenIndicatorHook;
 import tn.amin.mpro2.hook.all.ThreadAttrsHook;
@@ -27,8 +29,10 @@ public class MProHookManager extends HookManager {
         addHook(new TypingIndicatorSentHook());
         addHook(new TypingIndicatorReceivedHook());
         addHook(new CameraLaunchHook());
+        addHook(new MediaTranscoderHook());
         addHook(new MessagesDisplayHook());
         addHook(new UIColorsHook());
         addHook(new ThreadAttrsHook());
+        addHook(new AdBlockHook());
     }
 }

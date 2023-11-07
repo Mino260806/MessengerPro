@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Map;
 
 import tn.amin.mpro2.constants.OrcaInfo;
@@ -40,7 +41,7 @@ public class OrcaBridge {
         intent.putExtra(PARAM_MESSAGE, message);
         intent.putExtra(PARAM_THREAD_KEY, threadKey);
         if (replyMessageId != null)
-            intent.putExtra(PARAM_REPLY_MESSAGE_ID, threadKey);
+            intent.putExtra(PARAM_REPLY_MESSAGE_ID, replyMessageId);
         context.sendBroadcast(intent);
     }
 
@@ -61,51 +62,59 @@ public class OrcaBridge {
             String action = intent.getStringExtra(PARAM_ACTION);
             if (action != null) {
                 intent.removeExtra(PARAM_ACTION);
-
                 long threadKey;
                 String message;
                 String messageId;
                 String reaction;
                 String replyMessageId;
                 switch (action) {
-                    case ACTION_SEND_MESSAGE:
+                    case ACTION_SEND_MESSAGE -> {
                         message = intent.getStringExtra(PARAM_MESSAGE);
                         replyMessageId = intent.getStringExtra(PARAM_REPLY_MESSAGE_ID);
                         threadKey = intent.getLongExtra(PARAM_THREAD_KEY, -1);
 
-                        if (replyMessageId != null && replyMessageId.trim().isEmpty()) {
+                        // Trim all strings if they are not null
+                        if (message != null) {
+                            message = message.trim();
+                        }
+                        if (replyMessageId != null) {
+                            replyMessageId = replyMessageId.trim();
+                        }
+                        if (replyMessageId != null && replyMessageId.isEmpty()) {
                             replyMessageId = null;
                         }
-
                         if (message != null && threadKey != -1) {
                             callback.sendMessage(message, replyMessageId, threadKey);
                         }
-
-                        break;
-
-                    case ACTION_REACT_TO_MESSAGE:
+                    }
+                    case ACTION_REACT_TO_MESSAGE -> {
                         reaction = intent.getStringExtra(PARAM_REACTION);
                         messageId = intent.getStringExtra(PARAM_MESSAGE_ID);
                         threadKey = intent.getLongExtra(PARAM_THREAD_KEY, -1);
 
+                        // Trim all strings if they are not null
+                        if (reaction != null) {
+                            reaction = reaction.trim();
+                        }
+                        if (messageId != null) {
+                            messageId = messageId.trim();
+                        }
                         if (reaction != null && messageId != null && threadKey != -1) {
                             callback.reactToMessage(reaction, messageId, threadKey);
                         }
-
-                        break;
-
-                    case ACTION_PREFERENCES_RELOAD:
+                    }
+                    case ACTION_PREFERENCES_RELOAD -> {
                         Map<String, Map<String, ?>> preferences = (Map<String, Map<String, ?>>) intent.getSerializableExtra(PARAM_PREFERENCES_MAP);
-
                         if (preferences != null) {
                             callback.reloadPreferences(preferences);
                         }
-
-                        break;
+                    }
                 }
             }
         }
     }
+
+
 
     private static Intent getIntent(Context context, String action) {
         Intent intent = new Intent();

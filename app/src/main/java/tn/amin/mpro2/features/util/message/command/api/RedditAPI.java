@@ -17,10 +17,10 @@ public class RedditAPI extends AbstractAPI {
     public static String fetchLatestPost(String subreddit, String sort) {
         Post post = fetchLatestPostInternal(subreddit, sort);
         StringBuilder sb = new StringBuilder();
-        sb.append(MessageUnicodeConverter.bold(post.title) + '\n');
+        sb.append(MessageUnicodeConverter.bold(post.title)).append('\n');
         if (!post.description.isEmpty()) // To prevent extra line break
-            sb.append(post.description + '\n');
-        sb.append('\n' + post.url);
+            sb.append(post.description).append('\n');
+        sb.append('\n').append(post.url);
         return sb.toString();
     }
 
@@ -43,7 +43,7 @@ public class RedditAPI extends AbstractAPI {
     }
 
     private static Post fetchLatestPostInternal(String subreddit, String sort) {
-        final List possibleSorts = Arrays.asList("top", "new", "hot");
+        final List<String> possibleSorts = Arrays.asList("top", "new", "hot");
         if (!possibleSorts.contains(sort))
             sort = "top";
         try {

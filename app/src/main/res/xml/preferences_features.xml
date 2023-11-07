@@ -12,6 +12,10 @@
         android:defaultValue="true"
         android:key="mpro_ui_color_theme_force"
         android:title="@string/pref_color_theme_force" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mpro_adblocker"
+        android:title="@string/pref_adblocker" />
 
     <PreferenceCategory
         android:key="category_conversation_key"
@@ -71,6 +75,10 @@
         android:key="mpro_image_default_camera"
         android:title="@string/pref_default_camera" />
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="mpro_disable_media_transcoder"
+        android:title="@string/pref_disable_media_transcoder" />
     <PreferenceCategory
         android:key="category_other_key"
         android:title="@string/pref_category_other" />

@@ -12,4 +12,6 @@ public enum HookId {
     MESSAGES_DISPLAY,
     UI_COLORS,
     THREAD_ATTRS,
+    MEDIA_TRANSCODER,
+    AD_BLOCKER,
 }
