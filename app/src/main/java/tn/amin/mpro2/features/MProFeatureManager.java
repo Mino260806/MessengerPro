@@ -43,7 +43,6 @@ public class MProFeatureManager extends FeatureManager {
         addFeature(new UntypingFeature(gateway));
         addFeature(new DefaultCameraFeature(gateway));
         addFeature(new MediaTranscodeFeature(gateway));
-        addFeature(new AdBlockFeature(gateway));
 
         // Tasker features
         addFeature(new TaskerEventMessageFeature(gateway));
