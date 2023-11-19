@@ -42,7 +42,7 @@ public class ThemeConfigurationFrame extends FrameLayout {
         applyButton.setText(gateway.res.getString(R.string.apply));
 
         mSpinner.setAdapter(new ArrayAdapter<>(
-                context, android.R.layout.simple_spinner_item, Themes.getThemeNames()));
+                context, R.layout.spinner_item, Themes.getThemeNames()));
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
