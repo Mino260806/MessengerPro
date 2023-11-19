@@ -1,10 +1,11 @@
 package tn.amin.mpro2.hook.all;
-
 import java.util.Arrays;
+import org.apache.commons.lang3.math.NumberUtils;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import de.robv.android.xposed.XC_MethodHook;
+import tn.amin.mpro2.debug.Logger;
 import tn.amin.mpro2.hook.BaseHook;
 import tn.amin.mpro2.hook.HookId;
 import tn.amin.mpro2.hook.HookTime;
@@ -30,9 +31,15 @@ public class MessageReceivedHook extends BaseHook {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                         long convThreadKey = (Long) param.args[2];
+                        String senderUserKeyString = (String) param.args[3];
                         String messageId = (String) param.args[6];
                         String message = (String) param.args[8];
-                        String senderUserKey = (String) param.args[3];
+
+                        long senderUserKey = NumberUtils.toLong(senderUserKeyString, -1);
+                        if (senderUserKey == -1) {
+                            Logger.warn("Unknown user key: " + senderUserKeyString);
+                            return;
+                        }
 
                         notifyListeners((listener) ->
                                 ((MessageReceivedListener) listener).onMessageReceived(message, messageId, senderUserKey, convThreadKey));

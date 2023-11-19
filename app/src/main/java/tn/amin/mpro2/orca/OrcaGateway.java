@@ -102,15 +102,24 @@ public class OrcaGateway {
      * Waits for Mailbox to be constructed and then stores it in a variable.
      */
     public void prepareToCaptureMailbox() {
+        final Class<?> MailboxConfig = XposedHelpers.findClass(OrcaClassNames.MAILBOX_CONFIG, classLoader);
         final Class<?> Mailbox = XposedHelpers.findClass(OrcaClassNames.MAILBOX, classLoader);
+
+        // MailboxConfig constructor is called before Mailbox constructor
+        XposedBridge.hookAllConstructors(MailboxConfig, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                Logger.info("Captured mailbox configuration!");
+                authData = new AuthDataWrapper(param.args[1]);
+            }
+        });
 
         XposedBridge.hookAllConstructors(Mailbox, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Logger.info("Captured mailbox !");
                 Object mailbox = param.thisObject;
-                authData = new AuthDataWrapper(param.args[1]);
-                mailboxConnector = new MailboxConnector(mailbox, classLoader);
+                mailboxConnector = new MailboxConnector(mailbox, authData, classLoader);
                 for (Runnable callback : mailboxCallback) {
                     callback.run();
                 }
