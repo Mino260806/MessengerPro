@@ -38,9 +38,6 @@ public class MessageSentHook extends BaseHook {
 
                 if (param.args[5] instanceof String message) {
 
-                    java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
-                    logger.warning("Wael ! " + Arrays.toString(param.args));
-
                     Long threadKey = (Long) param.args[2];
 
                     String rangeStartsString = (String) param.args[7];
@@ -64,7 +61,6 @@ public class MessageSentHook extends BaseHook {
                     if (refinedMessage == null) return;
 
 //                    Logger.logObjectRecursive(refinedMessage);
-                    logger.warning("Wael ! " + refinedMessage.content);
                     param.args[5] = refinedMessage.content;
                     param.args[7] = Mention.joinRangeStarts(refinedMessage.mentions);
                     param.args[8] = Mention.joinRangeEnds(refinedMessage.mentions);
