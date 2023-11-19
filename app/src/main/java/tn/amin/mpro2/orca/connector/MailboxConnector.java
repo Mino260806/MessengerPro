@@ -54,7 +54,7 @@ public class MailboxConnector {
         preDispatch(notificationScope -> {
             long time = System.currentTimeMillis() * 1000;
             Object[] disptachParams = new Object[] {
-                    9, 65540, threadKey, mailbox.get(), "", textMessage.content, null, null, null, null, null, null, textMessage.replyMessageId != null? 1: 0, 0, null, null, null, time, null, null, null, null, null, null, notificationScope
+                    9, 65540, threadKey, mailbox.get(), "", textMessage.content, null, null, null, null, null, null, textMessage.replyMessageId != null? 1: 0, 0, null, null, null, time, null, null, null, null, null, null, false, notificationScope
             };
 
             disptachParams[7] = Mention.joinRangeStarts(textMessage.mentions);
@@ -151,7 +151,7 @@ public class MailboxConnector {
             try {
                 XposedBridge.invokeOriginalMethod(disptach, null, new Object[] {
 //                        53, threadKey, mailbox.get(), orcaAttachment, "", "You sent a file.", null, null, time, null, notificationScope
-                        61, 65540, threadKey, mailbox.get(), orcaAttachment, "You sent a file.", replyId, replyId != null? 1: 0, null, null, null, time, null, null,  notificationScope, true
+                        62, 65540, threadKey, mailbox.get(), orcaAttachment, "You sent a file.", replyId, replyId != null? 1: 0, null, null, null, time, null, null,  notificationScope, true
                 });
             } catch (Throwable t) {
                 Logger.error(t);

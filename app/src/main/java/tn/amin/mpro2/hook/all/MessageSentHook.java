@@ -16,7 +16,7 @@ import tn.amin.mpro2.orca.datatype.Mention;
 import tn.amin.mpro2.orca.datatype.TextMessage;
 
 public class MessageSentHook extends BaseHook {
-    public static final String DISPATCH_METHOD = "dispatchVIJOOOOOOOOOOOOOOOOOOOOOO";
+    public static final String DISPATCH_METHOD = "dispatchVIJOOOOOOOOOOOOOOOOOOOOOOO";
 //    public static final String DISPATCH_METHOD = "dispatchVIJOOOOOOOOOOOOOOOOOOOO";
 
     public MessageSentHook() {
@@ -36,13 +36,12 @@ public class MessageSentHook extends BaseHook {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 
-                if (param.args[5] instanceof String) {
+                if (param.args[5] instanceof String message) {
 
-//                    java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
-//                    logger.warning("sent ! " + Arrays.toString(param.args));
+                    java.util.logging.Logger logger = java.util.logging.Logger.getLogger(this.getClass().getName());
+                    logger.warning("Wael ! " + Arrays.toString(param.args));
 
                     Long threadKey = (Long) param.args[2];
-                    String message = (String) param.args[5];
 
                     String rangeStartsString = (String) param.args[7];
                     String rangeEndsString = (String) param.args[8];
@@ -64,7 +63,8 @@ public class MessageSentHook extends BaseHook {
                     TextMessage refinedMessage = (TextMessage) getListenersReturnValue().value;
                     if (refinedMessage == null) return;
 
-                    Logger.logObjectRecursive(refinedMessage);
+//                    Logger.logObjectRecursive(refinedMessage);
+                    logger.warning("Wael ! " + refinedMessage.content);
                     param.args[5] = refinedMessage.content;
                     param.args[7] = Mention.joinRangeStarts(refinedMessage.mentions);
                     param.args[8] = Mention.joinRangeEnds(refinedMessage.mentions);
