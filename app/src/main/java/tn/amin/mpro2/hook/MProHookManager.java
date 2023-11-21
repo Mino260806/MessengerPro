@@ -33,6 +33,5 @@ public class MProHookManager extends HookManager {
         addHook(new MessagesDisplayHook());
         addHook(new UIColorsHook());
         addHook(new ThreadAttrsHook());
-        addHook(new AdBlockHook());
     }
 }
