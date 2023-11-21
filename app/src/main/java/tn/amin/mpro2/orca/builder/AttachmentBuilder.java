@@ -34,7 +34,7 @@ public class AttachmentBuilder {
 
     public AttachmentBuilder(ClassLoader classLoader) {
         Class<?> Attachment = XposedHelpers.findClass(OrcaClassNames.ATTACHMENT, classLoader);
-        mAttachmentConstructor = XposedHelpers.findConstructorExact(Attachment, java.lang.String.class, java.lang.String.class, java.lang.Long.class, java.lang.String.class, java.lang.Long.class, java.lang.String.class, java.lang.Long.class, boolean.class, boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Long.class, java.lang.Long.class, java.lang.Long.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, byte[].class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Long.class);
+        mAttachmentConstructor = XposedHelpers.findConstructorExact(Attachment, java.lang.String.class, java.lang.String.class, java.lang.Long.class, java.lang.String.class, java.lang.Long.class, java.lang.String.class, java.lang.Long.class, boolean.class, boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Long.class, java.lang.Long.class, java.lang.Long.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, byte[].class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Long.class, java.lang.Integer.class, boolean.class);
 
         mTime = System.currentTimeMillis() * 1000;
     }
@@ -80,7 +80,7 @@ public class AttachmentBuilder {
                     mWidth, mHeight, // only in video / image
                     null,null,null,null,null,null,null,null,null,null,null,null,null,null,
                     mAbsolutePath,
-                    null,null,null,null,null, 0L);
+                    null,null,null,null,null, 0L, 0, false);
         } catch (Throwable t) {
             Logger.error(t);
             return null;

@@ -30,9 +30,9 @@ public class MessageReceivedHook extends BaseHook {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                         long convThreadKey = (Long) param.args[2];
-                        String senderUserKey = (String) param.args[3];
                         String messageId = (String) param.args[6];
                         String message = (String) param.args[8];
+                        String senderUserKey = (String) param.args[3];
 
                         notifyListeners((listener) ->
                                 ((MessageReceivedListener) listener).onMessageReceived(message, messageId, senderUserKey, convThreadKey));

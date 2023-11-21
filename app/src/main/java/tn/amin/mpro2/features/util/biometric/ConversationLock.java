@@ -51,6 +51,7 @@ public class ConversationLock {
                 public void onAuthenticationError(int errorCode,
                                                   @NonNull CharSequence errString) {
                     super.onAuthenticationError(errorCode, errString);
+                    cancellationSignal.cancel();
                     Toast.makeText(context,
                             "Authentication error: " + errString, Toast.LENGTH_SHORT)
                             .show();
